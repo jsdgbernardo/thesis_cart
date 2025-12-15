@@ -1,0 +1,19 @@
+# Build, install, and log folders
+build/
+install/
+log/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# CMake files
+CMakeLists.txt.user
+
+# VSCode settings
+.vscode/
+
+# Other temporary files
+*.swp
+*.bak
+*.tmp
