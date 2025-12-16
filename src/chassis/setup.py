@@ -14,7 +14,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name, 'launch'), glob('launch/*.py')),
         (os.path.join('share', package_name, 'description'), glob('description/*.xacro')),
-        (os.path.join('share', package_name, 'worlds'), glob('worlds/*.world')),
+        (os.path.join('share', package_name, 'worlds'), glob('worlds/*.world') + glob('worlds/*.sdf')),
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
     ],
     install_requires=['setuptools'],
@@ -30,6 +30,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'diff_drive_controller = chassis.diff_drive_controller:main',
         ],
     },
 )
