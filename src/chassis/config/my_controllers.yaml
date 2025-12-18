@@ -1,64 +1,58 @@
-controller_manager:
+/**/controller_manager:
   ros__parameters:
-    update_rate: 30
-    use_sim_time: true # Uncomment if using simulation
+    update_rate: 101 # Hz
 
-diff_drive:
+    joint_broad:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive:
+      type: diff_drive_controller/DiffDriveController
+
+/**/diff_drive:
   ros__parameters:
-    type: diff_drive_controller/DiffDriveController
 
-    publish_rate: 50.0
+    left_wheel_names: ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
 
-    base_frame_id: base_link
-
-    left_wheel_names: ['left_wheel_joint']
-    right_wheel_names: ['right_wheel_joint']
     wheel_separation: 0.18288
+    #wheels_per_side: 1  # actually 2, but both are controlled by 1 signal
     wheel_radius: 0.0325
 
-    use_stamped_vel: false # use stamped velocity commands for Nav2 
-    position_feedback: true
+    wheel_separation_multiplier: 1.0
+    left_wheel_radius_multiplier: 1.0
+    right_wheel_radius_multiplier: 1.0
 
+    publish_rate: 50.0
     odom_frame_id: odom
+    base_frame_id: base_link
+    # pose_covariance_diagonal : [0.001, 0.001, 0.0, 0.0, 0.0, 0.01]
+    # twist_covariance_diagonal: [0.001, 0.0, 0.0, 0.0, 0.0, 0.01]
+
     open_loop: false
     enable_odom_tf: true
 
-    publish_odometry: true
-    publish_tf: true
+    cmd_vel_timeout: 0.5
+    #publish_limited_velocity: true
+    use_stamped_vel: false
+    #velocity_rolling_window_size: 10
 
-    cmd_vel_timeout: 1.0
-
-    # wheels_per_side: x
-    # wheel_separation_multiplier: x
-    # left_wheel_radius_multiplier: x
-    # right_wheel_radius_multiplier: x
-
-    # pose_covariance_diagonal: x
-    # twist_covariance_diagonal: x
-    
-    # publish_limited_velocity: x
-    velocity_rolling_window_size: 10
-  
-    # linear.x.has_velocity_limits: false
-    # linear.x.has_acceleration_limits: false
+    # Velocity and acceleration limits
+    # Whenever a min_* is unspecified, default to -max_*
+    # linear.x.has_velocity_limits: true
+    # linear.x.has_acceleration_limits: true
     # linear.x.has_jerk_limits: false
-    # linear.x.max_velocity: NAN
-    # linear.x.min_velocity: NAN
-    # linear.x.max_acceleration: NAN
-    # linear.x.min_acceleration: NAN
-    # linear.x.max_jerk: NAN
-    # linear.x.min_jerk: NAN
+    # linear.x.max_velocity: 1.0
+    # linear.x.min_velocity: -1.0
+    # linear.x.max_acceleration: 1.0
+    # linear.x.max_jerk: 0.0
+    # linear.x.min_jerk: 0.0
 
-    # angular.z.has_velocity_limits: false
-    # angular.z.has_acceleration_limits: false
+    # angular.z.has_velocity_limits: true
+    # angular.z.has_acceleration_limits: true
     # angular.z.has_jerk_limits: false
-    # angular.z.max_velocity: NAN
-    # angular.z.min_velocity: NAN
-    # angular.z.max_acceleration: NAN
-    # angular.z.min_acceleration: NAN
-    # angular.z.max_jerk: NAN
-    # angular.z.min_jerk: NAN
-
-joint_broad:
-  ros__parameters:
-    type: joint_state_broadcaster/JointStateBroadcaster
+    # angular.z.max_velocity: 1.0
+    # angular.z.min_velocity: -1.0
+    # angular.z.max_acceleration: 1.0
+    # angular.z.min_acceleration: -1.0
+    # angular.z.max_jerk: 0.0
+    # angular.z.min_jerk: 0.0

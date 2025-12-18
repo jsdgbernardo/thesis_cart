@@ -3,11 +3,14 @@ import os
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, ExecuteProcess, TimerAction
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, ExecuteProcess, TimerAction, RegisterEventHandler
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, FindExecutable
 from launch.conditions import IfCondition
+from launch.event_handlers import OnProcessStart, OnProcessExit
+
 from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 
 import xacro
 
@@ -18,31 +21,41 @@ def generate_launch_description():
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
     # Load description file
-    xacro_file = os.path.join(pkg_path, 'description', 'chassis.urdf.xacro')
     robot_description = Command([
         PathJoinSubstitution([FindExecutable(name='xacro')]),
-        ' ', xacro_file
+        ' ', 
+        PathJoinSubstitution(
+            [FindPackageShare('chassis'),
+             'description',
+            'chassis.urdf.xacro']
+        )
     ])
 
     # Setup to launch the simulator and Gazebo world
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
-        launch_arguments={'gz_args': PathJoinSubstitution([
-            pkg_path,
-            'worlds',
-            'empty.sdf'
-        ])}.items(),
+            [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
+                'launch',
+                'gz_sim.launch.py'])]
+        ),
+        launch_arguments=[('gz_args', [' -r -v 1 empty.sdf'])]
     )
 
     # Bridge ROS topics and Gazebo messages for establishing communication
+    # bridge = Node(
+    #     package='ros_gz_bridge',
+    #     executable='parameter_bridge',
+    #     parameters=[{
+    #         'config_file': os.path.join(pkg_path, 'config', 'ros_gz_bridge.yaml'),
+    #         'qos_overrides./tf_static.publisher.durability': 'transient_local',
+    #     }],
+    #     output='screen'
+    # )
+
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        parameters=[{
-            'config_file': os.path.join(pkg_path, 'config', 'ros_gz_bridge.yaml'),
-            'qos_overrides./tf_static.publisher.durability': 'transient_local',
-        }],
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
         output='screen'
     )
 
@@ -75,24 +88,22 @@ def generate_launch_description():
        executable='rviz2',
     )
 
-    # # Controller params file
-    # controller_params_file = os.path.join(
-    #     pkg_path, 'config', 'my_controllers.yaml'
-    # )
+    # Controller params file
+    controller_params_file = PathJoinSubstitution(
+        [FindPackageShare('chassis'),
+        'config',
+        'my_controllers.yaml']
+    )
 
-    # # ROS2 Control node
-    # controller_manager = Node(
-    #     package="controller_manager",
-    #     executable="ros2_control_node",
-    #     parameters=[{'robot_description': robot_description},
-    #                 controller_params_file],
-    #     output="screen",
-    # )
-
+    # ROS2 Control node spawners
     diff_drive_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["diff_drive"],
+        arguments=[
+            "diff_drive",
+            '--param-file',
+            controller_params_file
+            ],
         remappings=[( "/odom","/diff_drive/odom")],
     )
 
@@ -108,7 +119,16 @@ def generate_launch_description():
         spawn_entity,
         robot_state_publisher,
         rviz,
-        # controller_manager,
-        diff_drive_spawner,
-        joint_broad_spawner,
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_entity,
+                on_exit=[joint_broad_spawner],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_broad_spawner,
+                on_exit=[diff_drive_spawner],
+            )
+        ),
     ])
