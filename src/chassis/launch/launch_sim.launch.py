@@ -83,9 +83,17 @@ def generate_launch_description():
     )
 
     # Visualize in RViz
+    rviz_arg = DeclareLaunchArgument(
+        'rviz',
+        default_value='true',
+        description='Whether to start RViz'
+    )
+
     rviz = Node(
        package='rviz2',
        executable='rviz2',
+       condition=IfCondition(LaunchConfiguration('rviz')),
+       output='screen'
     )
 
     # Controller params file
@@ -114,6 +122,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        rviz_arg,
         gz_sim,
         bridge,
         spawn_entity,
