@@ -60,26 +60,15 @@ def generate_launch_description():
     )
 
     # Spawn entity in Gazebo
-    # spawn_entity = Node(
-    #     package='ros_gz_sim',
-    #     executable='create',
-    #     arguments=[
-    #         '-topic', '/robot_description',
-    #         '-entity', 'chassis',
-    #     ],
-    #     output='screen'
-    # )
     spawn_entity = Node(
-    package='ros_gz_sim',
-    executable='create',
-    arguments=[
-        '-topic', '/robot_description',
-        '-name', 'robot',
-        '-z', '0.1',
-    ],
-    output='screen'
-)
-
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-topic', '/robot_description',
+            '-entity', 'chassis',
+        ],
+        output='screen'
+    )
 
     # Robot State Publisher node
     robot_state_publisher = Node(
@@ -92,16 +81,6 @@ def generate_launch_description():
             {'robot_description': robot_description}
         ]
     )
-
-
-    #event handler to delay spawn_entity until gz_sim is started
-    spawn_after_rsp = RegisterEventHandler(
-    event_handler=OnProcessStart(
-        target_action=robot_state_publisher,
-        on_start=[spawn_entity],
-    )
-)
-
 
     # Visualize in RViz
     rviz_arg = DeclareLaunchArgument(
@@ -142,35 +121,13 @@ def generate_launch_description():
         arguments=["joint_broad"],
     )
 
-    # return LaunchDescription([
-    #     rviz_arg,
-    #     gz_sim,
-    #     bridge,
-    #     spawn_entity,
-    #     robot_state_publisher,
-    #     rviz,
-    #     RegisterEventHandler(
-    #         event_handler=OnProcessExit(
-    #             target_action=spawn_entity,
-    #             on_exit=[joint_broad_spawner],
-    #         )
-    #     ),
-    #     RegisterEventHandler(
-    #         event_handler=OnProcessExit(
-    #             target_action=joint_broad_spawner,
-    #             on_exit=[diff_drive_spawner],
-    #         )
-    #     ),
-    # ])
-
     return LaunchDescription([
         rviz_arg,
         gz_sim,
         bridge,
+        spawn_entity,
         robot_state_publisher,
-        spawn_after_rsp,
         rviz,
-
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_entity,
