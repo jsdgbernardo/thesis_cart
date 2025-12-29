@@ -194,6 +194,12 @@
         </xacro:inertial_cylinder>
     </link>
 
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
     <gazebo reference="lidar_link">
         <sensor name="lidar_sensor" type="gpu_lidar">
             <pose>0 0 0 0 0 0</pose>
