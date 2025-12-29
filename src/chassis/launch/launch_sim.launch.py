@@ -20,6 +20,13 @@ def generate_launch_description():
     pkg_path = get_package_share_directory('chassis')
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
+    # Lidar
+    lidar = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([os.path.join(
+            pkg_path, 'launch', 'rplidar.launch.py'
+        )])
+    )
+
     # Load description file
     robot_description = Command([
         PathJoinSubstitution([FindExecutable(name='xacro')]),
@@ -42,22 +49,22 @@ def generate_launch_description():
     )
 
     # Bridge ROS topics and Gazebo messages for establishing communication
-    # bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     parameters=[{
-    #         'config_file': os.path.join(pkg_path, 'config', 'ros_gz_bridge.yaml'),
-    #         'qos_overrides./tf_static.publisher.durability': 'transient_local',
-    #     }],
-    #     output='screen'
-    # )
-
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        parameters=[{
+            'config_file': os.path.join(pkg_path, 'config', 'ros_gz_bridge.yaml'),
+            'qos_overrides./tf_static.publisher.durability': 'transient_local',
+        }],
         output='screen'
     )
+
+    # bridge = Node(
+    #     package='ros_gz_bridge',
+    #     executable='parameter_bridge',
+    #     arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+    #     output='screen'
+    # )
 
     # Spawn entity in Gazebo
     spawn_entity = Node(
