@@ -23,4 +23,27 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_executable(intercart_comm_node
+  src/intercart_comms_node.cpp
+  src/cart_state.cpp
+  src/conflict_resolver.cpp
+)
+
+ament_target_dependencies(intercart_comm_node
+  rclcpp geometry_msgs std_msgs
+)
+
+install(TARGETS intercart_comm_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include
+)
+
+install(DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+
 ament_package()

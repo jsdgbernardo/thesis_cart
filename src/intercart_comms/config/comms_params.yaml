@@ -1,0 +1,4 @@
+intercart_comm_node:
+  ros__parameters:
+    cart_id: 1
+    safety_radius: 1.2

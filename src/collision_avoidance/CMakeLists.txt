@@ -46,5 +46,9 @@ install(DIRECTORY config launch
   DESTINATION share/${PROJECT_NAME}
 )
 
+ament_export_include_directories(include)
+# ament_export_libraries(${PROJECT_NAME}-system gz_hardware_plugins)
+# ament_export_libraries(ign_ros2_control-system gz_hardware_plugins)
+
 
 ament_package()
