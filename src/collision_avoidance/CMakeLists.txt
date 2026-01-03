@@ -24,4 +24,27 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+add_executable(collision_avoidance_node
+  src/collision_avoidance_node.cpp
+  src/obstacle_detector.cpp
+  src/avoidance_planner.cpp
+)
+
+ament_target_dependencies(collision_avoidance_node
+  rclcpp sensor_msgs geometry_msgs
+)
+
+install(TARGETS collision_avoidance_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include
+)
+
+install(DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+
 ament_package()
