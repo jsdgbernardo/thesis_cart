@@ -211,6 +211,26 @@
         </xacro:inertial_sphere>
     </link>
 
+    <!-- LIDAR LINK -->
+
+    <joint name="lidar_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="lidar_link"/>
+        <origin xyz="0.196 0 0.135" rpy="0 0 0"/>
+    </joint>
+
+    <link name="lidar_link">
+        <visual>
+            <geometry>
+                <cylinder radius="0.035" length="0.025"/>
+            </geometry>
+            <material name="red"/>
+        </visual>
+        <xacro:inertial_cylinder mass="0.140" length="0.025" radius="0.035">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+        </xacro:inertial_cylinder>
+    </link>
+
     <!-- GAZEBO FRICTION -->
 
     <gazebo reference="left_wheel_link">
@@ -253,6 +273,34 @@
         </plugin>
     </gazebo>
 
+    <!-- GAZEBO LIDAR REFERENCE -->
+
+    <gazebo reference="lidar_link">
+        <sensor name="lidar_sensor" type="gpu_lidar">
+            <pose>0 0 0 0 0 0</pose>
+
+            <always_on>true</always_on>
+            <update_rate>10</update_rate>
+            <visualize>true</visualize>
+
+            <ray>
+                <scan>
+                    <horizontal>
+                    <samples>360</samples>
+                    <resolution>1</resolution>
+                    <min_angle>-3.14159</min_angle>
+                    <max_angle>3.14159</max_angle>
+                    </horizontal>
+                </scan>
+
+                <range>
+                    <min>0.3</min>
+                    <max>12.0</max>
+                </range>
+            </ray>
+        </sensor>
+    </gazebo>
+
     <!-- ROS CONTROL -->
 
     <ros2_control name="GazeboSimSystem" type="system">
@@ -276,5 +324,11 @@
             <state_interface name="position"/>
         </joint>
     </ros2_control>
+
+    <gazebo>
+        <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+            <parameters>$(find chassis)/config/my_controllers.yaml</parameters>
+        </plugin>
+    </gazebo>
 
 </robot>
