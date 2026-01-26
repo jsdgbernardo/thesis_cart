@@ -37,7 +37,7 @@ def generate_launch_description():
         name='robot_state_publisher',
         output='both',
         parameters=[
-            {'use_sim_time': True},
+            {'use_sim_time': False},
             {'robot_description': robot_description}
         ]
     )
@@ -54,6 +54,15 @@ def generate_launch_description():
         [FindPackageShare('chassis'),
         'config',
         'my_controllers.yaml']
+    )
+
+    # Contorller manager
+    controller_manager = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[{'robot_description': robot_description},
+                    controller_params_file],
+        output='both',
     )
 
     # ROS2 Control node spawners
@@ -77,6 +86,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_state_publisher,
         # lidar,
+        controller_manager,
         joint_broad_spawner,
         RegisterEventHandler(
             event_handler=OnProcessExit(

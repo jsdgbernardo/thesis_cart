@@ -303,7 +303,7 @@
 
     <!-- ROS CONTROL -->
 
-    <ros2_control name="GazeboSimSystem" type="system">
+    <!-- <ros2_control name="GazeboSimSystem" type="system">
         <hardware>
             <plugin>gz_ros2_control/GazeboSimSystem</plugin>
         </hardware>
@@ -329,6 +329,6 @@
         <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
             <parameters>$(find chassis)/config/my_controllers.yaml</parameters>
         </plugin>
-    </gazebo>
+    </gazebo> -->
 
 </robot>
