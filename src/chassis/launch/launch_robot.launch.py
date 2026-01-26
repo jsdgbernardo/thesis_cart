@@ -76,7 +76,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         robot_state_publisher,
-        lidar,
+        # lidar,
         joint_broad_spawner,
         RegisterEventHandler(
             event_handler=OnProcessExit(
