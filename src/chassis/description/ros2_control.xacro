@@ -12,8 +12,8 @@
                 <param name="baud_rate">57600</param>
                 <param name="wheel_radius">0.034</param>
                 <param name="wheel_separation">0.337</param>
-                <param name="ppr_left">70.5</param>
-                <param name="ppr_right">70.5</param>
+                <param name="ppr_left">2969.4</param>
+                <param name="ppr_right">2982.6</param>
                 <param name="timeout_ms">2000</param>
             </hardware>
             <joint name="left_wheel_joint">
