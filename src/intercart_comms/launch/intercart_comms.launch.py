@@ -7,6 +7,6 @@ def generate_launch_description():
             package='cart_intercart_comm',
             executable='intercart_comm_node',
             name='intercart_comm_node',
-            parameters=['config/comm_params.yaml']
+            parameters=['config/comms_params.yaml']
         )
     ])
