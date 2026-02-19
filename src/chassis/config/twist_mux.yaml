@@ -5,3 +5,7 @@ twist_mux:
         topic: cmd_vel
         timeout: 0.5
         priority: 10
+      collision:  
+        topic: /cmd_vel_collision
+        timeout: 0.2
+        priority: 50

@@ -1,5 +1,12 @@
 #include "collision_avoidance/avoidance_planner.hpp"
 
+AvoidancePlanner::AvoidancePlanner(float safe_dist, float slow_dist,
+                                   float base_speed, float turn_speed)
+  : safe_dist_(safe_dist), slow_dist_(slow_dist),
+    base_speed_(base_speed), turn_speed_(turn_speed)
+{
+}
+
 geometry_msgs::msg::Twist AvoidancePlanner::compute_cmd(
   float front, float left, float right)
 {

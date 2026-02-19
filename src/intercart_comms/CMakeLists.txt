@@ -23,6 +23,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+include_directories(include)
+
 add_executable(intercart_comm_node
   src/intercart_comms_node.cpp
   src/cart_state.cpp
@@ -31,6 +33,11 @@ add_executable(intercart_comm_node
 
 ament_target_dependencies(intercart_comm_node
   rclcpp geometry_msgs std_msgs
+)
+
+target_include_directories(intercart_comm_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
 install(TARGETS intercart_comm_node

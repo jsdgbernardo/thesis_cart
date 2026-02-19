@@ -15,8 +15,11 @@ CollisionAvoidanceNode::CollisionAvoidanceNode()
     std::bind(&CollisionAvoidanceNode::scan_callback, this, std::placeholders::_1)
   );
 
+  // cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
+  //   "/cmd_vel_safe", 10);
   cmd_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
-    "/cmd_vel_safe", 10);
+    "/cmd_vel_collision", 10);
+
 
   RCLCPP_INFO(this->get_logger(), "Collision Avoidance Node started");
 }
@@ -33,4 +36,11 @@ void CollisionAvoidanceNode::scan_callback(
   );
 
   cmd_pub_->publish(cmd);
+}
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<CollisionAvoidanceNode>());
+  rclcpp::shutdown();
+  return 0;
 }

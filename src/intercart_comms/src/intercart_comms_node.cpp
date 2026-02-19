@@ -44,3 +44,11 @@ void IntercartCommNode::self_velocity_callback(
 {
   // Reserved for future intent estimation
 }
+
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<IntercartCommNode>());
+  rclcpp::shutdown();
+  return 0;
+}
