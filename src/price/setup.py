@@ -28,7 +28,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'weight_scale_node = price.weight_scale_node:main',
+            'calculation = price.calculation:main',
         ],
     },
 )
