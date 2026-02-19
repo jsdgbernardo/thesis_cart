@@ -2,6 +2,7 @@
 build/
 install/
 log/
+src/gz_ros2_control/
 
 # Python cache files
 __pycache__/
