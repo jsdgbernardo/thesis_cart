@@ -42,17 +42,20 @@ def generate_launch_description():
         ]
     )
 
+    # Twist mux file
+    twist_mux_file = PathJoinSubstitution(
+        [FindPackageShare('chassis'),
+        'config',
+        'twist_mnux.yaml']
+    )
+
     # Twist mux
     twist_mux = Node(
         package='twist_mux',
         executable='twist_mux',
         name='twist_mux',
         output='both',
-        parameters=[PathJoinSubstitution(
-            [FindPackageShare(pkg_path),
-             'config',
-             'twist_mux.yaml']
-        )],
+        parameters=[twist_mux_file],
         remappings=[('/cmd_vel_out', '/diff_drive/cmd_vel_unstamped')]
     )
 
@@ -74,7 +77,6 @@ def generate_launch_description():
             'collision_params.yaml'
         )]
     )
-
 
     # Controller params file
     controller_params_file = PathJoinSubstitution(
@@ -112,7 +114,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         robot_state_publisher,
-        twist_mux,
+        # twist_mux,
         lidar,
         controller_manager,
         joint_broad_spawner,
