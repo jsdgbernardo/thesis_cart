@@ -7,8 +7,8 @@ from ament_index_python.packages import get_package_share_directory
 import RPi.GPIO as GPIO
 import json
 
-from price.weight_detection import WeightDetector
-# from price.camera_detection import CameraDetector
+from price.weight.weight import WeightDetector
+# from price.camera.camera import CameraDetector
 
 class CartNode(Node):
 
@@ -29,7 +29,7 @@ class CartNode(Node):
             self.get_logger().error("Error decoding JSON file.")
             self.items_data = {"items": []}
 
-        self.weight_detector = WeightDetector(json_path=json_path)
+        self.weight_detector = WeightDetector()
         # self.camera_detector = CameraDetector()
 
         self.timer = self.create_timer(0.25, self.loop)
@@ -37,13 +37,13 @@ class CartNode(Node):
         self.get_logger().info("Place items on scale")
 
     def loop(self):
-        result = self.weight_detector.process_weight()
+        result = self.weight_detector.read_weight()
 
         if result:
 
             if result["action"] == "added":
 
-                weight_item = result["item"]
+                weight_item = self.detect_item_by_weight(result["weight"])
                 delta = result["weight"]
 
                 self.get_logger().info(f"Added: {delta:.2f} g")
@@ -75,6 +75,29 @@ class CartNode(Node):
                     f"Removed: {result['weight']:.2f} g"
                 )
 
+    def detect_item_by_weight(self, delta_weight):
+        abs_weight = abs(delta_weight)
+        best_match = None
+        smallest_diff = float("inf")
+
+        for category, value in self.items_data.items():
+
+            if isinstance(value, list):
+                items_list = value
+            else:
+                items_list = [value]
+
+            for item in items_list:
+                expected = item["expected_weight"]
+                tolerance = item["weight_tolerance"]
+
+                if (expected - tolerance) <= abs_weight <= (expected + tolerance):
+                    diff = abs(abs_weight - expected)
+                    if diff < smallest_diff:
+                        smallest_diff = diff
+                        best_match = item
+
+        return best_match
 
 def main(args=None):
     rclpy.init(args=args)

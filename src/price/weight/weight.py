@@ -1,11 +1,9 @@
 import time
-import json
-import os
 from hx711 import HX711
 
 class WeightDetector:
-    def __init__(self):
 
+    def __init__(self):
         # HX711 setup
         self.hx = HX711(5, 6)
         self.hx.reset()
@@ -15,7 +13,6 @@ class WeightDetector:
         self.threshold = 5
         self.stability_samples = 5
         self.stability_tolerance = 2.0
-        json_path = None
 
         self.readings_buffer = []
         self.change_detected = False
@@ -31,12 +28,6 @@ class WeightDetector:
             self.tare_value = 0
 
         self.prev_weight = self.get_weight()
-
-        # load grocery items from JSON
-        self.items_data = {"items": []}
-        if json_path and os.path.exists(json_path):
-            with open(json_path, "r") as f:
-                self.items_data = json.load(f)
 
     def get_weight(self):
         raw_data = self.hx.get_raw_data(times=5)
@@ -55,7 +46,6 @@ class WeightDetector:
 
         # initial big change
         delta_weight = current_weight - self.prev_weight
-
         result = None
 
         if not self.change_detected and abs(delta_weight) > self.threshold:
@@ -68,22 +58,13 @@ class WeightDetector:
             min_w = min(self.readings_buffer)
 
             if abs(max_w - min_w) < self.stability_tolerance:
-                final_weight = sum(self.readings_buffer)/len(self.readings_buffer)
+                final_weight = sum(self.readings_buffer) / len(self.readings_buffer)
                 total_delta = final_weight - self.start_weight
 
-                if total_delta > 0:
-                    item = self.detect_item_by_weight(total_delta)
-                    result = {
-                        "action": "added",
-                        "weight": total_delta,
-                        "item": item
-                    }
-                else:
-                    result = {
-                        "action": "removed",
-                        "weight": abs(total_delta),
-                        "item": None
-                    }
+                result = {
+                    "action": "added" if total_delta > 0 else "removed",
+                    "weight": abs(total_delta),
+                }
 
                 self.change_detected = False
                 self.readings_buffer.clear()
@@ -95,27 +76,3 @@ class WeightDetector:
         self.hx.power_up()
 
         return result
-
-    def detect_item_by_weight(self, delta_weight):
-        abs_weight = abs(delta_weight)
-        best_match = None
-        smallest_diff = float("inf")
-
-        for category, value in self.items_data.items():
-
-            if isinstance(value, list):
-                items_list = value
-            else:
-                items_list = [value]
-
-            for item in items_list:
-                expected = item["expected_weight"]
-                tolerance = item["weight_tolerance"]
-
-                if (expected - tolerance) <= abs_weight <= (expected + tolerance):
-                    diff = abs(abs_weight - expected)
-                    if diff < smallest_diff:
-                        smallest_diff = diff
-                        best_match = item
-
-        return best_match
