@@ -26,6 +26,8 @@ setup(
         'console_scripts': [
             'items_manager_node = path_planning.items_manager:main',
             'brute_force_node = path_planning.brute_force_node:main',
+            'brute_force_node_filtered = path_planning.brute_force_node_filtered:main',
+            'test_node = path_planning.test_node:main',
         ],
     },
 )
