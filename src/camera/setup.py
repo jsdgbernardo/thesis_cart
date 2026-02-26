@@ -1,8 +1,6 @@
-from glob import glob
-import os
 from setuptools import find_packages, setup
 
-package_name = 'price'
+package_name = 'camera'
 
 setup(
     name=package_name,
@@ -12,12 +10,11 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'items'), glob('items/*'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='bagmalu',
-    maintainer_email='bagmalu@todo.todo',
+    maintainer='price',
+    maintainer_email='malubaglorraine@gmail.com',
     description='TODO: Package description',
     license='Apache-2.0',
     extras_require={
@@ -27,8 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'calculation = price.calculation:main',
-            'image_publisher = camera.camera.webcam:main',
+          'webcam = camera.webcam:main',
         ],
     },
 )
