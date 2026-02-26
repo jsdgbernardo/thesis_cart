@@ -65,9 +65,15 @@ class BruteForceNode(Node):
         )
         self.get_logger().info('Created subscription to /amcl_pose')
 
-        # Publishes the best path found
-        self.path_publisher = self.create_publisher(Path, 'best_path', 10)
-        self.order_publisher = self.create_publisher(String, 'goal_order', 10)
+        # Publishes the best path found (use transient local so rviz can see it after startup)
+        path_qos = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10,
+            durability=rclpy.qos.DurabilityPolicy.TRANSIENT_LOCAL,
+        )
+        self.path_publisher = self.create_publisher(Path, 'best_path', path_qos)
+        self.order_publisher = self.create_publisher(String, 'goal_order', qos_profile)
         
         self.get_logger().info(f'BruteForceNode initialized.')
 
@@ -174,6 +180,8 @@ class BruteForceNode(Node):
     # Concatenate path segments between start and each successive goal
     def compute_full_path(self, start_pose, goals):
         total_path = Path()
+        total_path.header.frame_id = 'map'
+        total_path.header.stamp = self.get_clock().now().to_msg()
         total_cost = 0.0
         poses = [start_pose] + list(goals)
         for i in range(len(poses) - 1):
@@ -208,39 +216,47 @@ class BruteForceNode(Node):
         result_ready = concurrent.futures.Future()
 
         def goal_response_callback(future):
-            goal_handle = future.result()
-            if not goal_handle.accepted:
-                self.get_logger().error('ComputePathToPose goal rejected')
-                result_ready.set_result((None, float('inf')))
-                return
-
-            def result_callback(result_future):
-                try:
-                    result_msg = result_future.result()
-                    if result_msg is None:
-                        self.get_logger().error('ComputePathToPose get_result returned None')
-                        result_ready.set_result((None, float('inf')))
-                        return
-
-                    result = None
-                    try:
-                        result = result_msg.result
-                    except Exception:
-                        result = None
-
-                    if result and result.path and len(result.path.poses) > 0:
-                        path = result.path
-                        cost = self.path_cost(path)
-                        result_ready.set_result((path, cost))
-                    else:
-                        self.get_logger().error('ComputePathToPose returned empty path')
-                        result_ready.set_result((None, float('inf')))
-                except Exception as e:
-                    self.get_logger().error(f'Exception in result_callback: {e}')
+            try:
+                goal_handle = future.result()
+                self.get_logger().info(f'Goal response received, accepted={goal_handle.accepted}')
+                if not goal_handle.accepted:
+                    self.get_logger().error('ComputePathToPose goal rejected')
                     result_ready.set_result((None, float('inf')))
+                    return
 
-            result_future = goal_handle.get_result_async()
-            result_future.add_done_callback(result_callback)
+                def result_callback(result_future):
+                    try:
+                        result_msg = result_future.result()
+                        self.get_logger().info(f'Result callback triggered, result_msg={result_msg is not None}')
+                        if result_msg is None:
+                            self.get_logger().error('ComputePathToPose get_result returned None')
+                            result_ready.set_result((None, float('inf')))
+                            return
+
+                        result = None
+                        try:
+                            result = result_msg.result
+                        except Exception as e:
+                            self.get_logger().error(f'Failed to extract result: {e}')
+                            result = None
+
+                        if result and result.path and len(result.path.poses) > 0:
+                            path = result.path
+                            cost = self.path_cost(path)
+                            self.get_logger().info(f'Path result ready: {len(path.poses)} poses, cost={cost}')
+                            result_ready.set_result((path, cost))
+                        else:
+                            self.get_logger().error(f'ComputePathToPose returned empty path. result={result}, has_path={result and hasattr(result, "path")}')
+                            result_ready.set_result((None, float('inf')))
+                    except Exception as e:
+                        self.get_logger().error(f'Exception in result_callback: {e}', exc_info=True)
+                        result_ready.set_result((None, float('inf')))
+
+                result_future = goal_handle.get_result_async()
+                result_future.add_done_callback(result_callback)
+            except Exception as e:
+                self.get_logger().error(f'Exception in goal_response_callback: {e}', exc_info=True)
+                result_ready.set_result((None, float('inf')))
 
         send_goal_future = self.action_client.send_goal_async(goal_msg)
         send_goal_future.add_done_callback(goal_response_callback)
