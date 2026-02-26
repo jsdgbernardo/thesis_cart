@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.time import Time
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from ament_index_python.packages import get_package_share_directory
 
 from nav2_msgs.action import ComputePathToPose
@@ -12,6 +14,7 @@ from std_msgs.msg import String, Float32
 from itertools import permutations
 from time import sleep
 from action_msgs.msg import GoalStatus
+import threading
 
 import os, json
 from path_planning.items_manager import ItemsManager
@@ -35,13 +38,22 @@ class BruteForceNode(Node):
 
         # Initialize action client for path planning (single-segment ComputePathToPose)
         self.action_client = ActionClient(self, ComputePathToPose, self.action_name)
-        # Subcribe to shopping list from the item manager
-        self.shopping_list = self.create_subscription(
+        
+        # QoS profile for reliable communication
+        qos_profile = QoSProfile(
+            reliability=ReliabilityPolicy.RELIABLE,
+            history=HistoryPolicy.KEEP_LAST,
+            depth=10
+        )
+        
+        # Subscribe to shopping list from the item manager
+        self.shopping_list_sub = self.create_subscription(
             String,
             'shopping_list',
             self.shopping_list_callback,
-            10
+            qos_profile
         )
+        self.get_logger().info('Created subscription to /shopping_list')
 
         # Subscribe to AMCL pose for current robot position
         self.current_pose = None
@@ -51,6 +63,7 @@ class BruteForceNode(Node):
             self.amcl_callback,
             10
         )
+        self.get_logger().info('Created subscription to /amcl_pose')
 
         # Publishes the best path found
         self.path_publisher = self.create_publisher(Path, 'best_path', 10)
@@ -76,23 +89,37 @@ class BruteForceNode(Node):
     # Calls for shopping list updates from the item manager
     # Triggers path planning algorithm when new shopping list is received
     def shopping_list_callback(self, msg):
-        
-        item_name = msg.data.split(',')
-        self.items = [] # Clear previous items
+        try:
+            self.get_logger().info(f'shopping_list_callback triggered with data: {msg.data}')
+            
+            item_name = msg.data.split(',')
+            self.items = [] # Clear previous items
 
-        for name in item_name:
-            if name in self.json_items:
-                x = self.json_items[name]['x_coordinate']
-                y = self.json_items[name]['y_coordinate']
-                self.items.append(ItemCoordinates(name, x, y))
-                self.get_logger().info(f'Received shopping list item: {item_name} at ({x}, {y})')
+            for name in item_name:
+                name = name.strip()  # Remove leading/trailing whitespace
+                self.get_logger().info(f'Processing item: "{name}"')
+                if name in self.json_items:
+                    x = self.json_items[name]['x_coordinate']
+                    y = self.json_items[name]['y_coordinate']
+                    self.items.append(ItemCoordinates(name, x, y))
+                    self.get_logger().info(f'Received shopping list item: {name} at ({x}, {y})')
+                else:
+                    self.get_logger().warn(f'Item {name} not found in JSON database. Available: {list(self.json_items.keys())}')
+
+            # Trigger planning in background thread to avoid blocking the callback
+            if self.current_pose is not None and len(self.items) > 0:
+                self.get_logger().info(f'Starting path recomputation for {len(self.items)} items.')
+                # Run planning in a separate thread to avoid blocking callbacks
+                planning_thread = threading.Thread(target=self.computer_and_publish_path, args=(self.items,))
+                planning_thread.daemon = True
+                planning_thread.start()
             else:
-                self.get_logger().warn(f'Item {name} not found in JSON database.')
-
-        self.get_logger().info(f'Recomputing path.')
-        # Trigger planning immediately with the updated items
-        if self.current_pose is not None and len(self.items) > 0:
-            self.computer_and_publish_path(self.items)
+                if self.current_pose is None:
+                    self.get_logger().warn('Current pose is None, cannot plan')
+                if len(self.items) == 0:
+                    self.get_logger().warn('No valid items to plan for')
+        except Exception as e:
+            self.get_logger().error(f'Exception in shopping_list_callback: {e}', exc_info=True)
 
     # Update current robot pose from AMCL
     def amcl_callback(self, msg):
@@ -100,43 +127,49 @@ class BruteForceNode(Node):
 
     # Compute Brute Force TSP + Dijkstra Path for the given shopping list items
     def computer_and_publish_path(self, items):
+        try:
+            # Convert current pose to PoseStamped
+            start_pose = PoseStamped()
+            start_pose.header.frame_id = 'map'
+            start_pose.header.stamp = self.get_clock().now().to_msg()
+            start_pose.pose = self.current_pose
+            
+            # Convert items to PoseStamped goals
+            goal_poses = [self.item_to_pose_stamped(it) for it in items]
 
-        # Convert current pose to PoseStamped
-        start_pose = PoseStamped()
-        start_pose.header.frame_id = 'map'
-        start_pose.header.stamp = self.get_clock().now().to_msg()
-        start_pose.pose = self.current_pose
-        
-        # Convert items to PoseStamped goals
-        goal_poses = [self.item_to_pose_stamped(it) for it in items]
+            # Compute TSP + Dijkstra
+            best_path = None
+            best_cost = float('inf')
+            best_order = None
 
-        # Compute TSP + Dijkstra
-        best_path = None
-        best_cost = float('inf')
-        best_order = None
+            if not goal_poses:
+                self.get_logger().warn('No goal poses to plan.')
+                return
 
-        if not goal_poses:
-            self.get_logger().warn('No goal poses to plan.')
-            return
+            self.get_logger().info(f'Computing paths for {len(goal_poses)} goal poses. This may take some time...')
 
-        # Try all permutations of goal orders (Brute Force TSP)
-        for order in permutations(range(len(goal_poses))):
-            ordered_goals = [goal_poses[i] for i in order]
-            path, cost = self.compute_full_path(start_pose, ordered_goals)
-            if path is not None and cost < best_cost:
-                best_path = path
-                best_cost = cost
-                best_order = [items[i].name for i in order]
+            # Try all permutations of goal orders (Brute Force TSP)
+            for order in permutations(range(len(goal_poses))):
+                ordered_goals = [goal_poses[i] for i in order]
+                path, cost = self.compute_full_path(start_pose, ordered_goals)
+                if path is not None and cost < best_cost:
+                    best_path = path
+                    best_cost = cost
+                    best_order = [items[i].name for i in order]
 
-        if best_path:
-            # publish path and order
-            self.path_publisher.publish(best_path)
-            order_msg = String()
-            order_msg.data = json.dumps({'order': best_order, 'cost': best_cost})
-            self.order_publisher.publish(order_msg)
-            self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f}')
-        else:
-            self.get_logger().error('No valid path found for selected items.')
+            self.get_logger().info(f'Best path cost: {best_cost:.2f} for order: {best_order}')
+
+            if best_path:
+                # publish path and order
+                self.path_publisher.publish(best_path)
+                order_msg = String()
+                order_msg.data = json.dumps({'order': best_order, 'cost': best_cost})
+                self.order_publisher.publish(order_msg)
+                self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f}')
+            else:
+                self.get_logger().error('No valid path found for selected items.')
+        except Exception as e:
+            self.get_logger().error(f'Exception in computer_and_publish_path: {e}', exc_info=True)
 
     # Concatenate path segments between start and each successive goal
     def compute_full_path(self, start_pose, goals):
@@ -170,60 +203,58 @@ class BruteForceNode(Node):
         goal_msg.planner_id = ''
         goal_msg.use_start = True
 
+        # Create a future to wait for completion
+        import concurrent.futures
+        result_ready = concurrent.futures.Future()
+
+        def goal_response_callback(future):
+            goal_handle = future.result()
+            if not goal_handle.accepted:
+                self.get_logger().error('ComputePathToPose goal rejected')
+                result_ready.set_result((None, float('inf')))
+                return
+
+            def result_callback(result_future):
+                try:
+                    result_msg = result_future.result()
+                    if result_msg is None:
+                        self.get_logger().error('ComputePathToPose get_result returned None')
+                        result_ready.set_result((None, float('inf')))
+                        return
+
+                    result = None
+                    try:
+                        result = result_msg.result
+                    except Exception:
+                        result = None
+
+                    if result and result.path and len(result.path.poses) > 0:
+                        path = result.path
+                        cost = self.path_cost(path)
+                        result_ready.set_result((path, cost))
+                    else:
+                        self.get_logger().error('ComputePathToPose returned empty path')
+                        result_ready.set_result((None, float('inf')))
+                except Exception as e:
+                    self.get_logger().error(f'Exception in result_callback: {e}')
+                    result_ready.set_result((None, float('inf')))
+
+            result_future = goal_handle.get_result_async()
+            result_future.add_done_callback(result_callback)
+
         send_goal_future = self.action_client.send_goal_async(goal_msg)
-        rclpy.spin_until_future_complete(self, send_goal_future, timeout_sec=20.0)
-        if not send_goal_future.done() or send_goal_future.result() is None:
-            exc = None
-            try:
-                exc = send_goal_future.exception()
-            except Exception:
-                exc = None
-            if exc:
-                self.get_logger().error(f'Failed to send ComputePathToPose goal: exception: {exc}')
-            else:
-                self.get_logger().error('Failed to send ComputePathToPose goal: no result')
-            return None, float('inf')
+        send_goal_future.add_done_callback(goal_response_callback)
 
-        goal_handle = send_goal_future.result()
-        self.get_logger().info(f'Goal handle accepted: {getattr(goal_handle, "accepted", False)}')
-        if not goal_handle.accepted:
-            self.get_logger().error('ComputePathToPose goal rejected')
-            return None, float('inf')
-
-        result_future = goal_handle.get_result_async()
-        rclpy.spin_until_future_complete(self, result_future, timeout_sec=20.0)
-        if not result_future.done() or result_future.result() is None:
-            exc = None
-            try:
-                exc = result_future.exception()
-            except Exception:
-                exc = None
-            if exc:
-                self.get_logger().error(f'ComputePathToPose get_result failed/exception: {exc}')
-            else:
-                self.get_logger().error('ComputePathToPose get_result failed or timed out (no result)')
-            return None, float('inf')
-
-        result_msg = result_future.result()
-        # log numeric status for diagnosis
+        # Wait for result with timeout (non-blocking on executor)
         try:
-            status = getattr(result_msg, 'status', None)
-            self.get_logger().info(f'ComputePathToPose result status: {status}')
-        except Exception:
-            pass
-
-        result = None
-        try:
-            result = result_msg.result
-        except Exception:
-            result = None
-
-        if result and result.path and len(result.path.poses) > 0:
-            path = result.path
-            cost = self.path_cost(path)
+            path, cost = result_ready.result(timeout=20.0)
             return path, cost
-
-        return None, float('inf')
+        except concurrent.futures.TimeoutError:
+            self.get_logger().error('ComputePathToPose action timed out')
+            return None, float('inf')
+        except Exception as e:
+            self.get_logger().error(f'Exception waiting for path segment: {e}')
+            return None, float('inf')
 
     # Compute simple Euclidean cost along a nav_msgs/Path
     # Uses path waypoints to calculate total distance traveled
@@ -273,7 +304,9 @@ class BruteForceNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = BruteForceNode()
-    rclpy.spin(node)
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+    executor.spin()
     node.destroy_node()
     rclpy.shutdown()
 

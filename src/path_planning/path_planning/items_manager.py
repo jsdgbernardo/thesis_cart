@@ -4,6 +4,7 @@
 
 import rclpy
 from rclpy.node import Node
+from rclpy.executors import MultiThreadedExecutor
 from std_msgs.msg import String
 from ament_index_python.packages import get_package_share_directory
 
@@ -53,21 +54,28 @@ class ItemsManager(Node):
 
     # Callback for adding items to the shopping list
     def add_items_callback(self, msg):
-        item = msg.data
-        if item in self.item_names and item not in self.selected_items:
-            self.selected_items.append(item)
-            
-            # Publish the updated shopping list
-            self.shopping_list.publish(
-                String(data=",".join(self.selected_items))
-            )
+        try:
+            item = msg.data.strip()
+            if not item:
+                self.get_logger().warn('Empty item received')
+                return
+                
+            if item in self.item_names and item not in self.selected_items:
+                self.selected_items.append(item)
+                
+                # Publish the updated shopping list
+                self.shopping_list.publish(
+                    String(data=",".join(self.selected_items))
+                )
 
-            self.get_logger().info(f'Added item: {item}. Current shopping list: {self.selected_items}')
+                self.get_logger().info(f'Added item: {item}. Current shopping list: {self.selected_items}')
 
-        elif item in self.selected_items:
-            self.get_logger().info(f'Item already selected: {item}')
-        else:
-            self.get_logger().warn(f'Unknown item received: {item}')
+            elif item in self.selected_items:
+                self.get_logger().info(f'Item already selected: {item}')
+            else:
+                self.get_logger().warn(f'Unknown item received: {item}. Available items: {self.item_names}')
+        except Exception as e:
+            self.get_logger().error(f'Error in add_items_callback: {e}', exc_info=True)
 
     # Callback for removing items from the shopping list
     def remove_item_callback(self, msg):
@@ -92,6 +100,8 @@ class ItemsManager(Node):
 def main(args=None):
     rclpy.init(args=args)
     items_manager = ItemsManager()
-    rclpy.spin(items_manager)
+    executor = MultiThreadedExecutor()
+    executor.add_node(items_manager)
+    executor.spin()
     items_manager.destroy_node()
     rclpy.shutdown()
