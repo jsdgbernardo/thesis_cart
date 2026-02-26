@@ -18,6 +18,7 @@ geometry_msgs::msg::Twist AvoidancePlanner::compute_cmd(
 
   // TO DO: account for coordanates of the shelves/permanent items in the map
   // TO DO: finetune safe distance/speed parameters based on irl dimensions
+    // needed measurements: aisle width
 
   std::string state;
 
@@ -43,7 +44,7 @@ geometry_msgs::msg::Twist AvoidancePlanner::compute_cmd(
     // CLEAR PATH
 
     // directions will be taken from global planner
-    // TO DO: subscribe to global path
+    // TO DO: subscribe to global path - or no this is handled by the twist mux na
     cmd.linear.x = base_speed_;
     cmd.angular.z = 0.0;
 

@@ -46,42 +46,69 @@ void CollisionAvoidanceNode::scan_callback(
     // obstacle_detected_ = true; // for testing
 }
 
+// void CollisionAvoidanceNode::cmd_callback(
+//   const geometry_msgs::msg::Twist::SharedPtr msg)
+// {
+//   last_cmd_ = *msg;
+
+//   geometry_msgs::msg::Twist safe_cmd = last_cmd_;
+
+//   if (obstacle_detected_)
+//   {
+//     // Use planner to generate avoidance command
+//     safe_cmd = planner_.compute_cmd(
+//       detector_.front_distance(),
+//       detector_.left_distance(),
+//       detector_.right_distance()
+//     );
+
+//     std::string state = (detector_.front_distance() < planner_.get_safe_dist()) ? "AVOIDING" : "CLEAR";
+
+//     if (state != last_state_) {
+//       RCLCPP_INFO(this->get_logger(), "State: %s", state.c_str());
+//       last_state_ = state;
+//     }
+
+//     RCLCPP_WARN(this->get_logger(), "Obstacle detected! Avoiding...");
+//   }
+//   else
+//   {
+//     std::string state = "CLEAR";
+//     if (state != last_state_) {
+//       RCLCPP_INFO(this->get_logger(), "State: %s", state.c_str());
+//       last_state_ = state;
+//     }
+//   }
+
+//   cmd_pub_->publish(safe_cmd);
+// }
+
 void CollisionAvoidanceNode::cmd_callback(
   const geometry_msgs::msg::Twist::SharedPtr msg)
 {
   last_cmd_ = *msg;
-
   geometry_msgs::msg::Twist safe_cmd = last_cmd_;
 
-  if (obstacle_detected_)
-  {
-    // Use planner to generate avoidance command
-    safe_cmd = planner_.compute_cmd(
-      detector_.front_distance(),
-      detector_.left_distance(),
-      detector_.right_distance()
-    );
+  std_msgs::msg::String state_msg;
 
-    std::string state = (detector_.front_distance() < planner_.get_safe_dist()) ? "AVOIDING" : "CLEAR";
-
-    if (state != last_state_) {
-      RCLCPP_INFO(this->get_logger(), "State: %s", state.c_str());
-      last_state_ = state;
-    }
-
-    RCLCPP_WARN(this->get_logger(), "Obstacle detected! Avoiding...");
-  }
+  // Determine state based on front distance
+  if (detector_.front_distance() < planner_.get_safe_dist())
+    state_msg.data = "AVOIDING";
   else
-  {
-    std::string state = "CLEAR";
-    if (state != last_state_) {
-      RCLCPP_INFO(this->get_logger(), "State: %s", state.c_str());
-      last_state_ = state;
-    }
-  }
+    state_msg.data = "CLEAR";
 
+  // ALWAYS publish the state
+  // state_msg.data = "CLEAR"; //for testing
+  state_pub_->publish(state_msg);
+
+  // Publish movement command
   cmd_pub_->publish(safe_cmd);
+
+  RCLCPP_INFO(this->get_logger(), "Published CLEAR state");  // debug log
 }
+
+
+
 
 int main(int argc, char * argv[])
 {

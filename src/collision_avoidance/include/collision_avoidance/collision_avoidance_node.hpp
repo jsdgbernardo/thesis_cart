@@ -28,7 +28,7 @@ private:
   geometry_msgs::msg::Twist last_cmd_;
   bool obstacle_detected_ = false;
   // std::string last_state_ = "CLEAR"; // NEW: track last logged state
-  std::string last_state_ = "initial";
+  std::string last_state_ = "";
 
   // --- Subsystem Components ---
   ObstacleDetector detector_;
