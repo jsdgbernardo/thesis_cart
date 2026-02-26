@@ -6,12 +6,11 @@ import os
 from ament_index_python.packages import get_package_share_directory
 import RPi.GPIO as GPIO
 import json
-# import cv2
-# from sensor_msgs.msg import CompressedImage
-# import numpy as np
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
+import cv2
 
 from price.weight.weight import WeightDetector
-# from price.camera.camera import CameraDetector
 
 class CartNode(Node):
 
@@ -33,71 +32,55 @@ class CartNode(Node):
             self.items_data = {"items": []}
 
         self.weight_detector = WeightDetector()
-        # self.camera_detector = CameraDetector()
 
-        # # subscripbe to webcam compressed image
-        # self.sub = self.create_subscription(
-        #     CompressedImage,
-        #     '/camera/image/compressed',
-        #     self.image_callback,
-        #     10
-        # )
+        self.timer = self.create_timer(0.1, self.loop)
 
-        # self.annotated_pub = self.create_publisher(CompressedImage, '/pose/image/compressed', 10)
+        # subscribe to camera topic
+        self.subscription = self.create_subscription(
+            Image,
+            '/camera/image',
+            self.listener_callback,
+            10
+        )
+        self.subscription
 
-        self.timer = self.create_timer(0.25, self.loop)
+        self.br = CvBridge()
+        # store latest frame for capture when weight changes
+        self.last_frame = None
 
         self.get_logger().info("Place items on scale")
-
-    # def image_callback(self, msg):
-    #     np_arr = np.frombuffer(msg.data, np.uint8)
-    #     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
-    #     if frame is None:
-    #         self.get_logger().warn("Failed to decode JPEG image.")
-    #         return
+    
+    def listener_callback(self, msg):
+        self.get_logger().info("Receiving image")
+        current_frame = self.br.imgmsg_to_cv2(msg)
+        # keep a copy of the most recent frame
+        self.last_frame = current_frame
 
     def loop(self):
         weight_result = self.weight_detector.read_weight()
-        # camera_result = self.camera_detector.publish_frame()
 
         if weight_result:
-
             # weight-based detection
             if weight_result["action"] == "added":
-
-                weight_item = self.detect_item_by_weight(weight_result["weight"])
                 delta = weight_result["weight"]
-
                 self.get_logger().info(f"Added: {delta:.2f} g")
-
-                if weight_item:
-                    name = weight_item.get("item_name", "Unknown")
-
-                    self.get_logger().info(
-                        f"Item: {name}"
-                    )
-                else:
-                    self.get_logger().info("No item detected by weight.")
-
             else:
-                weight_item = self.detect_item_by_weight(weight_result["weight"])
                 delta = weight_result["weight"]
-
                 self.get_logger().info(f"Removed: {delta:.2f} g")
 
-                if weight_item:
-                    name = weight_item.get("item_name", "Unknown")
+            # capture an image at the moment of change
+            self.capture_frame(weight_result["action"])
 
-                    self.get_logger().info(
-                        f"Item: {name}"
-                    )
-                else:
-                    self.get_logger().info("No item detected by weight.")
+            weight_item = self.detect_item_by_weight(weight_result["weight"])
+            if weight_item:
+                name = weight_item.get("item_name", "Unknown")
+                self.get_logger().info(f"Item: {name}")
+            else:
+                self.get_logger().info("No item detected by weight.")
+        else:
+            # nothing detected, still polling
+            self.get_logger().debug("No stable change detected yet.")
 
-        # # camera-based detection
-        # if camera_result is not None:
-        #     self.get_logger().info("Camera frame captured for item detection.")
 
     def detect_item_by_weight(self, delta_weight):
         abs_weight = abs(delta_weight)
@@ -123,6 +106,21 @@ class CartNode(Node):
 
         return best_match
 
+    def capture_frame(self, action: str):
+        if self.last_frame is None:
+            self.get_logger().warning("No camera frame available to capture.")
+            return
+
+        # create a timestamped filename
+        import time
+        ts = int(time.time())
+        filename = f"/tmp/weight_change_{action}_{ts}.jpg"
+        try:
+            cv2.imwrite(filename, self.last_frame)
+            self.get_logger().info(f"Captured frame due to weight {action}: {filename}")
+        except Exception as e:
+            self.get_logger().error(f"Failed to write image: {e}")
+
 def main(args=None):
     rclpy.init(args=args)
     node = CartNode()
@@ -130,3 +128,6 @@ def main(args=None):
     node.destroy_node()
     GPIO.cleanup()
     rclpy.shutdown()
+
+if __name__ == '__main__': 
+    main()
