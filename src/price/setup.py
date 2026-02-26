@@ -12,8 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'items'), glob('items/*')),
-        (os.path.join('share', package_name, 'model'), glob('model/*')),
+        (os.path.join('share', package_name, 'items'), glob('items/*'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,

@@ -6,6 +6,9 @@ import os
 from ament_index_python.packages import get_package_share_directory
 import RPi.GPIO as GPIO
 import json
+# import cv2
+# from sensor_msgs.msg import CompressedImage
+# import numpy as np
 
 from price.weight.weight import WeightDetector
 # from price.camera.camera import CameraDetector
@@ -14,7 +17,7 @@ class CartNode(Node):
 
     def __init__(self):
         super().__init__('cart_node')
-
+        
         price_path = get_package_share_directory('price')
         json_path = os.path.join(price_path, 'items', 'grocery_items.json')
 
@@ -32,48 +35,69 @@ class CartNode(Node):
         self.weight_detector = WeightDetector()
         # self.camera_detector = CameraDetector()
 
+        # # subscripbe to webcam compressed image
+        # self.sub = self.create_subscription(
+        #     CompressedImage,
+        #     '/camera/image/compressed',
+        #     self.image_callback,
+        #     10
+        # )
+
+        # self.annotated_pub = self.create_publisher(CompressedImage, '/pose/image/compressed', 10)
+
         self.timer = self.create_timer(0.25, self.loop)
 
         self.get_logger().info("Place items on scale")
 
+    # def image_callback(self, msg):
+    #     np_arr = np.frombuffer(msg.data, np.uint8)
+    #     frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+    #     if frame is None:
+    #         self.get_logger().warn("Failed to decode JPEG image.")
+    #         return
+
     def loop(self):
-        result = self.weight_detector.read_weight()
+        weight_result = self.weight_detector.read_weight()
+        # camera_result = self.camera_detector.publish_frame()
 
-        if result:
+        if weight_result:
 
-            if result["action"] == "added":
+            # weight-based detection
+            if weight_result["action"] == "added":
 
-                weight_item = self.detect_item_by_weight(result["weight"])
-                delta = result["weight"]
+                weight_item = self.detect_item_by_weight(weight_result["weight"])
+                delta = weight_result["weight"]
 
                 self.get_logger().info(f"Added: {delta:.2f} g")
 
-                # weight-based detection
                 if weight_item:
                     name = weight_item.get("item_name", "Unknown")
 
                     self.get_logger().info(
-                        f"Weight Detected: {name}"
+                        f"Item: {name}"
                     )
                 else:
                     self.get_logger().info("No item detected by weight.")
 
-                # # Camera detection
-                # camera_name, confidence = self.camera_detector.detect_item()
-
-                # if camera_name:
-                #     self.get_logger().info(
-                #         f"Camera Detected: {camera_name} | Conf: {confidence:.2f}"
-                #     )
-                # else:
-                #     self.get_logger().info("No item detected by camera.")
-
-                # comparison logic
-
             else:
-                self.get_logger().info(
-                    f"Removed: {result['weight']:.2f} g"
-                )
+                weight_item = self.detect_item_by_weight(weight_result["weight"])
+                delta = weight_result["weight"]
+
+                self.get_logger().info(f"Removed: {delta:.2f} g")
+
+                if weight_item:
+                    name = weight_item.get("item_name", "Unknown")
+
+                    self.get_logger().info(
+                        f"Item: {name}"
+                    )
+                else:
+                    self.get_logger().info("No item detected by weight.")
+
+        # # camera-based detection
+        # if camera_result is not None:
+        #     self.get_logger().info("Camera frame captured for item detection.")
 
     def detect_item_by_weight(self, delta_weight):
         abs_weight = abs(delta_weight)
