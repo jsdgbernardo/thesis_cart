@@ -46,7 +46,7 @@ def generate_launch_description():
     twist_mux_file = PathJoinSubstitution(
         [FindPackageShare('chassis'),
         'config',
-        'twist_mnux.yaml']
+        'twist_mux.yaml']
     )
 
     # Twist mux
@@ -114,7 +114,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         robot_state_publisher,
-        # twist_mux,
+        twist_mux,
         lidar,
         controller_manager,
         joint_broad_spawner,
