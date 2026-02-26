@@ -33,7 +33,7 @@ def generate_launch_description():
         ' ', 
         PathJoinSubstitution(
             [FindPackageShare('chassis'),
-             'description',
+             'description_sim',
             'chassis.urdf.xacro']
         )
     ])
@@ -44,8 +44,7 @@ def generate_launch_description():
             [PathJoinSubstitution([FindPackageShare('ros_gz_sim'),
                 'launch',
                 'gz_sim.launch.py'])]
-        ),
-        launch_arguments=[('gz_args', [' -r -v 1 empty.sdf'])]
+        )
     )
 
     # Bridge ROS topics and Gazebo messages for establishing communication
@@ -59,12 +58,12 @@ def generate_launch_description():
         output='screen'
     )
 
-    # bridge = Node(
-    #     package='ros_gz_bridge',
-    #     executable='parameter_bridge',
-    #     arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
-    #     output='screen'
-    # )
+    bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        output='screen'
+    )
 
     # Spawn entity in Gazebo
     spawn_entity = Node(
@@ -131,7 +130,7 @@ def generate_launch_description():
     return LaunchDescription([
         rviz_arg,
         gz_sim,
-        bridge,
+        # bridge,
         spawn_entity,
         robot_state_publisher,
         rviz,

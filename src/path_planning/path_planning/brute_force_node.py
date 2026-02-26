@@ -10,9 +10,11 @@ from geometry_msgs.msg import PoseStamped, Point, PoseWithCovarianceStamped, Pos
 from tf_transformations import quaternion_from_euler
 from std_msgs.msg import String, Float32
 from itertools import permutations
+from time import sleep
+from action_msgs.msg import GoalStatus
 
 import os, json
-from .items_manager import ItemsManager
+from path_planning.items_manager import ItemsManager
 
 class ItemCoordinates:
     def __init__(self, name, x, y):
@@ -24,12 +26,15 @@ class BruteForceNode(Node):
     def __init__(self):
         super().__init__('brute_force_node')
 
+        # allow overriding action name via ROS parameter
+        self.declare_parameter('action_name', 'compute_path_to_pose')
+        self.action_name = self.get_parameter('action_name').get_parameter_value().string_value
+
         self.items = [] # Will be populated from the item manager's published shopping list
         self.json_items = self.load_items() # Load item locations from JSON for reference
 
-        # Initialize action client for path planning
-        self.action_client = ActionClient(self, ComputePathToPose, 'compute_path_to_pose')
-
+        # Initialize action client for path planning (single-segment ComputePathToPose)
+        self.action_client = ActionClient(self, ComputePathToPose, self.action_name)
         # Subcribe to shopping list from the item manager
         self.shopping_list = self.create_subscription(
             String,
@@ -149,25 +154,74 @@ class BruteForceNode(Node):
 
     # Call nav2 ComputePathToPose action to get path between two PoseStamped
     # Use nav2_params config file for Dijkstra settings
-    def compute_path_segment(self, start, goal):
-        goal_msg = ComputePathToPose.Goal()
-        # nav2 expects PoseStamped for start and goal
-        goal_msg.start = start
-        goal_msg.goal = goal
+    def compute_path_segment(self, start: PoseStamped, goal: PoseStamped):
+        self.get_logger().info(
+            f'Computing path segment from ({start.pose.position.x:.2f}, {start.pose.position.y:.2f}) to ({goal.pose.position.x:.2f}, {goal.pose.position.y:.2f})'
+        )
 
-        if not self.action_client.wait_for_server(timeout_sec=5.0):
-            self.get_logger().error('compute_path_to_pose action server not available.')
+        # wait for server with a few retries to handle startup timing
+        if not self.wait_for_action_server(timeout_sec=5.0, retries=3):
+            self.get_logger().error(f'ComputePathToPose action server not available (action_name={self.action_name}).')
             return None, float('inf')
 
-        future = self.action_client.send_goal_async(goal_msg)
-        rclpy.spin_until_future_complete(self, future, timeout_sec=10.0)
+        goal_msg = ComputePathToPose.Goal()
+        goal_msg.start = start
+        goal_msg.goal = goal
+        goal_msg.planner_id = ''
+        goal_msg.use_start = True
 
-        if future.done():
-            result = future.result()
-            if result and result.result and result.result.path and len(result.result.path.poses) > 0:
-                path = result.result.path
-                cost = self.path_cost(path)
-                return path, cost
+        send_goal_future = self.action_client.send_goal_async(goal_msg)
+        rclpy.spin_until_future_complete(self, send_goal_future, timeout_sec=20.0)
+        if not send_goal_future.done() or send_goal_future.result() is None:
+            exc = None
+            try:
+                exc = send_goal_future.exception()
+            except Exception:
+                exc = None
+            if exc:
+                self.get_logger().error(f'Failed to send ComputePathToPose goal: exception: {exc}')
+            else:
+                self.get_logger().error('Failed to send ComputePathToPose goal: no result')
+            return None, float('inf')
+
+        goal_handle = send_goal_future.result()
+        self.get_logger().info(f'Goal handle accepted: {getattr(goal_handle, "accepted", False)}')
+        if not goal_handle.accepted:
+            self.get_logger().error('ComputePathToPose goal rejected')
+            return None, float('inf')
+
+        result_future = goal_handle.get_result_async()
+        rclpy.spin_until_future_complete(self, result_future, timeout_sec=20.0)
+        if not result_future.done() or result_future.result() is None:
+            exc = None
+            try:
+                exc = result_future.exception()
+            except Exception:
+                exc = None
+            if exc:
+                self.get_logger().error(f'ComputePathToPose get_result failed/exception: {exc}')
+            else:
+                self.get_logger().error('ComputePathToPose get_result failed or timed out (no result)')
+            return None, float('inf')
+
+        result_msg = result_future.result()
+        # log numeric status for diagnosis
+        try:
+            status = getattr(result_msg, 'status', None)
+            self.get_logger().info(f'ComputePathToPose result status: {status}')
+        except Exception:
+            pass
+
+        result = None
+        try:
+            result = result_msg.result
+        except Exception:
+            result = None
+
+        if result and result.path and len(result.path.poses) > 0:
+            path = result.path
+            cost = self.path_cost(path)
+            return path, cost
 
         return None, float('inf')
 
@@ -184,6 +238,18 @@ class BruteForceNode(Node):
             dz = p1.z - p2.z
             cost += (dx * dx + dy * dy + dz * dz) ** 0.5
         return cost
+
+    def wait_for_action_server(self, timeout_sec: float = 5.0, retries: int = 3) -> bool:
+        """Wait for the configured action server with retries.
+
+        Returns True if available, False otherwise.
+        """
+        for attempt in range(1, retries + 1):
+            self.get_logger().info(f'Waiting for action server "{self.action_name}" (attempt {attempt}/{retries})...')
+            if self.action_client.wait_for_server(timeout_sec=timeout_sec):
+                return True
+            sleep(0.1)
+        return False
 
     # Convert item coordinates to a pose stamped goal for path planning
     def item_to_pose_stamped(self, item: ItemCoordinates, frame_id='map', yaw=0.0):
