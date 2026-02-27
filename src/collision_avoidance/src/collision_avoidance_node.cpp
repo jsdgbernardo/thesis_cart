@@ -4,7 +4,7 @@
 CollisionAvoidanceNode::CollisionAvoidanceNode()
 : Node("collision_avoidance_node"),
   detector_(15.0, 45.0),
-  planner_(
+  planner_( // yaml file is being used instead
     this->declare_parameter("safe_distance", 0.5),
     this->declare_parameter("slow_distance", 1.0),
     this->declare_parameter("base_speed", 0.4),
