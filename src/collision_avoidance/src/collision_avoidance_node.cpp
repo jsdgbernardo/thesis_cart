@@ -87,24 +87,24 @@ void CollisionAvoidanceNode::cmd_callback(
   const geometry_msgs::msg::Twist::SharedPtr msg)
 {
   last_cmd_ = *msg;
-  geometry_msgs::msg::Twist safe_cmd = last_cmd_;
 
+  geometry_msgs::msg::Twist safe_cmd;
   std_msgs::msg::String state_msg;
 
-  // Determine state based on front distance
-  if (detector_.front_distance() < planner_.get_safe_dist())
+  float front = detector_.front_distance();
+  float left  = detector_.left_distance();
+  float right = detector_.right_distance();
+
+  if (front < planner_.get_safe_dist()) {
+    safe_cmd = planner_.compute_cmd(front, left, right);
     state_msg.data = "AVOIDING";
-  else
+  } else {
+    safe_cmd = last_cmd_;
     state_msg.data = "CLEAR";
+  }
 
-  // ALWAYS publish the state
-  // state_msg.data = "CLEAR"; //for testing
   state_pub_->publish(state_msg);
-
-  // Publish movement command
   cmd_pub_->publish(safe_cmd);
-
-  RCLCPP_INFO(this->get_logger(), "Published CLEAR state");  // debug log
 }
 
 
