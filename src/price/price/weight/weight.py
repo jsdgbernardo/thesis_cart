@@ -20,7 +20,7 @@ class WeightDetector:
 
         time.sleep(0.5)
 
-        # for taring
+        # for taring=
         raw_data = self.hx.get_raw_data(times=5)
         if raw_data:
             self.tare_value = sum(raw_data) / len(raw_data)
@@ -47,17 +47,18 @@ class WeightDetector:
         # initial big change
         delta_weight = current_weight - self.prev_weight
         result = None
-
+        
         if not self.change_detected and abs(delta_weight) > self.threshold:
             self.change_detected = True
             self.start_weight = self.prev_weight
-            self.get_logger().info("Weight change detected, waiting for stabilization...")
-
+            print("[INFO] Weight change detected. Waiting for stability...")
+            
         if self.change_detected and len(self.readings_buffer) == self.stability_samples:
             max_w = max(self.readings_buffer)
             min_w = min(self.readings_buffer)
-
-            if abs(max_w - min_w) < self.stability_tolerance:
+            stability = abs(max_w - min_w)
+            
+            if stability < self.stability_tolerance:
                 final_weight = sum(self.readings_buffer) / len(self.readings_buffer)
                 total_delta = final_weight - self.start_weight
 
@@ -68,7 +69,7 @@ class WeightDetector:
 
                 self.change_detected = False
                 self.readings_buffer.clear()
-
+            
         self.prev_weight = current_weight
 
         # reset detection

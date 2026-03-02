@@ -46,7 +46,7 @@
   },
   "tuna":{
     "item_name": "San Marino Corned Tuna",
-    "expected_weight": 214.0,
+    "expected_weight": 215.5,
     "weight_tolerance": 2,
     "price": 0.0,
     "yolo_class_id": "San-Marino-Corned-Tuna",
