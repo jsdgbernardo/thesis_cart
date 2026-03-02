@@ -16,6 +16,7 @@ from time import sleep
 from action_msgs.msg import GoalStatus
 import threading
 import traceback
+import time
 
 import os, json
 from path_planning.items_manager import ItemsManager
@@ -135,6 +136,9 @@ class HeuristicNode(Node):
     # Compute Greedy TSP + A* Path for the given shopping list items
     def computer_and_publish_path(self, items):
         try:
+
+            start_time = time.time() # record start time for performance measurement
+
             # Convert current pose to PoseStamped
             start_pose = PoseStamped()
             start_pose.header.frame_id = 'map'
@@ -194,6 +198,9 @@ class HeuristicNode(Node):
                 current_pose = goal_poses[best_idx]
                 remaining.remove(best_idx)
 
+            end_time = time.time() # record end time for performance measurement
+            elapsed = end_time - start_time
+            
             best_path = total_path
             best_cost = total_cost
             best_order = [items[i].name for i in ordered_indices]
@@ -209,7 +216,7 @@ class HeuristicNode(Node):
                 order_msg = String()
                 order_msg.data = json.dumps({'order': best_order, 'cost': best_cost})
                 self.order_publisher.publish(order_msg)
-                self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f}')
+                self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f} Computation Time: {elapsed:.2f} seconds')
             else:
                 self.get_logger().error('No valid path found for selected items.')
         except Exception as e:

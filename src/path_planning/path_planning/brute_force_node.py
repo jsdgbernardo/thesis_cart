@@ -15,6 +15,8 @@ from itertools import permutations
 from time import sleep
 from action_msgs.msg import GoalStatus
 import threading
+import traceback
+import time
 
 import os, json
 from path_planning.items_manager import ItemsManager
@@ -125,7 +127,7 @@ class BruteForceNode(Node):
                 if len(self.items) == 0:
                     self.get_logger().warn('No valid items to plan for')
         except Exception as e:
-            self.get_logger().error(f'Exception in shopping_list_callback: {e}', exc_info=True)
+            self.get_logger().error(f'Exception in shopping_list_callback: {e}\n{traceback.format_exc()}')
 
     # Update current robot pose from AMCL
     def amcl_callback(self, msg):
@@ -134,6 +136,9 @@ class BruteForceNode(Node):
     # Compute Brute Force TSP + Dijkstra Path for the given shopping list items
     def computer_and_publish_path(self, items):
         try:
+
+            start_time = time.time() # record start time for performance measurement
+
             # Convert current pose to PoseStamped
             start_pose = PoseStamped()
             start_pose.header.frame_id = 'map'
@@ -163,6 +168,9 @@ class BruteForceNode(Node):
                     best_cost = cost
                     best_order = [items[i].name for i in order]
 
+            end_time = time.time() # record end time for performance measurement
+            elapsed = end_time - start_time
+
             self.get_logger().info(f'Best path cost: {best_cost:.2f} for order: {best_order}')
 
             if best_path:
@@ -171,11 +179,11 @@ class BruteForceNode(Node):
                 order_msg = String()
                 order_msg.data = json.dumps({'order': best_order, 'cost': best_cost})
                 self.order_publisher.publish(order_msg)
-                self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f}')
+                self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f}, Computation Time: {elapsed:.2f} seconds')
             else:
                 self.get_logger().error('No valid path found for selected items.')
         except Exception as e:
-            self.get_logger().error(f'Exception in computer_and_publish_path: {e}', exc_info=True)
+            self.get_logger().error(f'Exception in computer_and_publish_path: {e}\n{traceback.format_exc()}')
 
     # Concatenate path segments between start and each successive goal
     def compute_full_path(self, start_pose, goals):
@@ -249,13 +257,13 @@ class BruteForceNode(Node):
                             self.get_logger().error(f'ComputePathToPose returned empty path. result={result}, has_path={result and hasattr(result, "path")}')
                             result_ready.set_result((None, float('inf')))
                     except Exception as e:
-                        self.get_logger().error(f'Exception in result_callback: {e}', exc_info=True)
+                        self.get_logger().error(f'Exception in result_callback: {e}\n{traceback.format_exc()}')
                         result_ready.set_result((None, float('inf')))
 
                 result_future = goal_handle.get_result_async()
                 result_future.add_done_callback(result_callback)
             except Exception as e:
-                self.get_logger().error(f'Exception in goal_response_callback: {e}', exc_info=True)
+                self.get_logger().error(f'Exception in goal_response_callback: {e}\n{traceback.format_exc()}')
                 result_ready.set_result((None, float('inf')))
 
         send_goal_future = self.action_client.send_goal_async(goal_msg)
