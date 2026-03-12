@@ -55,25 +55,38 @@ class ItemsManager(Node):
     # Callback for adding items to the shopping list
     def add_items_callback(self, msg):
         try:
-            item = msg.data.strip()
-            if not item:
+            text = msg.data.lower().strip()
+
+            if not text:
                 self.get_logger().warn('Empty item received')
                 return
-                
-            if item in self.item_names and item not in self.selected_items:
-                self.selected_items.append(item)
-                
-                # Publish the updated shopping list
-                self.shopping_list.publish(
-                    String(data=",".join(self.selected_items))
-                )
 
-                self.get_logger().info(f'Added item: {item}. Current shopping list: {self.selected_items}')
+            found_items = []
 
-            elif item in self.selected_items:
-                self.get_logger().info(f'Item already selected: {item}')
-            else:
-                self.get_logger().warn(f'Unknown item received: {item}. Available items: {self.item_names}')
+            for item in self.item_names:
+                readable_item = item.replace("_", " ")
+
+                if readable_item in text:
+                    found_items.append(item)   # keep original JSON name
+
+            if not found_items:
+                self.get_logger().warn(f'No valid items found in: {text}')
+                return
+
+            for item in found_items:
+                if item not in self.selected_items:
+                    self.selected_items.append(item)
+                    self.get_logger().info(f'Added item: {item}')
+                else:
+                    self.get_logger().info(f'Item already selected: {item}')
+
+            # publish list using JSON names
+            self.shopping_list.publish(
+                String(data=",".join(self.selected_items))
+            )
+
+            self.get_logger().info(f'Current shopping list: {self.selected_items}')
+
         except Exception as e:
             self.get_logger().error(f'Error in add_items_callback: {e}', exc_info=True)
 
