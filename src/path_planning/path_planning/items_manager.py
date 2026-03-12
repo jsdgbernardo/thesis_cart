@@ -16,6 +16,7 @@ class ItemsManager(Node):
         super().__init__('items_manager_node')
 
         self.selected_items = [] # Shopping list
+        self.cart_items = [] # Items currently in the cart
         self.item_names = self.load_items()
 
         # Subscription to selected items topic (add item to the list)
@@ -29,13 +30,19 @@ class ItemsManager(Node):
         # Subscription to remove items topic (remove item from the list)
         self.remove_item = self.create_subscription(
             String,
-            'shopping_cart',
+            'remove_items',
             self.remove_item_callback,
             10
         )
 
         # Publisher for the current shopping list
         self.shopping_list = self.create_publisher(String, 'shopping_list', 10)
+
+        # Publisher for items in the cart
+        self.shopping_cart = self.create_publisher(String, 'shopping_cart', 10)
+
+        # Publishder for unavailable items
+        self.item_error = self.create_publisher(String, 'item_error', 10)
 
     # Load items from JSON file
     def load_items(self):
@@ -71,6 +78,7 @@ class ItemsManager(Node):
 
             if not found_items:
                 self.get_logger().warn(f'No valid items found in: {text}')
+                self.item_error.publish(String(data=f'{text}'))
                 return
 
             for item in found_items:
@@ -95,6 +103,9 @@ class ItemsManager(Node):
         item = msg.data
         if item in self.selected_items:
             self.selected_items.remove(item)
+            self.cart_items.append(item)  # Add to cart when removed from shopping list
+            self.shopping_cart.publish(String(data=",".join(self.cart_items)))  # Publish cart items
+            self.get_logger().info(f'Removed item: {item}')
 
     # Publish the current shopping list to the topic
     # def publish_selected_items(self):
