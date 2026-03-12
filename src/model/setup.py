@@ -12,8 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'my_model_ncnn_model'), 
-         [f for f in glob('my_model_ncnn_model/*') if '__pycache__' not in f])
+        (os.path.join('share', package_name, 'onnx'), glob('onnx/*'))
     ],
     install_requires=['setuptools', 'ament_index_python'],
     zip_safe=True,
@@ -28,7 +27,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'yolo_detection = model.yolo_detection:main',
+            'yolo = model.yolo_detection:main',
         ],
     },
 )
