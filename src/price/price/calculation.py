@@ -7,8 +7,10 @@ from ament_index_python.packages import get_package_share_directory
 import RPi.GPIO as GPIO
 import json
 from sensor_msgs.msg import Image
+from std_msgs.msg import Bool, String
 from cv_bridge import CvBridge
 import cv2
+import time
 
 from price.weight.weight import WeightDetector
 
@@ -35,26 +37,57 @@ class CartNode(Node):
 
         self.timer = self.create_timer(0.1, self.loop)
 
-        # subscribe to camera topic
-        self.subscription = self.create_subscription(
+        self.image_subscription = self.create_subscription(
             Image,
-            '/camera/image',
+            'camera/image',
             self.listener_callback,
             10
         )
-        self.subscription
+        self.image_subscription
+
+        self.capture_publisher = self.create_publisher(
+            Bool,
+            'camera/capture',
+            10
+        )
+
+        self.detection_subscription = self.create_subscription(
+            Image,
+            'camera/detected',
+            self.detection_callback,
+            10
+        )
+        self.detected_frame = None
+
+        self.yolo_subscription = self.create_subscription(
+            String,
+            'camera/detections',
+            self.yolo_callback,
+            10
+        )
+        self.latest_detections = None
 
         self.br = CvBridge()
-        # store latest frame for capture when weight changes
         self.last_frame = None
 
         self.get_logger().info("Place items on scale")
     
+    def detection_callback(self, msg):
+        self.detected_frame = self.br.imgmsg_to_cv2(msg)
+
+    def yolo_callback(self, msg):
+        try:
+            self.latest_detections = json.loads(msg.data)
+        except json.JSONDecodeError:
+            self.get_logger().warning("Failed to parse YOLO detections")
+            self.latest_detections = None
+
     def listener_callback(self, msg):
-        self.get_logger().info("Receiving image")
+        self.get_logger().info("Receiving captured frame")
         current_frame = self.br.imgmsg_to_cv2(msg)
-        # keep a copy of the most recent frame
         self.last_frame = current_frame
+        self.capture_frame("Detected")
+        self.last_frame = None
 
     def loop(self):
         weight_result = self.weight_detector.read_weight()
@@ -68,19 +101,23 @@ class CartNode(Node):
                 delta = weight_result["weight"]
                 self.get_logger().info(f"Removed: {delta:.2f} g")
 
-            # capture an image at the moment of change
-            self.capture_frame(weight_result["action"])
+            # trigger camera to send one frame
+            trigger_msg = Bool()
+            trigger_msg.data = True
+            self.capture_publisher.publish(trigger_msg)
+
+            self.get_logger().info("Capture requested")
 
             weight_item = self.detect_item_by_weight(weight_result["weight"])
-            if weight_item:
-                name = weight_item.get("item_name", "Unknown")
-                self.get_logger().info(f"Item: {name}")
+            combined_item = self.detect_item_combined(weight_item)
+            if combined_item:
+                name = combined_item.get("item_name", "Unknown")
+                confidence = combined_item.get("confidence", "Unknown")
+                self.get_logger().info(f"Item: {name} (confidence: {confidence})")
             else:
-                self.get_logger().info("No item detected by weight.")
+                self.get_logger().info("No item detected.")
         else:
-            # nothing detected, still polling
             self.get_logger().debug("No stable change detected yet.")
-
 
     def detect_item_by_weight(self, delta_weight):
         abs_weight = abs(delta_weight)
@@ -106,13 +143,46 @@ class CartNode(Node):
 
         return best_match
 
+    def detect_item_combined(self, weight_item):
+        if self.latest_detections is None:
+            return weight_item
+
+        detections = self.latest_detections
+        if not detections.get("classes") or not detections.get("confidences"):
+            return weight_item
+
+        # If weight-based detection found an item, verify with YOLO
+        if weight_item:
+            # Get the highest confidence YOLO detection
+            if detections["confidences"]:
+                max_confidence = max(detections["confidences"])
+                if max_confidence > 0.7: 
+                    # High confidence in YOLO, add it to the result
+                    weight_item["confidence"] = round(max_confidence, 2)
+                    weight_item["yolo_verified"] = True
+                    self.get_logger().info(f"Item verified by YOLO with confidence {max_confidence:.2f}")
+                    return weight_item
+                else:
+                    weight_item["confidence"] = "weight-based"
+                    weight_item["yolo_verified"] = False
+                    return weight_item
+            else:
+                weight_item["confidence"] = "weight-based"
+                return weight_item
+        else:
+            # No weight-based match, try YOLO alone if confidence is high
+            if detections["confidences"]:
+                max_confidence = max(detections["confidences"])
+                if max_confidence > 0.7:
+                    self.get_logger().info(f"Item detected by YOLO with confidence {max_confidence:.2f}")
+                    return {"item_name": "YOLO Detection", "confidence": round(max_confidence, 2)}
+            return None
+
     def capture_frame(self, action: str):
         if self.last_frame is None:
             self.get_logger().warning("No camera frame available to capture.")
             return
 
-        # create a timestamped filename
-        import time
         ts = int(time.time())
         filename = f"/tmp/weight_change_{action}_{ts}.jpg"
         try:

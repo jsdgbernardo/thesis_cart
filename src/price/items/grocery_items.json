@@ -163,7 +163,7 @@
   },
   "noodles": {
     "item_name": "Nissin Seafood Cup Noodles",
-    "expected_weight": 81.5,
+    "expected_weight": 81.9,
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Nissin-Seafood-Cup-Noodles",
