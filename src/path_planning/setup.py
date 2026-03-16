@@ -1,3 +1,5 @@
+from glob import glob
+import os
 from setuptools import find_packages, setup
 
 package_name = 'path_planning'
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -28,7 +31,6 @@ setup(
             'brute_force_node = path_planning.brute_force_node:main',
             'heuristic_node = path_planning.heuristic_node:main',
             'meta_heuristic_node = path_planning.meta_heuristic_node:main',
-            'test_node = path_planning.test_node:main',
         ],
     },
 )
