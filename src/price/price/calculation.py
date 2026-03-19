@@ -41,7 +41,11 @@ class CartNode(Node):
         # acces item database
         price_path = get_package_share_directory('price')
         json_path = os.path.join(price_path, 'items', 'grocery_items.json')
-        cart_path = os.path.join(price_path, 'items', 'cart.json')
+        self.cart_path = os.path.join(price_path, 'items', 'cart.json')
+
+        self.get_logger().info(f'Cart path: {self.cart_path}')
+        self.get_logger().info(f'Cart path exists: {os.path.exists(self.cart_path)}')
+        self.get_logger().info(f'Cart dir writable: {os.access(os.path.dirname(self.cart_path), os.W_OK)}')
 
         try:
             with open(json_path, 'r') as f:
@@ -293,12 +297,15 @@ class CartNode(Node):
             'last_updated': time.strftime('%Y-%m-%dT%H:%M:%S'),
         }
 
+        self.get_logger().debug(f'Writing to cart path: {self.cart_path}')
+        self.get_logger().debug(f'Payload: {json.dumps(payload)}')
+        
         try:
-            with open(cart_path, 'w') as f:
+            with open(self.cart_path, 'w') as f:
                 json.dump(payload, f, indent=2)
-            self.get_logger().info('cart.json updated')
+            self.get_logger().info(f'cart.json updated at {self.cart_path}')
         except Exception as e:
-            self.get_logger().error(f'Failed to write cart file: {e}')
+            self.get_logger().error(f'Failed to write cart file at {self.cart_path}: {e}')
 
         receipt_msg = String()
         receipt_msg.data = json.dumps(payload)
