@@ -1,5 +1,24 @@
 #!/usr/bin/env python3
 
+# Overall Flow:
+# weight change -> read weight -> no change -> idle
+#                              -> yes change -> store weight result
+#                                            -> camera/capture = True
+# 
+# camera/detected   -> image_callback      -> store annotated frame -> try_resolve
+# camera/detections -> detections_callback -> store yolo detections -> try_resolve    
+# 
+# try_resolve -> both callbacks received -> resolve 
+#             -> timeout
+#
+# resolve:
+# 1) detect_item_by weight -> match weight in database
+# 2) identify_and_update -> weight + yolo -> continue
+#                        -> weight only -> continue  
+#                        -> yolo only -> continue
+#                        -> confict -> trust weight
+#                        -> last resort -> synch to current yolo view
+
 import rclpy
 from rclpy.node import Node
 import os
@@ -12,17 +31,17 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Bool, String
 from cv_bridge import CvBridge
 
-from price.weight.weight import WeightDetector
-
+from price.weight.weight import WeightSensor
 
 class CartNode(Node):
 
     def __init__(self):
         super().__init__('cart_node')
 
-        # load item database
+        # acces item database
         price_path = get_package_share_directory('price')
         json_path = os.path.join(price_path, 'items', 'grocery_items.json')
+        cart_path = os.path.join(price_path, 'items', 'cart.json')
 
         try:
             with open(json_path, 'r') as f:
@@ -35,69 +54,288 @@ class CartNode(Node):
             self.get_logger().error('Error decoding JSON file.')
             self.items_data = {}
 
-        self.weight_detector = WeightDetector()
+        self.weight_detector = WeightSensor()
         self.br = CvBridge()
 
-        # state
-        self.latest_detections = None       # most recent YOLO detections
-        self.pending_weight_result = None   # weight event waiting to be resolved
-        self.pending_trigger_id = 0         # increments each time a trigger is sent
-        self.received_trigger_id = 0        # id of the trigger this annotated frame belongs to
+        # list of items in the cart
+        self.items_in_cart = {}
 
-        # ros2 subscriptions
+        # for weight detection
+        self.pending_weight_result = None
+        self.pending_trigger_time = None
+        self.pending_trigger_id = 0
+
+        # for image detection
+        self.current_annotated_frame = None
+        self.current_detections = None
+        self.current_image_trigger_id = -1
+        self.current_detections_trigger_id = -1
+
+        # topic subscribers
         self.create_subscription(Image, 'camera/detected', self.detected_image_callback, 10)
-        self.create_subscription(String, 'camera/detections', self.yolo_callback, 10)
+        self.create_subscription(String, 'camera/detections', self.detections_callback, 10)
 
-        # ros2 publishers
+        # topic publishers
         self.capture_publisher = self.create_publisher(Bool, 'camera/capture', 10)
+        self.receipt_publisher = self.create_publisher(String, 'app/receipt', 10)
 
-        self.create_timer(0.1, self.loop)  # 10 Hz
+        self._write_cart_file()
 
+        self.create_timer(0.1, self.loop)
         self.get_logger().info('Ready. Place items on scale.')
 
-    # callbacks
+    # callbacks - store latest data
     def detected_image_callback(self, msg):
+        self.current_annotated_frame = self.br.imgmsg_to_cv2(msg, 'bgr8')
+        self.current_image_trigger_id = self.pending_trigger_id
+        self._try_resolve()
+
+    def detections_callback(self, msg):
+        try:
+            self.current_detections = json.loads(msg.data)
+        except json.JSONDecodeError:
+            self.get_logger().warning('Failed to parse detections.')
+            self.current_detections = None
+        self.current_detections_trigger_id = self.pending_trigger_id
+        self._try_resolve()
+
+    # resolution logic: weight -> image -> reset
+    def _try_resolve(self):
         if self.pending_weight_result is None:
             return
+        tid = self.pending_trigger_id
+        if self.current_image_trigger_id == tid and self.current_detections_trigger_id == tid:
+            self._resolve()
 
-        if self.received_trigger_id != self.pending_trigger_id:
-            self.get_logger().debug(
-                f'Ignoring stale annotated frame '
-                f'(trigger {self.received_trigger_id} != {self.pending_trigger_id})'
-            )
-            return
+    def _resolve(self):
+        weight_result = self.pending_weight_result
+        action = weight_result['action']
+        delta = weight_result['weight']
 
-        annotated = self.br.imgmsg_to_cv2(msg, 'bgr8')
-        self._save_frame(annotated, self.pending_weight_result['action'])
+        if self.current_annotated_frame is not None:
+            self._save_frame(self.current_annotated_frame, action)
 
-        weight_item = self.detect_item_by_weight(self.pending_weight_result['weight'])
-        combined = self.detect_item_combined(weight_item)
+        yolo_state = self._build_yolo_state(self.current_detections)
+        result = self._identify_and_update(action, delta, yolo_state)
 
-        if combined:
-            name = combined.get('item_name', 'Unknown')
-            confidence = combined.get('confidence', 'N/A')
-            source = combined.get('source', 'N/A')
+        if result:
             self.get_logger().info(
-                f"Item detected: {name} | confidence: {confidence} | source: {source}"
+                f"Item {action}: {result.get('item_name', 'Unknown')} "
+                f"| confidence: {result.get('confidence', 'N/A')} "
+                f"| source: {result.get('source', 'N/A')} "
             )
+            self._write_cart_file(delta)
         else:
-            self.get_logger().info('No item matched.')
+            self.get_logger().info(
+                f'No item matched.'
+            )
 
-        
         self.pending_weight_result = None
+        self.pending_trigger_time = None
 
-    def yolo_callback(self, msg):
+    def _build_yolo_state(self, detections) -> dict:
+        state = {}
+        if not detections:
+            return state
+        for name in detections.get('class_names', []):
+            state[name] = state.get(name, 0) + 1
+        return state
+
+    def _identify_and_update(self, action: str, delta: float, yolo_state: dict):
+        weight_item = self.detect_item_by_weight(delta)
+
+        if action == 'added':
+            return self._handle_added(weight_item, yolo_state)
+        else:
+            return self._handle_removed(weight_item, yolo_state)
+
+    def _cart_add(self, item: dict, count: int = 1):
+        key = item.get('yolo_class_id', 'Unknown')
+        if key in self.items_in_cart:
+            self.items_in_cart[key]['count'] += count
+        else:
+            self.items_in_cart[key] = {
+                'item_name': item.get('item_name', 'Unknown'),
+                'price': item.get('price', 0.0),
+                'count': count,
+            }
+
+    def _cart_remove(self, key: str, count: int = 1):
+        if key not in self.items_in_cart:
+            return
+        self.items_in_cart[key]['count'] -= count
+        if self.items_in_cart[key]['count'] <= 0:
+            self.items_in_cart.pop(key)
+
+    # add / remove handlers
+    def _handle_added(self, weight_item, yolo_state: dict):
+        cart_name_counts = {
+            v['item_name']: v['count'] for v in self.items_in_cart.values()
+        }
+
+        yolo_added = {}
+        for name, count in yolo_state.items():
+            old = cart_name_counts.get(name, 0)
+            if count > old:
+                yolo_added[name] = count - old
+
+        if weight_item and yolo_added:
+            weight_class = weight_item.get('yolo_class_id', '').strip().lower()
+            for name, count in yolo_added.items():
+                yolo_slug = name.strip().lower().replace(' ', '-')
+                if yolo_slug == weight_class:
+                    self._cart_add(weight_item, count)
+                    return {**weight_item, 'source': 'both'}
+
+            yolo_name = next(iter(yolo_added))
+            self.get_logger().warning(
+                f"Detection Conflict: Weight says '{weight_item.get('yolo_class_id')}', "
+                f"YOLO says '{yolo_name}'."
+                f"Trusting weight..."
+            )
+            self._sync_cart_to_yolo(yolo_state)
+            return {**weight_item, 'source': 'weight'}
+
+        elif weight_item:
+            self._cart_add(weight_item)
+            return {**weight_item, 'source': 'weight'}
+
+        elif yolo_added:
+            yolo_name = next(iter(yolo_added))
+            self._cart_add(
+                {'yolo_class_id': yolo_name, 'item_name': yolo_name, 'price': 0.0},
+                yolo_added[yolo_name]
+            )
+            return {'item_name': yolo_name, 'source': 'yolo'}
+
+        return None
+
+    def _handle_removed(self, weight_item, yolo_state: dict):
+        cart_name_counts = {
+            v['item_name']: v['count'] for v in self.items_in_cart.values()
+        }
+
+        yolo_removed = {}
+        for name, old_count in cart_name_counts.items():
+            new_count = yolo_state.get(name, 0)
+            if new_count < old_count:
+                yolo_removed[name] = old_count - new_count
+
+        if weight_item and yolo_removed:
+            weight_class = weight_item.get('yolo_class_id', '').strip().lower()
+            for name, count in yolo_removed.items():
+                yolo_slug = name.strip().lower().replace(' ', '-')
+                if yolo_slug == weight_class:
+                    self._cart_remove(weight_item.get('yolo_class_id'), count)
+                    return {**weight_item, 'source': 'both'}
+
+            yolo_name = next(iter(yolo_removed))
+            self.get_logger().warning(
+                f"Remove conflict: weight says '{weight_item.get('yolo_class_id')}', "
+                f"YOLO says '{yolo_name}' was removed. Trusting weight."
+            )
+            self._force_remove_by_weight(weight_item)
+            return {**weight_item, 'source': 'weight'}
+
+        elif weight_item:
+            self.get_logger().info(
+                f"Detection Conflict: YOLO still sees {yolo_name} after removal. "
+                f"Trusting weight..."
+            )
+            self._force_remove_by_weight(weight_item)
+            return {**weight_item, 'source': 'weight'}
+
+        elif yolo_removed:
+            yolo_name = next(iter(yolo_removed))
+            self._cart_remove(yolo_name, yolo_removed[yolo_name])
+            return {'item_name': yolo_name, 'source': 'yolo'}
+
+        if weight_item:
+            self.get_logger().warning('Could not identify removed item via YOLO. Trusting weight.')
+            self._force_remove_by_weight(weight_item)
+            return {**weight_item, 'source': 'weight'}
+
+        self.get_logger().warning('Could not identify removed item. Syncing cart to YOLO detections.')
+        self._sync_cart_to_yolo(yolo_state)
+        return None
+
+    def _force_remove_by_weight(self, weight_item):
+        self._cart_remove(weight_item.get('yolo_class_id', ''))
+
+    # last resort: rebuild cart.json from YOLO's current view
+    def _sync_cart_to_yolo(self, yolo_state: dict):
+        self.items_in_cart = {
+            name: {'item_name': name, 'price': 0.0, 'count': count}
+            for name, count in yolo_state.items()
+        }
+
+    # cart.json
+    def _write_cart_file(self, delta_weight: float = 0.0):
+        items = []
+        for v in self.items_in_cart.values():
+            if v.get('type') == 'produce':
+                weight_kg = delta_weight / 1000.0
+                subtotal = round(v['price'] * weight_kg, 2)
+            else:
+                subtotal = round(v['price'] * v['count'], 2)
+
+            items.append({
+                'item_name': v['item_name'],
+                'price': v['price'],
+                'count': v['count'],
+                'subtotal': subtotal,
+            })
+
+        total = round(sum(i['subtotal'] for i in items), 2)
+        payload = {
+            'items': items,
+            'total': total,
+            'last_updated': time.strftime('%Y-%m-%dT%H:%M:%S'),
+        }
+
         try:
-            self.latest_detections = json.loads(msg.data)
-            self.received_trigger_id = self.pending_trigger_id
-        except json.JSONDecodeError:
-            self.get_logger().warning('Failed to parse YOLO detections.')
-            self.latest_detections = None
+            with open(cart_path, 'w') as f:
+                json.dump(payload, f, indent=2)
+            self.get_logger().info('cart.json updated')
+        except Exception as e:
+            self.get_logger().error(f'Failed to write cart file: {e}')
 
-    # ── Main loop ──────────────────────────────────────────────────────────────
+        receipt_msg = String()
+        receipt_msg.data = json.dumps(payload)
+        self.receipt_publisher.publish(receipt_msg)
 
+    # detections
+    def detect_item_by_weight(self, delta_weight):
+        abs_weight = abs(delta_weight)
+        best_match = None
+        smallest_diff = float('inf')
+
+        for value in self.items_data.values():
+            candidates = value if isinstance(value, list) else [value]
+            for item in candidates:
+                expected = item['expected_weight']
+                tolerance = item['weight_tolerance']
+                if expected == 0.0:
+                    continue
+                if (expected - tolerance) <= abs_weight <= (expected + tolerance):
+                    diff = abs(abs_weight - expected)
+                    if diff < smallest_diff:
+                        smallest_diff = diff
+                        best_match = item
+
+        return best_match
+
+    # main loop
     def loop(self):
         if self.pending_weight_result is not None:
+            elapsed = time.time() - self.pending_trigger_time
+            if elapsed > 5.0:
+                self.get_logger().warning(
+                    f'Timeout after {elapsed:.1f}s. Resolving with partial data. '
+                    f'image_ready={self.current_image_trigger_id == self.pending_trigger_id}, '
+                    f'detections_ready={self.current_detections_trigger_id == self.pending_trigger_id}'
+                )
+                self._resolve()
             return
 
         weight_result = self.weight_detector.read_weight()
@@ -111,99 +349,18 @@ class CartNode(Node):
         )
 
         self.pending_trigger_id += 1
+        self.current_annotated_frame = None
+        self.current_detections = None
+        self.current_image_trigger_id = -1
+        self.current_detections_trigger_id = -1
+
         self.pending_weight_result = weight_result
-        self.latest_detections = None
+        self.pending_trigger_time = time.time()
 
         trigger = Bool()
         trigger.data = True
         self.capture_publisher.publish(trigger)
-        self.get_logger().info(
-            f'Capture requested.'
-        )
-
-    def detect_item_by_weight(self, delta_weight):
-        abs_weight = abs(delta_weight)
-        best_match = None
-        smallest_diff = float('inf')
-
-        for value in self.items_data.values():
-            candidates = value if isinstance(value, list) else [value]
-
-            for item in candidates:
-                expected = item['expected_weight']
-                tolerance = item['weight_tolerance']
-
-                if expected == 0.0:
-                    continue
-
-                if (expected - tolerance) <= abs_weight <= (expected + tolerance):
-                    diff = abs(abs_weight - expected)
-                    if diff < smallest_diff:
-                        smallest_diff = diff
-                        best_match = item
-
-        return best_match
-
-    def detect_item_combined(self, weight_item):
-        """
-          1. weight + YOLO agree   → weight+yolo confidence
-          2. weight alone          → weight-based confidence
-          3. YOLO alone (>0.7)     → yolo confidence
-          4. nothing               → None
-        """
-        detections = self.latest_detections
-        yolo_available = (
-            detections is not None
-            and detections.get('classes')
-            and detections.get('confidences')
-        )
-
-        if weight_item:
-            if yolo_available:
-                best_idx = detections['confidences'].index(max(detections['confidences']))
-                best_conf = detections['confidences'][best_idx]
-                yolo_class_names = detections.get('class_names', [])
-
-                yolo_agrees = False
-                if yolo_class_names:
-                    yolo_name = yolo_class_names[best_idx]
-                    weight_class = weight_item.get('yolo_class_id', '')
-                    yolo_slug = yolo_name.strip().lower().replace(' ', '-')
-                    weight_slug = weight_class.strip().lower()
-                    yolo_agrees = (yolo_slug == weight_slug)
-
-                if best_conf > 0.7 and yolo_agrees:
-                    return {
-                        **weight_item,
-                        'confidence': round(best_conf, 2),
-                        'source': 'weight+yolo',
-                    }
-                elif best_conf > 0.7:
-                    yolo_name = yolo_class_names[best_idx] if yolo_class_names else '?'
-                    self.get_logger().warning(
-                        f"YOLO disagrees: weight says "
-                        f"'{weight_item.get('yolo_class_id')}', "
-                        f"YOLO says '{yolo_name}' ({best_conf:.2f})"
-                    )
-                    return {**weight_item, 'confidence': 'weight-based', 'source': 'weight'}
-                else:
-                    return {**weight_item, 'confidence': 'weight-based', 'source': 'weight'}
-            else:
-                return {**weight_item, 'confidence': 'weight-based', 'source': 'weight'}
-
-        elif yolo_available:
-            best_conf = max(detections['confidences'])
-            if best_conf > 0.7:
-                best_idx = detections['confidences'].index(best_conf)
-                yolo_class_names = detections.get('class_names', [])
-                detected_name = yolo_class_names[best_idx] if yolo_class_names else 'Unknown'
-                return {
-                    'item_name': detected_name,
-                    'confidence': round(best_conf, 2),
-                    'source': 'yolo',
-                }
-
-        return None
+        self.get_logger().info('Capture requested.')
 
     # helpers
     def _save_frame(self, frame, action: str):

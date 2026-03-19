@@ -27,7 +27,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'yolo = model.yolo_detection:main',
+            'yolo = model.yolo_model:main',
         ],
     },
 )

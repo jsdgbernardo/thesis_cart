@@ -1,3 +1,3 @@
-from .weight import WeightDetector
+from .weight import WeightSensor
 
-__all__ = ["WeightDetector"]
+__all__ = ["WeightSensor"]

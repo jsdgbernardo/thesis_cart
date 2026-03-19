@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Overall Flow:
+# background thread -> drain camera -> latest frame
+#       trigger -> capture_callback -> latest frame -> camera/image
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -8,14 +12,16 @@ from cv_bridge import CvBridge
 import cv2
 import threading
 
-
-class ImagePublisher(Node):
+class Webcam(Node):
 
     def __init__(self):
-        super().__init__('image_publisher')
+        super().__init__('webcam')
 
-        self.publisher_ = self.create_publisher(Image, 'camera/image', 10)
-        self.create_subscription(Bool, 'camera/capture', self.capture_callback, 10)
+        # topic publishers 
+        self.publisher_ = self.create_publisher(Image, 'camera/image', 10) # latest frame
+
+        # topic subscribers 
+        self.create_subscription(Bool, 'camera/capture', self.capture_callback, 10) # trigger to capture latest frame
 
         self.cap = cv2.VideoCapture(0)
 
@@ -23,20 +29,19 @@ class ImagePublisher(Node):
             self.get_logger().error('Failed to open camera.')
             return
 
-        # ensures that read() is always fresh
-        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1) # ensures that read() is always fresh
 
         self.br = CvBridge()
         self.latest_frame = None
         self.lock = threading.Lock()
 
-        # continuously drain the camera buffer in the background
         self.running = True
         self.capture_thread = threading.Thread(target=self._drain_camera, daemon=True)
         self.capture_thread.start()
 
         self.get_logger().info('Camera ready. Waiting for trigger...')
 
+    # continuously drain the camera buffer in the background
     def _drain_camera(self):
         while self.running:
             ret, frame = self.cap.read()
@@ -46,6 +51,7 @@ class ImagePublisher(Node):
             else:
                 self.get_logger().warning('Camera read failed, retrying...')
 
+    # callbacks
     def capture_callback(self, msg):
         if not msg.data:
             return
@@ -68,7 +74,7 @@ class ImagePublisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = ImagePublisher()
+    node = Webcam()
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
