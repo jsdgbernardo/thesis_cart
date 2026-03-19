@@ -1,6 +1,7 @@
 {
   "chicken_feet": {
     "item_name": "Chicken Feet",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
     "price": 0.0,
@@ -10,6 +11,7 @@
   },
   "chicken_leg": {
     "item_name": "Chicken Leg",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
     "price": 0.0,
@@ -19,6 +21,7 @@
   },
   "chicken_quarter": {
     "item_name": "Chicken Quarter",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
     "price": 0.0,
@@ -28,6 +31,7 @@
   },
   "chicken_thigh": {
     "item_name": "Chicken Thigh",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
     "price": 0.0,
@@ -37,6 +41,7 @@
   },
   "pork_liempo": {
     "item_name": "Pork Liempo",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
     "price": 0.0,
@@ -46,96 +51,107 @@
   },
   "tuna":{
     "item_name": "San Marino Corned Tuna",
+    "item_type": "normal",
     "expected_weight": 215.5,
     "weight_tolerance": 2,
-    "price": 0.0,
+    "price": 47.0,
     "yolo_class_id": "San-Marino-Corned-Tuna",
     "x_coordinate": 7.1064772605896,
     "y_coordinate": 3.8431506156921387
   },
   "eggplant": {
     "item_name": "Eggplant",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 210.0,
     "yolo_class_id": "Eggplant",
     "x_coordinate": 2.982196092605591,
     "y_coordinate": 1.7291499376296997
   },
   "onion": {
     "item_name": "Onion",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 367.0,
     "yolo_class_id": "Onion",
     "x_coordinate": 4.9736328125,
     "y_coordinate": 1.7615762948989868
   },
   "garlic": {
     "item_name": "Garlic",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 236.0,
     "yolo_class_id": "Garlic",
     "x_coordinate": 7.061968803405762,
     "y_coordinate": 1.9394078254699707
   },
   "potato": {
     "item_name": "Potato",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 283.0,
     "yolo_class_id": "Potato",
     "x_coordinate": 3.0280871391296387,
     "y_coordinate": 3.5517163276672363
   },
   "papaya": {
     "item_name": "Papaya",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 68.0,
     "yolo_class_id": "Papaya",
     "x_coordinate": 4.994244575500488,
     "y_coordinate": 3.6703226566314697
   },
   "tomato": {
     "item_name": "Tomato",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 320.0,
     "yolo_class_id": "Tomato",
     "x_coordinate": 7.1064772605896,
     "y_coordinate": 3.8431506156921387
   },
   "carrot": {
     "item_name": "Carrot",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 264.0,
     "yolo_class_id": "Carrot",
     "x_coordinate": 3.0280871391296387,
     "y_coordinate": 3.5517163276672363
   },
   "string_beans": {
     "item_name": "String Beans",
+    "item_type": "produce",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 367.0,
     "yolo_class_id": "String-Beans",
     "x_coordinate": 4.994244575500488,
     "y_coordinate": 3.6703226566314697
   },
   "vinegar": {
     "item_name": "Datu Puti Vinegar",
+    "item_type": "normal",
     "expected_weight": 363.9,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 16.10,
     "yolo_class_id": "Datu-Puti-Vinegar",
     "x_coordinate": 2.4634318351745605,
     "y_coordinate": 5.510791778564453
   },
   "fish_sauce": {
     "item_name": "Datu Puti Fish Sauce",
+    "item_type": "normal",
     "expected_weight": 0.0,
     "weight_tolerance": 2.0,
     "price": 0.0,
@@ -145,27 +161,30 @@
   },
   "soy_sauce": {
     "item_name": "Datu Puti Soy Sauce",
+    "item_type": "normal",
     "expected_weight": 381.8,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 22.50,
     "yolo_class_id": "Datu-Puti-Soy-Sauce",
     "x_coordinate": 6.785021781921387,
     "y_coordinate": 6.019808769226074
   },
   "sugar": {
     "item_name": "White Sugar",
+    "item_type": "normal",
     "expected_weight": 250.7,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 16.40,
     "yolo_class_id": "Sugar",
     "x_coordinate": 4.447297096252441,
     "y_coordinate": 7.887138366699219
   },
   "noodles": {
     "item_name": "Nissin Seafood Cup Noodles",
+    "item_type": "normal",
     "expected_weight": 81.9,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 31.95,
     "yolo_class_id": "Nissin-Seafood-Cup-Noodles",
     "x_coordinate": 2.4634318351745605,
     "y_coordinate": 5.510791778564453
@@ -173,18 +192,20 @@
   "milk": [
     { 
       "item_name": "Nestle Fresh Milk 1L",
+      "item_type": "normal",
       "expected_weight": 1071,
       "weight_tolerance": 2.0,
-      "price": 0.0,
+      "price": 118.75,
       "yolo_class_id": "Nestle-Fresh-Milk",
       "x_coordinate": 5.257014274597168,
       "y_coordinate": 7.987063884735107
     },
     {
       "item_name": "Nestle Fresh Milk 250mL",
+      "item_type": "normal",
       "expected_weight": 271.5,
       "weight_tolerance": 2.0,
-      "price": 0.0,
+      "price": 41.25,
       "yolo_class_id": "Nestle-Fresh-Milk",
       "x_coordinate": 5.257014274597168,
       "y_coordinate": 7.987063884735107
@@ -193,18 +214,20 @@
   "piattos": [
     { 
       "item_name": "Piattos Cheese",
+      "item_type": "normal",
       "expected_weight": 90.7,
       "weight_tolerance": 2.0,
-      "price": 0.0,
+      "price": 40.0,
       "yolo_class_id": "Piattos-Cheese",
       "x_coordinate": 4.941558361053467,
       "y_coordinate": 5.769352912902832
     },
     {
       "item_name": "Piattos Cheese 40g",
+      "item_type": "normal",
       "expected_weight": 45.0,
       "weight_tolerance": 2.0,
-      "price": 0.0,
+      "price": 21.0,
       "yolo_class_id": "Piattos-Cheese",
       "x_coordinate": 4.941558361053467,
       "y_coordinate": 5.769352912902832
@@ -213,15 +236,17 @@
   "pringles": [
     { 
       "item_name": "Pringles Sour Cream 158g",
+      "item_type": "normal",
       "expected_weight": 204.2,
       "weight_tolerance": 2.0,
-      "price": 0.0,
+      "price": 138.0,
       "yolo_class_id": "Pringles-Sour-Cream",
       "x_coordinate": 6.785021781921387,
       "y_coordinate": 6.019808769226074
     },
     {
       "item_name": "Pringles Sour Cream",
+      "item_type": "normal",
       "expected_weight": 45.0,
       "weight_tolerance": 2.0,
       "price": 0.0,
@@ -232,9 +257,10 @@
   ],
   "dishwashing_liquid": {
     "item_name": "Joy Dishwashing Liquid",
+    "item_type": "normal",
     "expected_weight": 374.4,
     "weight_tolerance": 2.0,
-    "price": 0.0,
+    "price": 129.0,
     "yolo_class_id": "Joy-Dishwashing-Liquid",
     "x_coordinate": 2.4180517196655273,
     "y_coordinate": 7.692407608032227

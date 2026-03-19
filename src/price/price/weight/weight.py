@@ -1,7 +1,7 @@
 import time
 from hx711 import HX711
 
-class WeightDetector:
+class WeightSensor:
 
     def __init__(self):
         # HX711 setup
