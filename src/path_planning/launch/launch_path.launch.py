@@ -22,7 +22,7 @@ def generate_launch_description():
     planner_arg = DeclareLaunchArgument(
         'planner',
         default_value='brute_force',
-        description='Apprioach to use (brute_force, heuristic, metaheuristic)'
+        description='Approach to use (brute_force, heuristic, metaheuristic)'
     )
 
     # Items manager node

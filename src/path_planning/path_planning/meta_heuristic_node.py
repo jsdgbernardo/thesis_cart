@@ -69,6 +69,13 @@ class MetaHeuristicNode(Node):
         )
         self.get_logger().info('Created subscription to /amcl_pose')
 
+        # Publish initial pose if missing
+        self.initial_pose_pub = self.create_publisher(
+            PoseWithCovarianceStamped,
+            '/initialpose',
+            10
+        )
+
         # Publishes the best path found (use transient local so rviz can see it after startup)
         path_qos = QoSProfile(
             reliability=ReliabilityPolicy.RELIABLE,
@@ -108,15 +115,58 @@ class MetaHeuristicNode(Node):
             for name in item_name:
                 name = name.strip()  # Remove leading/trailing whitespace
                 self.get_logger().info(f'Processing item: "{name}"')
+
                 if name in self.json_items:
-                    x = self.json_items[name]['x_coordinate']
-                    y = self.json_items[name]['y_coordinate']
-                    self.items.append(ItemCoordinates(name, x, y))
+                    item_data = self.json_items[name]
+
+                    if isinstance(item_data, dict):
+                        x = item_data['x_coordinate']
+                        y = item_data['y_coordinate']
+                        self.items.append(ItemCoordinates(name, x, y))
+
+                    # Handle item lists
+                    elif isinstance(item_data, list):
+                        selected = item_data[0]
+                        x = selected['x_coordinate']
+                        y = selected['y_coordinate']
+                        self.items.append(ItemCoordinates(name, x, y))
+
                     self.get_logger().info(f'Received shopping list item: {name} at ({x}, {y})')
+                    
                 else:
                     self.get_logger().warn(f'Item {name} not found in JSON database. Available: {list(self.json_items.keys())}')
 
             # Trigger planning in background thread to avoid blocking the callback
+            if self.current_pose is None:
+                self.get_logger().warn('Current pose is None, using fallback pose')
+
+                msg = PoseWithCovarianceStamped()
+                msg.header.frame_id = 'map'
+                msg.header.stamp = self.get_clock().now().to_msg()
+
+                msg.pose.pose.position.x = 0.4310927391052246
+                msg.pose.pose.position.y = -0.06378614902496338
+                msg.pose.pose.position.z = 0.0
+
+                # Facing forward (yaw = 0 → quaternion z=0, w=1)
+                msg.pose.pose.orientation.x = 0.0
+                msg.pose.pose.orientation.y = 0.0
+                msg.pose.pose.orientation.z = 0.0
+                msg.pose.pose.orientation.w = 1.0
+
+                # Covariance (important for AMCL)
+                msg.pose.covariance = [
+                    0.25, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.25, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0685
+                ]
+
+                self.initial_pose_pub.publish(msg)
+                self.current_pose = msg.pose.pose
+
             if self.current_pose is not None and len(self.items) > 0:
                 self.get_logger().info(f'Starting path recomputation for {len(self.items)} items.')
                 # Run planning in a separate thread to avoid blocking callbacks
@@ -124,8 +174,6 @@ class MetaHeuristicNode(Node):
                 planning_thread.daemon = True
                 planning_thread.start()
             else:
-                if self.current_pose is None:
-                    self.get_logger().warn('Current pose is None, cannot plan')
                 if len(self.items) == 0:
                     self.get_logger().warn('No valid items to plan for')
         except Exception as e:

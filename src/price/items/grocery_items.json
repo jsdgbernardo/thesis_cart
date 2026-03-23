@@ -6,8 +6,8 @@
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Chicken-Feet",
-    "x_coordinate": 2.8741321563720703,
-    "y_coordinate": -0.4594098925590515
+    "x_coordinate": 2.7619359493255615,
+    "y_coordinate": -0.4767124652862549
   },
   "chicken_leg": {
     "item_name": "Chicken Leg",
@@ -16,8 +16,8 @@
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Chicken-Leg",
-    "x_coordinate": 5.187827110290527,
-    "y_coordinate": -0.25678956508636475
+    "x_coordinate": -0.4767124652862549,
+    "y_coordinate": -0.5248453617095947
   },
   "chicken_quarter": {
     "item_name": "Chicken Quarter",
@@ -26,8 +26,8 @@
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Chicken-Quarter",
-    "x_coordinate": 7.543957710266113,
-    "y_coordinate": 0.08051550388336182
+    "x_coordinate": 7.519138336181641,
+    "y_coordinate": -0.5910558700561523
   },
   "chicken_thigh": {
     "item_name": "Chicken Thigh",
@@ -36,8 +36,8 @@
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Chicken-Thigh",
-    "x_coordinate": 2.982196092605591,
-    "y_coordinate": 1.7291499376296997
+    "x_coordinate": 2.9507932662963867,
+    "y_coordinate": 1.4649615287780762
   },
   "pork_liempo": {
     "item_name": "Pork Liempo",
@@ -46,8 +46,8 @@
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Pork-Liempo",
-    "x_coordinate": 4.9736328125,
-    "y_coordinate": 1.7615762948989868
+    "x_coordinate": 5.179579734802246,
+    "y_coordinate": 1.4257547855377197
   },
   "tuna":{
     "item_name": "San Marino Corned Tuna",
@@ -56,8 +56,8 @@
     "weight_tolerance": 2,
     "price": 47.0,
     "yolo_class_id": "San-Marino-Corned-Tuna",
-    "x_coordinate": 7.1064772605896,
-    "y_coordinate": 3.8431506156921387
+    "x_coordinate": 7.419656753540039,
+    "y_coordinate": 3.458871841430664
   },
   "eggplant": {
     "item_name": "Eggplant",
@@ -66,8 +66,8 @@
     "weight_tolerance": 2.0,
     "price": 210.0,
     "yolo_class_id": "Eggplant",
-    "x_coordinate": 2.982196092605591,
-    "y_coordinate": 1.7291499376296997
+    "x_coordinate": 2.9507932662963867,
+    "y_coordinate": 1.4649615287780762
   },
   "onion": {
     "item_name": "Onion",
@@ -76,8 +76,8 @@
     "weight_tolerance": 2.0,
     "price": 367.0,
     "yolo_class_id": "Onion",
-    "x_coordinate": 4.9736328125,
-    "y_coordinate": 1.7615762948989868
+    "x_coordinate": 5.179579734802246,
+    "y_coordinate": 1.4257547855377197
   },
   "garlic": {
     "item_name": "Garlic",
@@ -86,8 +86,8 @@
     "weight_tolerance": 2.0,
     "price": 236.0,
     "yolo_class_id": "Garlic",
-    "x_coordinate": 7.061968803405762,
-    "y_coordinate": 1.9394078254699707
+    "x_coordinate": 7.45550537109375,
+    "y_coordinate": 1.4838883876800537
   },
   "potato": {
     "item_name": "Potato",
@@ -96,8 +96,8 @@
     "weight_tolerance": 2.0,
     "price": 283.0,
     "yolo_class_id": "Potato",
-    "x_coordinate": 3.0280871391296387,
-    "y_coordinate": 3.5517163276672363
+    "x_coordinate": 2.8622984886169434,
+    "y_coordinate": 3.462462902069092
   },
   "papaya": {
     "item_name": "Papaya",
@@ -106,8 +106,8 @@
     "weight_tolerance": 2.0,
     "price": 68.0,
     "yolo_class_id": "Papaya",
-    "x_coordinate": 4.994244575500488,
-    "y_coordinate": 3.6703226566314697
+    "x_coordinate": 5.143945693969727,
+    "y_coordinate": 3.3956384658813477
   },
   "tomato": {
     "item_name": "Tomato",
@@ -116,8 +116,8 @@
     "weight_tolerance": 2.0,
     "price": 320.0,
     "yolo_class_id": "Tomato",
-    "x_coordinate": 7.1064772605896,
-    "y_coordinate": 3.8431506156921387
+    "x_coordinate": 7.419656753540039,
+    "y_coordinate": 3.458871841430664
   },
   "carrot": {
     "item_name": "Carrot",
@@ -126,8 +126,8 @@
     "weight_tolerance": 2.0,
     "price": 264.0,
     "yolo_class_id": "Carrot",
-    "x_coordinate": 3.0280871391296387,
-    "y_coordinate": 3.5517163276672363
+    "x_coordinate": 2.8622984886169434,
+    "y_coordinate": 3.462462902069092
   },
   "string_beans": {
     "item_name": "String Beans",
@@ -136,8 +136,8 @@
     "weight_tolerance": 2.0,
     "price": 367.0,
     "yolo_class_id": "String-Beans",
-    "x_coordinate": 4.994244575500488,
-    "y_coordinate": 3.6703226566314697
+    "x_coordinate": 5.143945693969727,
+    "y_coordinate": 3.3956384658813477
   },
   "vinegar": {
     "item_name": "Datu Puti Vinegar",
@@ -146,8 +146,8 @@
     "weight_tolerance": 2.0,
     "price": 16.10,
     "yolo_class_id": "Datu-Puti-Vinegar",
-    "x_coordinate": 2.4634318351745605,
-    "y_coordinate": 5.510791778564453
+    "x_coordinate": 2.891848087310791,
+    "y_coordinate": 5.429434776306152
   },
   "fish_sauce": {
     "item_name": "Datu Puti Fish Sauce",
@@ -156,8 +156,8 @@
     "weight_tolerance": 2.0,
     "price": 0.0,
     "yolo_class_id": "Datu-Puti-Fish-Sauce",
-    "x_coordinate": 4.941558361053467,
-    "y_coordinate": 5.769352912902832
+    "x_coordinate": 5.198779106140137,
+    "y_coordinate": 5.438882827758789
   },
   "soy_sauce": {
     "item_name": "Datu Puti Soy Sauce",
@@ -166,8 +166,8 @@
     "weight_tolerance": 2.0,
     "price": 22.50,
     "yolo_class_id": "Datu-Puti-Soy-Sauce",
-    "x_coordinate": 6.785021781921387,
-    "y_coordinate": 6.019808769226074
+    "x_coordinate": 7.509736061096191,
+    "y_coordinate": 5.383303642272949
   },
   "sugar": {
     "item_name": "White Sugar",
@@ -186,8 +186,8 @@
     "weight_tolerance": 2.0,
     "price": 31.95,
     "yolo_class_id": "Nissin-Seafood-Cup-Noodles",
-    "x_coordinate": 2.4634318351745605,
-    "y_coordinate": 5.510791778564453
+    "x_coordinate": 2.891848087310791,
+    "y_coordinate": 5.429434776306152
   },
   "milk": [
     { 
@@ -197,8 +197,8 @@
       "weight_tolerance": 2.0,
       "price": 118.75,
       "yolo_class_id": "Nestle-Fresh-Milk",
-      "x_coordinate": 5.257014274597168,
-      "y_coordinate": 7.987063884735107
+      "x_coordinate": 4.970736980438232,
+      "y_coordinate": 7.407561302185059
     },
     {
       "item_name": "Nestle Fresh Milk 250mL",
@@ -207,8 +207,8 @@
       "weight_tolerance": 2.0,
       "price": 41.25,
       "yolo_class_id": "Nestle-Fresh-Milk",
-      "x_coordinate": 5.257014274597168,
-      "y_coordinate": 7.987063884735107
+      "x_coordinate": 4.970736980438232,
+      "y_coordinate": 7.407561302185059
     }
   ],
   "piattos": [
@@ -219,8 +219,8 @@
       "weight_tolerance": 2.0,
       "price": 40.0,
       "yolo_class_id": "Piattos-Cheese",
-      "x_coordinate": 4.941558361053467,
-      "y_coordinate": 5.769352912902832
+      "x_coordinate": 5.198779106140137,
+      "y_coordinate": 5.438882827758789
     },
     {
       "item_name": "Piattos Cheese 40g",
@@ -229,8 +229,8 @@
       "weight_tolerance": 2.0,
       "price": 21.0,
       "yolo_class_id": "Piattos-Cheese",
-      "x_coordinate": 4.941558361053467,
-      "y_coordinate": 5.769352912902832
+      "x_coordinate": 5.198779106140137,
+      "y_coordinate": 5.438882827758789
     }
   ],
   "pringles": [
@@ -241,8 +241,8 @@
       "weight_tolerance": 2.0,
       "price": 138.0,
       "yolo_class_id": "Pringles-Sour-Cream",
-      "x_coordinate": 6.785021781921387,
-      "y_coordinate": 6.019808769226074
+      "x_coordinate": 7.509736061096191,
+      "y_coordinate": 5.383303642272949
     },
     {
       "item_name": "Pringles Sour Cream",
@@ -251,8 +251,8 @@
       "weight_tolerance": 2.0,
       "price": 0.0,
       "yolo_class_id": "Pringles-Sour-Cream",
-      "x_coordinate": 6.785021781921387,
-      "y_coordinate": 6.019808769226074
+      "x_coordinate": 7.509736061096191,
+      "y_coordinate": 5.383303642272949
     }
   ],
   "dishwashing_liquid": {
@@ -262,7 +262,12 @@
     "weight_tolerance": 2.0,
     "price": 129.0,
     "yolo_class_id": "Joy-Dishwashing-Liquid",
-    "x_coordinate": 2.4180517196655273,
-    "y_coordinate": 7.692407608032227
+    "x_coordinate": 2.8274645805358887,
+    "y_coordinate": 7.348699569702148
+  },
+  "check_out": {
+    "item_name": "Checkout",
+    "x_coordinate": 0.45380592346191406,
+    "y_coordinate": 7.787566661834717
   }
 }
