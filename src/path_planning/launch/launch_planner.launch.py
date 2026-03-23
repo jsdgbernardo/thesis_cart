@@ -33,7 +33,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             'use_sim_time': 'false',
-            'map': os.path.join('map', 'draft1.yaml')
+            'map': os.path.join('map', 'processed.yaml')
         }.items()
     )
 
