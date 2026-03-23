@@ -343,12 +343,8 @@ class BruteForceNode(Node):
         return cost
 
     def wait_for_action_server(self, timeout_sec: float = 5.0, retries: int = 3) -> bool:
-        """Wait for the configured action server with retries.
-
-        Returns True if available, False otherwise.
-        """
         for attempt in range(1, retries + 1):
-            self.get_logger().info(f'Waiting for action server "{self.action_name}" (attempt {attempt}/{retries})...')
+            # self.get_logger().info(f'Waiting for action server "{self.action_name}" (attempt {attempt}/{retries})...')
             if self.action_client.wait_for_server(timeout_sec=timeout_sec):
                 return True
             sleep(0.1)

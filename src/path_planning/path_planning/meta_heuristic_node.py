@@ -168,7 +168,7 @@ class MetaHeuristicNode(Node):
                 self.current_pose = msg.pose.pose
 
             if self.current_pose is not None and len(self.items) > 0:
-                self.get_logger().info(f'Starting path recomputation for {len(self.items)} items.')
+                self.get_logger().info(f'Starting path computation for {len(self.items)} items.')
                 # Run planning in a separate thread to avoid blocking callbacks
                 planning_thread = threading.Thread(target=self.computer_and_publish_path, args=(self.items,))
                 planning_thread.daemon = True
@@ -439,12 +439,8 @@ class MetaHeuristicNode(Node):
         return cost
 
     def wait_for_action_server(self, timeout_sec: float = 5.0, retries: int = 3) -> bool:
-        """Wait for the configured action server with retries.
-
-        Returns True if available, False otherwise.
-        """
         for attempt in range(1, retries + 1):
-            self.get_logger().info(f'Waiting for action server "{self.action_name}" (attempt {attempt}/{retries})...')
+            # self.get_logger().info(f'Waiting for action server "{self.action_name}" (attempt {attempt}/{retries})...')
             if self.action_client.wait_for_server(timeout_sec=timeout_sec):
                 return True
             sleep(0.1)
