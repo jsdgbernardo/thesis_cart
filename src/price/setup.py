@@ -12,7 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'items'), glob('items/*'))
+        (os.path.join('share', package_name, 'items'), glob('items/*')),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -28,7 +29,6 @@ setup(
     entry_points={
         'console_scripts': [
             'calculation = price.calculation:main',
-            'image_publisher = camera.camera.webcam:main',
         ],
     },
 )

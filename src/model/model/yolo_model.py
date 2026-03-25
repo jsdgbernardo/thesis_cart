@@ -280,10 +280,10 @@ class YoloModel(Node):
                 })))
 
                 if added or removed:
-                    self.get_logger().info(f'Diff — added: {added} | removed: {removed}')
+                    self.get_logger().info(f'Added: {added} | Removed: {removed}')
                 else:
                     self.get_logger().info(
-                        f'No change detected. Scale state: {self.items_in_cart}'
+                        f'No change detected. Current State: {self.items_in_cart}'
                     )
 
             except Exception as e:
