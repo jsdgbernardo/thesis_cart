@@ -3,7 +3,9 @@ from hx711 import HX711
 
 class WeightSensor:
 
-    def __init__(self):
+    def __init__(self, node):
+        self.get_logger = node.get_logger
+
         # HX711 setup
         self.hx = HX711(5, 6)
         self.hx.reset()
@@ -51,7 +53,7 @@ class WeightSensor:
         if not self.change_detected and abs(delta_weight) > self.threshold:
             self.change_detected = True
             self.start_weight = self.prev_weight
-            print("[INFO] Weight change detected. Waiting for stability...")
+            self.get_logger().info('Weight change detected. Waiting to stabilize...')
             
         if self.change_detected and len(self.readings_buffer) == self.stability_samples:
             max_w = max(self.readings_buffer)
