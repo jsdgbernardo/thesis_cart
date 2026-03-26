@@ -18,7 +18,7 @@ import threading
 import traceback
 import time
 
-import os, json
+import os, json, logging
 from path_planning.items_manager import ItemsManager
 
 class ItemCoordinates:
@@ -265,6 +265,7 @@ class HeuristicNode(Node):
                 order_msg.data = json.dumps({'order': best_order, 'cost': best_cost})
                 self.order_publisher.publish(order_msg)
                 self.get_logger().info(f'Published best path. Order: {best_order}, Cost: {best_cost:.2f} Computation Time: {elapsed:.2f} seconds')
+                logging.info(f"\t{len(best_order)}\t{','.join(best_order)}\t{best_cost}\t{elapsed}")
             else:
                 self.get_logger().error('No valid path found for selected items.')
         except Exception as e:
@@ -289,9 +290,9 @@ class HeuristicNode(Node):
     # Call nav2 ComputePathToPose action to get path between two PoseStamped
     # Use nav2_astar config file for A* settings
     def compute_path_segment(self, start: PoseStamped, goal: PoseStamped):
-        self.get_logger().info(
-            f'Computing path segment from ({start.pose.position.x:.2f}, {start.pose.position.y:.2f}) to ({goal.pose.position.x:.2f}, {goal.pose.position.y:.2f})'
-        )
+        # self.get_logger().info(
+        #     f'Computing path segment from ({start.pose.position.x:.2f}, {start.pose.position.y:.2f}) to ({goal.pose.position.x:.2f}, {goal.pose.position.y:.2f})'
+        # )
 
         # wait for server with a few retries to handle startup timing
         if not self.wait_for_action_server(timeout_sec=5.0, retries=3):
@@ -311,7 +312,7 @@ class HeuristicNode(Node):
         def goal_response_callback(future):
             try:
                 goal_handle = future.result()
-                self.get_logger().info(f'Goal response received, accepted={goal_handle.accepted}')
+                # self.get_logger().info(f'Goal response received, accepted={goal_handle.accepted}')
                 if not goal_handle.accepted:
                     self.get_logger().error('ComputePathToPose goal rejected')
                     result_ready.set_result((None, float('inf')))
@@ -320,7 +321,7 @@ class HeuristicNode(Node):
                 def result_callback(result_future):
                     try:
                         result_msg = result_future.result()
-                        self.get_logger().info(f'Result callback triggered, result_msg={result_msg is not None}')
+                        # self.get_logger().info(f'Result callback triggered, result_msg={result_msg is not None}')
                         if result_msg is None:
                             self.get_logger().error('ComputePathToPose get_result returned None')
                             result_ready.set_result((None, float('inf')))
@@ -336,7 +337,7 @@ class HeuristicNode(Node):
                         if result and result.path and len(result.path.poses) > 0:
                             path = result.path
                             cost = self.path_cost(path)
-                            self.get_logger().info(f'Path result ready: {len(path.poses)} poses, cost={cost}')
+                            # self.get_logger().info(f'Path result ready: {len(path.poses)} poses, cost={cost}')
                             result_ready.set_result((path, cost))
                         else:
                             self.get_logger().error(f'ComputePathToPose returned empty path. result={result}, has_path={result and hasattr(result, "path")}')
@@ -407,6 +408,15 @@ class HeuristicNode(Node):
         return pose
 
 def main(args=None):
+
+    logging.basicConfig(
+        filename="heuristic.txt",
+        level=logging.INFO,
+        format="[%(asctime)s] %(message)s"
+    )
+
+    logging.info(f"Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds")
+
     rclpy.init(args=args)
     node = HeuristicNode()
     executor = MultiThreadedExecutor()

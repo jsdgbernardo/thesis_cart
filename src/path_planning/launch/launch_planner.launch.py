@@ -61,14 +61,39 @@ def generate_launch_description():
         condition=IfCondition(astar)
     )
 
-    wait_for_initialpose = ExecuteProcess(
-        cmd=['ros2', 'topic', 'echo', '/initialpose', '--once'],
-        output='screen'
-    )
+    # wait_for_initialpose = ExecuteProcess(
+    #     cmd=['ros2', 'topic', 'echo', '/initialpose', '--once'],
+    #     output='screen'
+    # )
+
+    # Publish initial pose at set coordinates
+    publish_initialpose = ExecuteProcess(
+    cmd=[
+        'ros2', 'topic', 'pub', '--once',
+        '/initialpose',
+        'geometry_msgs/msg/PoseWithCovarianceStamped',
+        """{
+            header: {frame_id: "map"},
+            pose: {
+                pose: {
+                    position: {x: 0.4310927391052246, y: -0.06378614902496338, z: 0.0},
+                    orientation: {z: 0.0, w: 1.0}
+                },
+                covariance: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            }
+        }"""
+    ],
+    output='screen'
+)
 
     start_navigation_after_pose = RegisterEventHandler(
         OnProcessExit(
-            target_action=wait_for_initialpose,
+            target_action=publish_initialpose,
             on_exit=[
                 navigation_dijkstra,
                 navigation_astar
@@ -79,6 +104,6 @@ def generate_launch_description():
     return LaunchDescription([
         astar_arg,
         localization,
-        wait_for_initialpose,
+        publish_initialpose,
         start_navigation_after_pose
     ])
