@@ -235,11 +235,16 @@ class MetaHeuristicNode(Node):
                     total_cost += cost
                     current_pose = goal_poses[idx]
                 return total_cost
+
+            def tournament_selection(population, k):
+                candidates = random.sample(population, k)
+                return min(candidates, key=lambda x: fitness(x))
             
-            # GA parameters
-            population_size = 30
-            generations = 40
-            mutation_rate = 0.2
+            # GA parameters scales with number of items
+            population_size = max(15, n*3)
+            generations = max(30, n*8)
+            mutation_rate = 0.2 if n <= 3 else 0.1 if n <= 7 else 0.05
+            tournament_k = 2 if n <= 3 else 3 if n <= 7 else 4
 
             # initialize population
             population = []
@@ -252,11 +257,11 @@ class MetaHeuristicNode(Node):
             # GA loop
             for _ in range(generations):
                 population.sort(key=lambda x: fitness(x))
-                next_generation = population[:5] # elitism: keep top 5
+                next_generation = population[:2] # elitism: keep top 2
 
                 while (len(next_generation) < population_size):
-                    parent1 = random.choice(population[:15]) # select from top 15
-                    parent2 = random.choice(population[:15])
+                    parent1 = tournament_selection(population, tournament_k)
+                    parent2 = tournament_selection(population, tournament_k)
 
                     # ordered crossover
                     start, end = sorted(random.sample(range(n), 2))
