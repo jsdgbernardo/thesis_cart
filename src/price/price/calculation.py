@@ -139,7 +139,7 @@ class CartNode(Node):
 
         if result:
             self.app.write_cart_file(abs(delta))
-            
+
             self.get_logger().info(
                 f"Item {action}: {result.get('item_name', 'Unknown')} "
                 f"| confidence: {result.get('confidence', 'N/A')} "
@@ -173,7 +173,7 @@ class CartNode(Node):
         )
 
         if action == 'added':
-            return self.handle_added(comparison, yolo_state, yolo_delta)
+            return self.handle_added(comparison, yolo_state, yolo_delta, weight_g=abs(delta))
         else:
             return self.handle_removed(comparison, yolo_state)
 
@@ -237,16 +237,6 @@ class CartNode(Node):
         return None, 0
 
     def compare_detections(self, weight_item, yolo_item) -> dict:
-        """Cross-check weight and YOLO detections.
-        YOLO is the primary source; weight is a secondary confirming signal.
-
-        Returns:
-            item        - the item to act on
-            confidence  - CONFIDENCE_* constant
-            source      - 'both' | 'weight' | 'yolo' | 'conflict'
-            weight_item - raw weight result (may be None)
-            yolo_item   - raw yolo result   (may be None)
-        """
         base = {'weight_item': weight_item, 'yolo_item': yolo_item}
 
         if weight_item and yolo_item:
@@ -279,15 +269,18 @@ class CartNode(Node):
         return {**base, 'item': None, 'confidence': None, 'source': None}
 
     # cart management
-    def cart_add(self, item: dict, count: int = 1):
+    def cart_add(self, item: dict, count: int = 1, weight_g: float = 0.0):
         key = item.get('yolo_class_id', 'Unknown')
         if key in self.items_in_cart:
             self.items_in_cart[key]['count'] += count
+            self.items_in_cart[key]['weight_g'] += weight_g
         else:
             self.items_in_cart[key] = {
                 'item_name': item.get('item_name', 'Unknown'),
+                'item_type': item.get('item_type', 'normal'),
                 'price':     item.get('price', 0.0),
                 'count':     count,
+                'weight_g':  weight_g,
             }
 
     def cart_remove(self, key: str, count: int = 1):
@@ -308,7 +301,7 @@ class CartNode(Node):
         }
 
     # add / remove handlers
-    def handle_added(self, comparison, yolo_state, yolo_delta=1):
+    def handle_added(self, comparison, yolo_state, yolo_delta=1, weight_g: float = 0.0):
         item       = comparison['item']
         confidence = comparison['confidence']
         source     = comparison['source']
@@ -317,13 +310,13 @@ class CartNode(Node):
             return None
 
         if confidence == CONFIDENCE_CONFLICT:
-            self.cart_add(item, count=yolo_delta)
+            self.cart_add(item, count=yolo_delta, weight_g=weight_g)
             return {**item, 'confidence': confidence, 'source': 'yolo'}
 
         if confidence == CONFIDENCE_LOW:
-            self.cart_add(item, count=yolo_delta)
+            self.cart_add(item, count=yolo_delta, weight_g=weight_g)
         else:
-            self.cart_add(item, count=1)
+            self.cart_add(item, count=1, weight_g=weight_g)
 
         return {**item, 'confidence': confidence, 'source': source}
 

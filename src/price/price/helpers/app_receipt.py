@@ -19,8 +19,8 @@ class Receipt:
     def write_cart_file(self, delta_weight: float = 0.0):
         items = []
         for v in self.items_in_cart.values():
-            if v.get('type') == 'produce':
-                weight_kg = delta_weight / 1000.0
+            if v.get('item_type') == 'produce':
+                weight_kg = v.get('weight_g', 0.0) / 1000.0
                 subtotal  = round(v['price'] * weight_kg, 2)
             else:
                 subtotal = round(v['price'] * v['count'], 2)
