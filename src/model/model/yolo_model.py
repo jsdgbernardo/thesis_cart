@@ -60,10 +60,6 @@ class YoloModel(Node):
         # access class names from either model.yaml or items.json
         class_names_path = os.path.join(price_dir, 'items', 'class_names.json')
         self.class_names = self._load_class_names(class_names_path, json_path)
-        # self.get_logger().info(f'Loaded {len(self.class_names)} classes: {self.class_names}')
-
-        # for i, name in enumerate(self.class_names):
-        #     self.get_logger().info(f'  [{i}] -> {name}')
 
         self.session = onnxruntime.InferenceSession(
             model_path,
@@ -98,7 +94,7 @@ class YoloModel(Node):
         # Load ground-truth index order from model export
         try:
             with open(class_names_path, 'r') as f:
-                index_map = json.load(f)  # {"0": "Chicken-Feet", "1": "Chicken-Leg", ...}
+                index_map = json.load(f)
         except Exception as e:
             self.get_logger().error(f'Failed to load class_names.json: {e}')
             return []
@@ -135,7 +131,6 @@ class YoloModel(Node):
 
     # callbacks
     def image_callback(self, msg):
-        self.get_logger().info(f'Image encoding: {msg.encoding}')
         frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
         with self.lock:
             self.latest_frame = frame
@@ -169,7 +164,7 @@ class YoloModel(Node):
         for det in raw:
             x1, y1, x2, y2, confidence, class_id = det
 
-            if confidence < 0.10:
+            if confidence < 0.25: # low confidence threshold to reduce noise
                 continue
 
             boxes.append([
@@ -255,10 +250,10 @@ class YoloModel(Node):
                 })))
 
                 if added or removed:
-                    self.get_logger().info(f'Added: {added} | Removed: {removed}')
+                    self.get_logger().info(f'Changes - Added: {added} | Removed: {removed}')
                 else:
                     self.get_logger().info(
-                        f'No change detected. Current State: {self.items_in_cart}'
+                        f'No change detected.'
                     )
 
             except Exception as e:

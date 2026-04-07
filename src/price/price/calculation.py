@@ -36,13 +36,9 @@ from cv_bridge import CvBridge
 from price.weight.weight import WeightSensor
 from price.helpers.app_receipt import Receipt
 
-# Weight and YOLO are peers — neither is primary.
-# HIGH   = both agree (maximum trust)
-# MEDIUM = exactly one sensor fired (either is sufficient alone)
-# CONFLICT = both fired but disagree (needs tie-breaking logic)
-CONFIDENCE_HIGH     = 'high'
-CONFIDENCE_MEDIUM   = 'medium'
-CONFIDENCE_CONFLICT = 'conflict'
+CONFIDENCE_HIGH     = 'HIGH'        # both agree
+CONFIDENCE_MEDIUM   = 'MEDIUM'      # one sensor only
+CONFIDENCE_CONFLICT = 'CONFLICT'    # disagree
 
 
 class CartNode(Node):
@@ -147,11 +143,7 @@ class CartNode(Node):
 
         if result:
             self.app.write_cart_file(abs(delta))
-            self.get_logger().info(
-                f"Item {action}: {result.get('item_name', 'Unknown')} "
-                f"| confidence: {result.get('confidence', 'N/A')} "
-                f"| source: {result.get('source', 'N/A')}"
-            )
+            self.get_logger().info(f"Receipt - {action}: {result.get('item_name', 'Unknown')} | Source: {result.get('source', 'N/A')}")
         else:
             self.get_logger().info('No item matched.')
 
@@ -177,8 +169,8 @@ class CartNode(Node):
         comparison = self.compare_detections(weight_item, yolo_item)
         self.get_logger().info(
             f"Detection — "
-            f"weight: '{weight_item.get('yolo_class_id') if weight_item else None}' | "
-            f"yolo: '{yolo_item.get('yolo_class_id') if yolo_item else None}' | "
+            f"'{weight_item.get('yolo_class_id') if weight_item else None}' vs "
+            f"'{yolo_item.get('yolo_class_id') if yolo_item else None}' | "
             f"result: {comparison['confidence']}"
         )
 
@@ -188,7 +180,6 @@ class CartNode(Node):
             return self.handle_removed(comparison, yolo_state)
 
     def detect_item_by_weight(self, delta_weight):
-        """Return best-matching item by weight, or None."""
         abs_weight    = abs(delta_weight)
         best_match    = None
         smallest_diff = float('inf')
@@ -209,7 +200,6 @@ class CartNode(Node):
         return best_match
 
     def detect_item_by_yolo(self, yolo_state: dict, action: str = 'added'):
-        """Return (best-matching item, delta count) from YOLO detections, or (None, 0)."""
         if not yolo_state:
             return None, 0
 
@@ -249,13 +239,6 @@ class CartNode(Node):
         return None, 0
 
     def compare_detections(self, weight_item, yolo_item) -> dict:
-        """
-        Compare weight and YOLO as peer sensors.
-
-        HIGH     — both agree on the same item.
-        MEDIUM   — exactly one sensor returned a match (the other failed or timed out).
-        CONFLICT — both matched, but to different items.
-        """
         base = {'weight_item': weight_item, 'yolo_item': yolo_item}
 
         if weight_item and yolo_item:
@@ -263,29 +246,24 @@ class CartNode(Node):
             y_class = yolo_item.get('yolo_class_id',  '').strip().lower()
 
             if w_class == y_class:
-                # Perfect agreement — highest trust
                 return {**base, 'item': yolo_item,
                         'confidence': CONFIDENCE_HIGH, 'source': 'both'}
 
             # Disagreement — both fired but identified different items.
-            # Prefer the item with a tighter weight match when available;
-            # fall back to weight (more deterministic than visual class).
             self.get_logger().warning(
-                f"Sensor conflict: weight='{w_class}' vs yolo='{y_class}'. "
-                f"Using weight as tiebreaker."
+                f"Conflict: '{w_class}' vs '{y_class}'. "
+                f"Using YOLO as tiebreaker."
             )
-            return {**base, 'item': weight_item,
-                    'confidence': CONFIDENCE_CONFLICT, 'source': 'conflict-weight-wins'}
+            return {**base, 'item': yolo_item,
+                    'confidence': CONFIDENCE_CONFLICT, 'source': 'Conflict_YOLO-wins'}
 
         elif weight_item:
-            # Weight sensor matched; YOLO missed. Medium confidence — one peer caught it.
             return {**base, 'item': weight_item,
                     'confidence': CONFIDENCE_MEDIUM, 'source': 'weight'}
 
         elif yolo_item:
-            # YOLO matched; weight missed. Medium confidence — one peer caught it.
             return {**base, 'item': yolo_item,
-                    'confidence': CONFIDENCE_MEDIUM, 'source': 'yolo'}
+                    'confidence': CONFIDENCE_MEDIUM, 'source': 'YOLO'}
 
         # Neither sensor matched
         return {**base, 'item': None, 'confidence': None, 'source': None}
@@ -300,13 +278,14 @@ class CartNode(Node):
             self.items_in_cart[key]['count']    += count
             self.items_in_cart[key]['weight_g'] += weight_g
         else:
-            self.items_in_cart[key] = {
-                'item_name': item.get('item_name', 'Unknown'),
-                'item_type': item.get('item_type', 'normal'),
-                'price':     item.get('price', 0.0),
-                'count':     count,
-                'weight_g':  weight_g,
-            }
+        #     self.items_in_cart[key] = {
+        #         'item_name': item.get('item_name', 'Unknown'),
+        #         'item_type': item.get('item_type', 'normal'),
+        #         'price':     item.get('price', 0.0),
+        #         'count':     count,
+        #         'weight_g':  weight_g,
+        #     }
+            return
 
     def cart_remove(self, key: str, count: int = 1):
         if key not in self.items_in_cart:
@@ -333,12 +312,14 @@ class CartNode(Node):
         source     = comparison['source']
 
         if item is None:
+            self.get_logger().warning(
+                'Remove: neither sensor identified an item. '
+                'Syncing cart to YOLO view as fallback.'
+            )
+            self.sync_cart_to_yolo(yolo_state)
             return None
 
-        # For conflict, trust weight (already resolved in compare_detections).
-        # For medium from YOLO, yolo_delta gives the best count estimate.
-        # For medium from weight or high confidence, count = 1 (weight fired once).
-        if source in ('yolo', 'conflict-weight-wins'):
+        if source in ('YOLO', 'Conflict_YOLO-wins'):
             self.cart_add(item, count=yolo_delta, weight_g=weight_g)
         else:
             self.cart_add(item, count=1, weight_g=weight_g)
@@ -409,7 +390,7 @@ class CartNode(Node):
 
     def _save_frame(self, frame, action: str):
         ts       = int(time.time())
-        filename = f'/tmp/annotated_{action}_{ts}.jpg'
+        filename = f'/tmp/{action}_annotated.jpg'
         try:
             cv2.imwrite(filename, frame)
             self.get_logger().info(f'Frame saved: {filename}')

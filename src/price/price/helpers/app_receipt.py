@@ -20,7 +20,7 @@ class Receipt:
         items = []
         for v in self.items_in_cart.values():
             if v.get('item_type') == 'produce':
-                weight_kg = v.get('weight_g', 0.0) / 1000.0
+                weight_kg = v.get('delta_weight', 0.0) / 1000.0
                 subtotal  = round(v['price'] * weight_kg, 2)
             else:
                 subtotal = round(v['price'] * v['count'], 2)
@@ -44,7 +44,7 @@ class Receipt:
                 json.dump(payload, f, indent=2)
             self.get_logger().info(f'cart.json updated at {self.cart_path}')
         except Exception as e:
-            self.get_logger().error(f'Failed to write cart file at {self.cart_path}: {e}')
+            self.get_logger().error(f'Failed to write cart file: {e}')
 
         receipt_msg      = String()
         receipt_msg.data = json.dumps(payload)
