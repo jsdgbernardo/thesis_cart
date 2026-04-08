@@ -108,22 +108,6 @@
     "yolo_class_id": "Joy-Dishwashing-Liquid",
     "x_coordinate": 2.8274645805358887,
     "y_coordinate": 7.348699569702148
-    "expected_weight": 250.7,
-    "weight_tolerance": 2.0,
-    "price": 16.40,
-    "yolo_class_id": "Sugar",
-    "x_coordinate": 4.447297096252441,
-    "y_coordinate": 7.487138366699219
-  },
-  "noodles": {
-    "item_name": "Nissin Seafood Cup Noodles",
-    "item_type": "normal",
-    "expected_weight": 81.9,
-    "weight_tolerance": 2.0,
-    "price": 31.95,
-    "yolo_class_id": "Nissin-Seafood-Cup-Noodles",
-    "x_coordinate": 2.891848087310791,
-    "y_coordinate": 5.429434776306152
   },
   "milk": [
     { 
