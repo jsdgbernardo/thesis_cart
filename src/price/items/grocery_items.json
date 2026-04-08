@@ -187,7 +187,7 @@
     { 
       "item_name": "Pringles Sour Cream 158g",
       "item_type": "normal",
-      "expected_weight": 204.2,
+      "expected_weight": 204.7,
       "weight_tolerance": 3.5,
       "price": 138.0,
       "yolo_class_id": "Pringles-Sour-Cream",
@@ -197,9 +197,9 @@
     {
       "item_name": "Pringles Sour Cream",
       "item_type": "normal",
-      "expected_weight": 45.0,
+      "expected_weight": 66.3,
       "weight_tolerance": 3.5,
-      "price": 0.0,
+      "price": 138.0,
       "yolo_class_id": "Pringles-Sour-Cream",
       "x_coordinate": 7.509736061096191,
       "y_coordinate": 5.383303642272949

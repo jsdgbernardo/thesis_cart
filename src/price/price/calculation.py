@@ -73,6 +73,7 @@ class CartNode(Node):
 
         self.items_in_cart = {}
 
+        self.minimum_item_weight = 4.0
         self.weight_detector = WeightSensor(self)
         self.br = CvBridge()
         self.app = Receipt(self, self.cart_path, self.items_in_cart)
@@ -143,7 +144,6 @@ class CartNode(Node):
 
         if result:
             self.app.write_cart_file(abs(delta))
-            self.get_logger().info(f"Receipt - {action}: {result.get('item_name', 'Unknown')} | Source: {result.get('source', 'N/A')}")
         else:
             self.get_logger().info('No item matched.')
 
@@ -163,16 +163,19 @@ class CartNode(Node):
     # ------------------------------------------------------------------ #
 
     def identify_and_update(self, action: str, delta: float, yolo_state: dict):
-        weight_item = self.detect_item_by_weight(delta)
+        weight_item, weight_confidence = self.detect_item_by_weight(delta)
         yolo_item, yolo_delta = self.detect_item_by_yolo(yolo_state, action)
 
-        comparison = self.compare_detections(weight_item, yolo_item)
+        comparison = self.compare_detections(weight_item, weight_confidence, yolo_item)
         self.get_logger().info(
             f"Detection — "
             f"'{weight_item.get('yolo_class_id') if weight_item else None}' vs "
             f"'{yolo_item.get('yolo_class_id') if yolo_item else None}' | "
             f"result: {comparison['confidence']}"
         )
+
+        # if(comparison['confidence'] == CONFIDENCE_CONFLICT):
+        #     self.get_logger().warning(f"Prioritizing to YOLO result.")
 
         if action == 'added':
             return self.handle_added(comparison, yolo_state, yolo_delta, weight_g=abs(delta))
@@ -183,6 +186,7 @@ class CartNode(Node):
         abs_weight    = abs(delta_weight)
         best_match    = None
         smallest_diff = float('inf')
+        weight_confidence = 0.0
 
         for value in self.items_data.values():
             candidates = value if isinstance(value, list) else [value]
@@ -195,9 +199,16 @@ class CartNode(Node):
                     diff = abs(abs_weight - expected)
                     if diff < smallest_diff:
                         smallest_diff = diff
-                        best_match    = item
+                        
+                        if tolerance > 0:
+                            weight_confidence = 1 - (diff / tolerance)
+                        else:
+                            weight_confidence = 1.0 if diff == 0 else 0.0
 
-        return best_match
+                        weight_confidence = max(0.0, min(1.0, weight_confidence))
+                        best_match = item
+
+        return best_match, weight_confidence
 
     def detect_item_by_yolo(self, yolo_state: dict, action: str = 'added'):
         if not yolo_state:
@@ -238,7 +249,7 @@ class CartNode(Node):
 
         return None, 0
 
-    def compare_detections(self, weight_item, yolo_item) -> dict:
+    def compare_detections(self, weight_item, weight_confidence, yolo_item) -> dict:
         base = {'weight_item': weight_item, 'yolo_item': yolo_item}
 
         if weight_item and yolo_item:
@@ -250,12 +261,14 @@ class CartNode(Node):
                         'confidence': CONFIDENCE_HIGH, 'source': 'both'}
 
             # Disagreement — both fired but identified different items.
-            self.get_logger().warning(
-                f"Conflict: '{w_class}' vs '{y_class}'. "
-                f"Using YOLO as tiebreaker."
-            )
-            return {**base, 'item': yolo_item,
-                    'confidence': CONFIDENCE_CONFLICT, 'source': 'Conflict_YOLO-wins'}
+            if(yolo_item.get('confidence'), 0) >= weight_confidence:
+                self.get_logger().warning("Priorizing YOLO.")
+                return {**base, 'item': yolo_item,
+                        'confidence': CONFIDENCE_CONFLICT, 'source': 'Conflict_YOLO-wins'}
+            else:
+                self.get_logger().warning("Priorizing weight.")
+                return {**base, 'item': weight_item,
+                        'confidence': CONFIDENCE_CONFLICT, 'source': 'Conflict_Weight-wins'}
 
         elif weight_item:
             return {**base, 'item': weight_item,
@@ -285,7 +298,6 @@ class CartNode(Node):
                 'count':     count,
                 'weight_g':  weight_g,
             }
-            return
 
     def cart_remove(self, key: str, count: int = 1):
         if key not in self.items_in_cart:
@@ -293,13 +305,20 @@ class CartNode(Node):
         self.items_in_cart[key]['count'] -= count
         if self.items_in_cart[key]['count'] <= 0:
             self.items_in_cart.pop(key)
-
+    
+    # Last resort: rebuild cart state entirely from YOLO's current view.
     def sync_cart_to_yolo(self, yolo_state: dict):
-        """Last resort: rebuild cart state entirely from YOLO's current view."""
-        self.items_in_cart = {
-            name: {'item_name': name, 'price': 0.0, 'count': count}
-            for name, count in yolo_state.items()
-        }
+        self.items_in_cart = {}
+        for name, count in yolo_state.items():
+            slug = name.strip().lower().replace(' ', '-')
+            item = self.yolo_index.get(slug, {})
+            self.items_in_cart[slug] = {
+                'item_name': item.get('item_name', name),
+                'item_type': item.get('item_type', 'normal'),
+                'price':     item.get('price', 0.0),
+                'count':     count,
+                'weight_g':  0.0,
+            }
 
     # ------------------------------------------------------------------ #
     # Add / remove handlers
@@ -319,7 +338,7 @@ class CartNode(Node):
             self.sync_cart_to_yolo(yolo_state)
             return None
 
-        if source in ('YOLO', 'Conflict_YOLO-wins'):
+        if source in ('Conflict_YOLO-wins', 'Conflict_Weight-wins'):
             self.cart_add(item, count=yolo_delta, weight_g=weight_g)
         else:
             self.cart_add(item, count=1, weight_g=weight_g)
@@ -351,7 +370,7 @@ class CartNode(Node):
     def loop(self):
         if self.pending_weight_result is not None:
             elapsed = time.time() - self.pending_trigger_time
-            if elapsed > 5.0:
+            if elapsed > 20.0:
                 self.get_logger().warning(
                     f'Timeout after {elapsed:.1f}s. Resolving with partial data. '
                     f'image_ready={self.current_image_trigger_id == self.pending_trigger_id}, '
@@ -361,7 +380,7 @@ class CartNode(Node):
             return
 
         weight_result = self.weight_detector.read_weight()
-        if weight_result is None:
+        if weight_result is None or weight_result['weight'] < self.minimum_item_weight:
             return
 
         action = weight_result['action']

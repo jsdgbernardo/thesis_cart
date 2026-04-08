@@ -11,8 +11,9 @@ class WeightSensor:
         self.hx.reset()
 
         # calibration 
-        self.reference_unit = -115.50
-        self.threshold = 5
+        self.calibration_value = -117.50
+
+        self.minimum_item_weight = 5
         self.stability_samples = 5
         self.stability_tolerance = 5.0
 
@@ -35,7 +36,7 @@ class WeightSensor:
         raw_data = self.hx.get_raw_data(times=5)
         if raw_data:
             average = sum(raw_data) / len(raw_data)
-            weight = (average - self.tare_value) / self.reference_unit
+            weight = (average - self.tare_value) / self.calibration_value
             return weight
         return 0
 
@@ -50,7 +51,7 @@ class WeightSensor:
         delta_weight = current_weight - self.prev_weight
         result = None
         
-        if not self.change_detected and abs(delta_weight) > self.threshold:
+        if not self.change_detected and abs(delta_weight) > self.minimum_item_weight:
             self.change_detected = True
             self.start_weight = self.prev_weight
             self.get_logger().info('Weight change detected. Waiting to stabilize...')

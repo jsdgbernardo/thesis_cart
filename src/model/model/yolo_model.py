@@ -71,10 +71,7 @@ class YoloModel(Node):
         self.input_shape = self.session.get_inputs()[0].shape
         self.output_names = [o.name for o in self.session.get_outputs()]
 
-        self.get_logger().info(f'Model input shape: {self.input_shape}')
-        self.get_logger().info(f'Model outputs: {self.output_names}')
         output_shapes = [o.shape for o in self.session.get_outputs()]
-        self.get_logger().info(f'Model output shapes: {output_shapes}')
 
         self.model_width = 640
         self.model_height = 640
@@ -120,7 +117,7 @@ class YoloModel(Node):
             yolo_id = index_map.get(str(i), f'class_{i}')
             display_name = yolo_id_to_name.get(yolo_id, yolo_id)
             class_names.append(display_name)
-            self.get_logger().info(f'  [{i}] {yolo_id} -> {display_name}')
+            # self.get_logger().info(f'  [{i}] {yolo_id} -> {display_name}')
 
         return class_names
 
