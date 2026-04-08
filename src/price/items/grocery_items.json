@@ -16,8 +16,8 @@
     "weight_tolerance": 0.0,
     "price": 0.0,
     "yolo_class_id": "Chicken-Leg",
-    "x_coordinate": 2.48873233795166,
-    "y_coordinate": -0.5248453617095947
+    "x_coordinate": 4.954452991485596,
+    "y_coordinate": -0.5228030681610107
   },
   "chicken_quarter": {
     "item_name": "Chicken Quarter",
