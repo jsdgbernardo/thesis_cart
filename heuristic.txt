@@ -1,8 +1,142 @@
-[2026-04-08 12:12:27,140] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
-[2026-04-08 12:12:49,773] 	1	chicken_leg	2.219524346351338	0.04063224792480469
-[2026-04-08 12:13:10,211] 	2	chicken_leg,onion	8.081165714343566	0.16008877754211426
-[2026-04-08 12:13:18,874] 	3	chicken_leg,onion,string_beans	16.14457948050968	0.39588332176208496
-[2026-04-08 12:13:29,273] 	4	chicken_leg,onion,string_beans,piattos	24.168524219849864	0.7339394092559814
-[2026-04-08 12:13:48,075] 	5	chicken_leg,onion,string_beans,piattos,sugar	32.013931021617054	1.1796929836273193
-[2026-04-08 12:13:56,710] 	6	chicken_leg,onion,string_beans,piattos,sugar,milk	32.5281356041594	1.6641979217529297
-[2026-04-08 12:14:12,138] 	7	chicken_leg,carrot,string_beans,piattos,sugar,milk,onion	38.78678807268939	2.43365478515625
+SAME ITEMS, 15 ITEMS (test for computation time standard deviation)
+[2026-04-08 15:14:08,105] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 15:14:24,702] 	1	chicken_leg	4.7092443585621835	0.060381174087524414
+[2026-04-08 15:14:46,010] 	2	chicken_leg,onion	13.08054499021504	0.17197465896606445
+[2026-04-08 15:14:49,691] 	3	chicken_leg,onion,string_beans	21.143958756381153	0.37342119216918945
+[2026-04-08 15:14:53,958] 	4	chicken_leg,onion,string_beans,piattos	29.167903495721333	0.8691198825836182
+[2026-04-08 15:14:58,853] 	5	chicken_leg,onion,string_beans,piattos,sugar	37.01331029748852	1.4045298099517822
+[2026-04-08 15:15:05,768] 	6	chicken_leg,onion,string_beans,piattos,milk,sugar	38.206981417519934	1.791734218597412
+[2026-04-08 15:15:11,169] 	7	carrot,string_beans,piattos,milk,sugar,onion,chicken_leg	44.2131406247859	2.457218885421753
+[2026-04-08 15:15:20,596] 	8	carrot,string_beans,tuna,piattos,milk,sugar,onion,chicken_leg	44.25996927711125	3.2197091579437256
+[2026-04-08 15:15:28,323] 	9	carrot,string_beans,tuna,garlic,onion,chicken_leg,piattos,milk,sugar	44.74425007052144	4.490321397781372
+[2026-04-08 15:15:38,966] 	10	carrot,string_beans,tuna,garlic,onion,chicken_quarter,chicken_leg,piattos,milk,sugar	44.77551071723235	6.362002849578857
+[2026-04-08 15:15:50,617] 	11	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar	38.87706544421205	8.351697206497192
+[2026-04-08 15:16:04,496] 	12	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar	38.89553996854685	11.212290048599243
+[2026-04-08 15:16:23,391] 	13	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid	40.56162657440762	15.214273691177368
+[2026-04-08 15:16:46,739] 	14	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk	40.621984321281275	19.85137176513672
+[2026-04-08 15:17:37,021] 	15	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk	40.65539300365995	26.7901668548584
+[2026-04-08 15:28:54,359] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 15:29:12,284] 	1	chicken_leg	4.7092443585621835	0.07053923606872559
+[2026-04-08 15:29:17,331] 	2	chicken_leg,onion	13.08054499021504	0.1914806365966797
+[2026-04-08 15:29:20,764] 	3	chicken_leg,onion,string_beans	21.143958756381153	0.4288458824157715
+[2026-04-08 15:29:26,506] 	4	chicken_leg,onion,string_beans,piattos	29.167903495721333	0.8448574542999268
+[2026-04-08 15:29:32,491] 	5	chicken_leg,onion,string_beans,piattos,sugar	37.01331029748852	2.225184440612793
+[2026-04-08 15:29:36,674] 	6	chicken_leg,onion,string_beans,piattos,milk,sugar	38.206981417519934	2.019796371459961
+[2026-04-08 15:29:42,092] 	7	carrot,string_beans,piattos,milk,sugar,onion,chicken_leg	44.2131406247859	2.5408260822296143
+[2026-04-08 15:29:47,313] 	8	carrot,string_beans,tuna,piattos,milk,sugar,onion,chicken_leg	44.25996927711125	3.4020133018493652
+[2026-04-08 15:29:56,396] 	9	carrot,string_beans,tuna,garlic,onion,chicken_leg,piattos,milk,sugar	44.74425007052144	4.450683116912842
+[2026-04-08 15:30:06,442] 	10	carrot,string_beans,tuna,garlic,onion,chicken_quarter,chicken_leg,piattos,milk,sugar	44.77551071723235	6.092188596725464
+[2026-04-08 15:30:19,693] 	11	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar	38.87706544421205	8.20670461654663
+[2026-04-08 15:30:34,632] 	12	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar	38.89553996854685	11.254902601242065
+[2026-04-08 15:30:52,418] 	13	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid	40.56162657440762	14.912741661071777
+[2026-04-08 15:31:19,396] 	14	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk	40.621984321281275	19.909170389175415
+[2026-04-08 15:31:50,588] 	15	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk	40.65539300365995	26.485751152038574
+[2026-04-08 15:37:53,064] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 15:38:50,407] 	1	chicken_leg	4.7092443585621835	0.06054496765136719
+[2026-04-08 15:38:56,758] 	2	chicken_leg,onion	13.08054499021504	0.1812305450439453
+[2026-04-08 15:39:05,360] 	3	chicken_leg,onion,string_beans	21.143958756381153	0.36824584007263184
+[2026-04-08 15:39:09,281] 	4	chicken_leg,onion,string_beans,piattos	29.167903495721333	0.8389506340026855
+[2026-04-08 15:39:13,377] 	5	chicken_leg,onion,string_beans,piattos,sugar	37.01331029748852	1.2679522037506104
+[2026-04-08 15:39:17,806] 	6	chicken_leg,onion,string_beans,piattos,milk,sugar	38.206981417519934	1.9570701122283936
+[2026-04-08 15:39:22,315] 	7	carrot,string_beans,piattos,milk,sugar,onion,chicken_leg	44.2131406247859	2.5676705837249756
+[2026-04-08 15:39:28,169] 	8	carrot,string_beans,tuna,piattos,milk,sugar,onion,chicken_leg	44.25996927711125	3.3969216346740723
+[2026-04-08 15:39:35,365] 	9	carrot,string_beans,tuna,garlic,onion,chicken_leg,piattos,milk,sugar	44.74425007052144	4.670255184173584
+[2026-04-08 15:39:45,398] 	10	carrot,string_beans,tuna,garlic,onion,chicken_quarter,chicken_leg,piattos,milk,sugar	44.77551071723235	6.130706310272217
+[2026-04-08 15:40:13,486] 	11	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar	38.87706544421205	8.432632684707642
+[2026-04-08 15:40:30,602] 	12	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar	38.89553996854685	11.144078731536865
+[2026-04-08 15:40:49,414] 	13	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid	40.56162657440762	15.127468585968018
+[2026-04-08 15:41:16,471] 	14	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk	40.621984321281275	20.637057304382324
+[2026-04-08 15:42:02,656] 	15	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk	40.65539300365995	26.85526943206787
+[2026-04-08 15:45:19,028] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 15:45:28,938] 	1	chicken_leg	4.7092443585621835	0.06576848030090332
+[2026-04-08 15:45:35,030] 	2	chicken_leg,onion	13.08054499021504	0.18418216705322266
+[2026-04-08 15:45:38,521] 	3	chicken_leg,onion,string_beans	21.143958756381153	0.41770339012145996
+[2026-04-08 15:45:46,863] 	4	chicken_leg,onion,string_beans,piattos	29.167903495721333	0.7925095558166504
+[2026-04-08 15:45:57,509] 	5	chicken_leg,onion,string_beans,piattos,sugar	37.01331029748852	1.3092868328094482
+[2026-04-08 15:46:01,472] 	6	chicken_leg,onion,string_beans,piattos,milk,sugar	38.206981417519934	1.8525850772857666
+[2026-04-08 15:46:06,674] 	7	carrot,string_beans,piattos,milk,sugar,onion,chicken_leg	44.2131406247859	2.4303159713745117
+[2026-04-08 15:46:13,384] 	8	carrot,string_beans,tuna,piattos,milk,sugar,onion,chicken_leg	44.25996927711125	3.2868552207946777
+[2026-04-08 15:46:26,365] 	9	carrot,string_beans,tuna,garlic,onion,chicken_leg,piattos,milk,sugar	44.74425007052144	4.583857536315918
+[2026-04-08 15:46:36,610] 	10	carrot,string_beans,tuna,garlic,onion,chicken_quarter,chicken_leg,piattos,milk,sugar	44.77551071723235	6.161117076873779
+[2026-04-08 15:46:49,903] 	11	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar	38.87706544421205	8.379405975341797
+[2026-04-08 15:47:05,859] 	12	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar	38.89553996854685	11.043467044830322
+[2026-04-08 15:47:25,326] 	13	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid	40.56162657440762	15.03907585144043
+[2026-04-08 15:47:53,249] 	14	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk	40.621984321281275	19.49022889137268
+[2026-04-08 15:48:24,529] 	15	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk	40.65539300365995	26.563028812408447
+[2026-04-08 15:51:32,872] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 15:51:49,972] 	1	chicken_leg	4.7092443585621835	0.06419062614440918
+[2026-04-08 15:51:53,020] 	2	chicken_leg,onion	13.08054499021504	0.18398618698120117
+[2026-04-08 15:51:59,563] 	3	chicken_leg,onion,string_beans	21.143958756381153	0.40154218673706055
+[2026-04-08 15:52:05,680] 	4	chicken_leg,onion,string_beans,piattos	29.167903495721333	0.8087158203125
+[2026-04-08 15:52:10,589] 	5	chicken_leg,onion,string_beans,piattos,sugar	37.01331029748852	1.2544519901275635
+[2026-04-08 15:52:16,286] 	6	chicken_leg,onion,string_beans,piattos,milk,sugar	38.206981417519934	1.8601515293121338
+[2026-04-08 15:52:21,579] 	7	carrot,string_beans,piattos,milk,sugar,onion,chicken_leg	44.2131406247859	2.3618569374084473
+[2026-04-08 15:52:27,855] 	8	carrot,string_beans,tuna,piattos,milk,sugar,onion,chicken_leg	44.25996927711125	3.224374294281006
+[2026-04-08 15:52:35,302] 	9	carrot,string_beans,tuna,garlic,onion,chicken_leg,piattos,milk,sugar	44.74425007052144	4.448485612869263
+[2026-04-08 15:52:45,711] 	10	carrot,string_beans,tuna,garlic,onion,chicken_quarter,chicken_leg,piattos,milk,sugar	44.77551071723235	5.960294246673584
+[2026-04-08 15:52:58,290] 	11	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar	38.87706544421205	8.101029396057129
+[2026-04-08 15:53:13,726] 	12	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar	38.89553996854685	11.104254961013794
+[2026-04-08 15:54:02,246] 	13	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid	40.56162657440762	15.094309329986572
+[2026-04-08 15:54:25,176] 	14	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk	40.621984321281275	19.9881751537323
+[2026-04-08 15:55:00,038] 	15	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk	40.65539300365995	26.011881113052368
+DIFFERENT ITEMS PER RUN BUT SAME NUMBERS, 7 ITEMS IN ALL AISLES (Test for deviation in computation time as well)				
+[2026-04-08 15:58:39,254] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds				
+[2026-04-08 15:59:13,290]	7	chicken_leg,garlic,onion,tuna,string_beans,piattos,sugar	37.02953899	2.22405386
+[2026-04-08 16:12:18,942] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:12:50,253] 	7	chicken_feet,carrot,tuna,pringles,milk,dishwashing_liquid,garlic	37.192719769441574	2.1164627075195312
+[2026-04-08 16:13:43,985] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:14:10,313] 	7	eggplant,onion,garlic,tuna,string_beans,carrot,pringles	23.703401868419693	1.83162260055542
+[2026-04-08 16:15:23,959] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:15:43,760] 	7	chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot	19.423561289665464	1.6466541290283203
+[2026-04-08 16:17:12,023] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:17:43,941] 	7	chicken_feet,eggplant,string_beans,pringles,piattos,milk,sugar	29.799801116018596	2.3025095462799072
+[2026-04-08 16:18:46,825] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:19:11,682] 	7	chicken_feet,carrot,noodles,dishwashing_liquid,milk,pringles,garlic	30.03134733707752	2.191685914993286
+[2026-04-08 16:26:22,874] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:26:46,077] 	7	chicken_quarter,garlic,tuna,pringles,milk,sugar,dishwashing_liquid	26.083816692045794	2.1791234016418457
+[2026-04-08 16:27:19,159] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:27:44,665] 	7	chicken_feet,chicken_leg,chicken_quarter,garlic,tuna,pringles,milk	21.554491843137676	2.177607774734497
+[2026-04-08 16:29:24,480] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:29:46,779] 	7	chicken_feet,eggplant,carrot,noodles,dishwashing_liquid,sugar,milk	22.877374406206947	2.0457112789154053
+[2026-04-08 16:30:32,329] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:30:54,182] 	7	chicken_feet,chicken_leg,chicken_quarter,eggplant,carrot,noodles,dishwashing_liquid	27.159471794772795	2.019749641418457
+[2026-04-08 16:35:33,214] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:35:56,953] 	7	chicken_feet,carrot,tuna,pringles,garlic,onion,sugar	35.84614241578387	2.1441447734832764
+[2026-04-08 16:42:50,332] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:43:22,234] 	7	chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,piattos	29.224182751257537	1.960998296737671
+[2026-04-08 16:44:02,895] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:44:41,291] 	7	eggplant,carrot,string_beans,noodles,piattos,dishwashing_liquid,sugar	25.858768856232274	1.8588590621948242
+[2026-04-08 16:45:04,821] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:45:36,036] 	7	chicken_feet,chicken_leg,tuna,piattos,noodles,sugar,milk	29.26701629635718	2.3369851112365723
+[2026-04-08 16:46:11,008] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:46:41,499] 	7	chicken_feet,chicken_leg,chicken_quarter,tuna,string_beans,carrot,onion	23.616256813870987	1.902822732925415
+[2026-04-08 16:47:01,081] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:47:30,146] 	7	carrot,string_beans,garlic,chicken_leg,vinegar,piattos,milk	37.26891694167361	2.7255895137786865
+[2026-04-08 16:50:27,004] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:50:57,853] 	7	carrot,noodles,piattos,pringles,tuna,milk,sugar	25.524039099896243	2.023329734802246
+[2026-04-08 16:55:18,657] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:56:22,242] 	7	eggplant,onion,chicken_quarter,pringles,milk,string_beans,carrot	32.83510995849369	2.0097365379333496
+[2026-04-08 16:58:17,535] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:58:36,811] 	7	eggplant,carrot,tuna,pringles,garlic,chicken_quarter,dishwashing_liquid	38.32958782524047	2.1462209224700928
+[2026-04-08 16:59:01,197] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 16:59:35,234] 	7	chicken_feet,onion,tuna,piattos,noodles,dishwashing_liquid,milk	30.961491055766057	2.177333354949951
+[2026-04-08 17:04:47,494] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:05:09,893] 	7	carrot,piattos,pringles,milk,sugar,garlic,chicken_leg	36.79272306128184	2.2217113971710205
+[2026-04-08 17:06:26,066] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:06:58,455] 	7	eggplant,garlic,tuna,pringles,sugar,dishwashing_liquid,chicken_leg	34.85201734384471	2.3620736598968506
+[2026-04-08 17:08:22,426] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:08:48,906] 	7	chicken_feet,carrot,string_beans,tuna,garlic,onion,noodles	27.005962571161362	1.949916124343872
+[2026-04-08 17:09:44,141] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:10:20,313] 	7	eggplant,carrot,tuna,garlic,chicken_quarter,piattos,milk	34.49145464177076	2.2900853157043457
+[2026-04-08 17:10:54,172] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:11:27,722] 	7	string_beans,pringles,milk,sugar,dishwashing_liquid,garlic,chicken_quarter	36.981608573211325	2.1234467029571533
+[2026-04-08 17:11:58,432] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:12:32,979] 	7	eggplant,garlic,pringles,noodles,sugar,string_beans,chicken_leg	43.16391502829215	2.3807156085968018
+[2026-04-08 17:14:13,365] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:14:54,754] 	7	chicken_feet,chicken_quarter,tuna,carrot,onion,piattos,milk	39.671813263997805	2.315927505493164
+[2026-04-08 17:15:25,435] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:16:20,912] 	7	chicken_feet,chicken_leg,garlic,onion,carrot,string_beans,noodles	27.819276488144453	1.8923721313476562
+[2026-04-08 17:16:58,750] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:17:26,765] 	7	carrot,string_beans,garlic,chicken_quarter,chicken_leg,milk,sugar	34.091982897997816	2.192750930786133
+[2026-04-08 17:17:47,184] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 17:18:21,187] 	7	chicken_feet,chicken_leg,carrot,noodles,sugar,milk,onion	35.360879326017844	2.178332805633545

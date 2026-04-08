@@ -209,6 +209,10 @@ class MetaHeuristicNode(Node):
                 seg_path, seg_cost = self.compute_path_segment(start_pose, goal_poses[0])
                 if seg_path:
                     self.path_publisher.publish(seg_path)
+                    end_time = time.time() # record end time for performance measurement
+                    elapsed = end_time - start_time
+                    self.get_logger().info(f'Published best path. Order: {items[0].name}, Cost: {seg_cost:.2f}, Computation Time: {elapsed:.2f} seconds')
+                    logging.info(f"\t{len(items)}\t{items[0].name}\t{seg_cost}\t{elapsed}")
                 return
 
             self.get_logger().info(f'Computing GA path for {n} goal poses. This may take some time...')
@@ -244,7 +248,28 @@ class MetaHeuristicNode(Node):
             population_size = max(15, n*3)
             generations = max(30, n*8)
             mutation_rate = 0.2 if n <= 3 else 0.1 if n <= 7 else 0.05
-            tournament_k = 2 if n <= 3 else 3 if n <= 7 else 4
+            tournament_k = 2 if n <= 4 else 3 if n <= 10 else 4
+
+            # if n <= 4:
+            #     population_size = 15
+            #     generations = 25
+            #     mutation_rate = 0.08
+            #     tournament_k = 2
+            # elif n <= 7:
+            #     population_size = 25
+            #     generations = 45
+            #     mutation_rate = 0.07
+            #     tournament_k = 3
+            # elif n <= 10:
+            #     population_size = 35
+            #     generations = 55
+            #     mutation_rate = 0.05
+            #     tournament_k = 3
+            # else:
+            #     population_size = 50
+            #     generations = 70
+            #     mutation_rate = 0.05
+            #     tournament_k = 4
 
             # initialize population
             population = []

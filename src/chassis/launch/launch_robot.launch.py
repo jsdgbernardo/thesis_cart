@@ -118,7 +118,7 @@ def generate_launch_description():
         lidar,
         controller_manager,
         joint_broad_spawner,
-        collision_avoidance,
+        # collision_avoidance,
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_broad_spawner,
