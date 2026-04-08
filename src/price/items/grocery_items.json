@@ -117,8 +117,8 @@
       "weight_tolerance": 3.5,
       "price": 118.75,
       "yolo_class_id": "Nestle-Fresh-Milk",
-      "x_coordinate": 4.970736980438232,
-      "y_coordinate": 7.407561302185059
+      "x_coordinate": 7.315138816833496,
+      "y_coordinate": 7.857551574707031
     },
     {
       "item_name": "Nestle Fresh Milk 250mL",
@@ -127,8 +127,8 @@
       "weight_tolerance": 3.5,
       "price": 41.25,
       "yolo_class_id": "Nestle-Fresh-Milk",
-      "x_coordinate": 4.970736980438232,
-      "y_coordinate": 7.407561302185059
+      "x_coordinate": 7.315138816833496,
+      "y_coordinate": 7.857551574707031
     }
   ],
   "noodles": {

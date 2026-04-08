@@ -1,0 +1,6 @@
+[2026-04-08 12:08:24,749] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-08 12:08:53,490] 	1	chicken_leg	2.219524346351338	0.05212688446044922
+[2026-04-08 12:09:05,862] 	2	chicken_leg,onion	8.081165714343566	0.2055213451385498
+[2026-04-08 12:09:17,297] 	3	chicken_leg,onion,string_beans	16.14457948050968	1.2289061546325684
+[2026-04-08 12:09:37,462] 	4	chicken_leg,onion,string_beans,piattos	24.168524219849864	8.05641484260559
+[2026-04-08 12:11:43,471] 	5	chicken_leg,onion,string_beans,piattos,sugar	32.013931021617054	103.91511297225952
