@@ -14,7 +14,7 @@ class WeightSensor:
         self.reference_unit = -115.50
         self.threshold = 5
         self.stability_samples = 5
-        self.stability_tolerance = 2.0
+        self.stability_tolerance = 5.0
 
         self.readings_buffer = []
         self.change_detected = False

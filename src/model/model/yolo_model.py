@@ -3,7 +3,7 @@
 # Overall Flow:
 # camera  -> image_callback -> latest frame 
 #                           -> inference loop 
-#                           -> preprocess -> onnx -> postprocess -> nms
+#                           -> preprocess -> onnx -> postprocess
 #                           -> draw_boxes -> camera/detected
 #                           -> count items -> camera/detections     
 #                           -> diff against previous -> camera/diff
@@ -41,25 +41,25 @@ class YoloModel(Node):
         )
 
         # topic subscribers 
-        self.create_subscription(Image, 'camera/image', self.image_callback, qos) # latest frame
+        self.create_subscription(Image, 'camera/image', self.image_callback, qos)
 
         # topic publishers 
-        self.image_pub = self.create_publisher(Image, 'camera/detected', 10) # annotated image with detections
-        self.det_pub = self.create_publisher(String, 'camera/detections', 10) # raw detection data: classes, confidences, boxes
-        self.diff_pub = self.create_publisher(String, 'camera/diff', 10) # what's added/removed since last inference
+        self.image_pub = self.create_publisher(Image, 'camera/detected', 10)
+        self.det_pub = self.create_publisher(String, 'camera/detections', 10)
+        self.diff_pub = self.create_publisher(String, 'camera/diff', 10)
 
         # access ONNX model
         model_dir = get_package_share_directory('model')
         model_path = os.path.join(model_dir, 'onnx', 'my_model.onnx')
         metadata_path = os.path.join(model_dir, 'my_model_ncnn_model', 'metadata.yaml')
 
-        # acces item database
+        # access item database
         price_dir = get_package_share_directory('price')
         json_path = os.path.join(price_dir, 'items', 'grocery_items.json')
 
-        # acces class names from either model.yaml or items.json
-        self.class_names = self._load_class_names(metadata_path, json_path)
-        self.get_logger().info(f'Loaded {len(self.class_names)} classes: {self.class_names}')
+        # access class names from either model.yaml or items.json
+        class_names_path = os.path.join(price_dir, 'items', 'class_names.json')
+        self.class_names = self._load_class_names(class_names_path, json_path)
 
         self.session = onnxruntime.InferenceSession(
             model_path,
@@ -73,6 +73,8 @@ class YoloModel(Node):
 
         self.get_logger().info(f'Model input shape: {self.input_shape}')
         self.get_logger().info(f'Model outputs: {self.output_names}')
+        output_shapes = [o.shape for o in self.session.get_outputs()]
+        self.get_logger().info(f'Model output shapes: {output_shapes}')
 
         self.model_width = 640
         self.model_height = 640
@@ -86,39 +88,41 @@ class YoloModel(Node):
         self.worker = threading.Thread(target=self.inference_loop, daemon=True)
         self.worker.start()
 
-    # setup 
+    # setup
 
-    def _load_class_names(self, metadata_path: str, json_path: str) -> list:
+    def _load_class_names(self, class_names_path: str, json_path: str) -> list:
+        # Load ground-truth index order from model export
         try:
-            with open(metadata_path, 'r') as f:
-                metadata = yaml.safe_load(f)
-            index_to_yolo_id = {int(k): v for k, v in metadata['names'].items()}
+            with open(class_names_path, 'r') as f:
+                index_map = json.load(f)
         except Exception as e:
-            self.get_logger().error(f'Failed to load metadata.yaml: {e}')
+            self.get_logger().error(f'Failed to load class_names.json: {e}')
             return []
 
+        # Load friendly display names from grocery_items.json
         yolo_id_to_name = {}
         try:
             with open(json_path, 'r') as f:
                 items_data = json.load(f)
             for value in items_data.values():
-                candidates = value if isinstance(value, list) else [value]
-                for item in candidates:
+                entries = value if isinstance(value, list) else [value]
+                for item in entries:
                     yolo_id = item.get('yolo_class_id')
                     item_name = item.get('item_name')
                     if yolo_id and item_name:
                         yolo_id_to_name.setdefault(yolo_id, item_name)
         except Exception as e:
-            self.get_logger().error(f'Failed to load grocery_items.json: {e}')
+            self.get_logger().warn(f'Failed to load grocery_items.json: {e}')
 
-        num_classes = max(index_to_yolo_id.keys()) + 1
-        return [
-            yolo_id_to_name.get(
-                index_to_yolo_id.get(i, f'class_{i}'),
-                index_to_yolo_id.get(i, f'class_{i}')
-            )
-            for i in range(num_classes)
-        ]
+        num_classes = max(int(k) for k in index_map.keys()) + 1
+        class_names = []
+        for i in range(num_classes):
+            yolo_id = index_map.get(str(i), f'class_{i}')
+            display_name = yolo_id_to_name.get(yolo_id, yolo_id)
+            class_names.append(display_name)
+            self.get_logger().info(f'  [{i}] {yolo_id} -> {display_name}')
+
+        return class_names
 
     def _class_id_to_name(self, class_id: int) -> str:
         if class_id < len(self.class_names):
@@ -141,9 +145,16 @@ class YoloModel(Node):
         normalized = rgb.astype(np.float32) / 255.0
         return np.transpose(normalized, (2, 0, 1))[np.newaxis, :]
 
-    # 
+    # nms=True export: output shape [N, 6] -> [x1, y1, x2, y2, confidence, class_id]
+    # coordinates are in model input space (0..640), scaled back to original frame size
     def postprocess(self, outputs, frame_shape):
-        raw = outputs[0][0].T
+        raw = outputs[0]
+        if raw.ndim == 3:
+            raw = raw[0]  # remove batch dimension if present -> [N, 6]
+
+        if raw is None or len(raw) == 0:
+            return [], [], []
+
         frame_h, frame_w = frame_shape[:2]
         scale_x = frame_w / self.model_width
         scale_y = frame_h / self.model_height
@@ -151,62 +162,21 @@ class YoloModel(Node):
         boxes, classes, confidences = [], [], []
 
         for det in raw:
-            cx, cy, w, h = det[:4]
-            class_confs = det[4:]
-            class_id = int(np.argmax(class_confs))
-            confidence = float(class_confs[class_id])
+            x1, y1, x2, y2, confidence, class_id = det
 
-            # discard weak detections immediately
-            if confidence < 0.7:
+            if confidence < 0.25: # low confidence threshold to reduce noise
                 continue
 
-            x1 = (cx - w / 2) * scale_x
-            y1 = (cy - h / 2) * scale_y
-            x2 = (cx + w / 2) * scale_x
-            y2 = (cy + h / 2) * scale_y
+            boxes.append([
+                float(x1) * scale_x,
+                float(y1) * scale_y,
+                float(x2) * scale_x,
+                float(y2) * scale_y,
+            ])
+            classes.append(int(class_id))
+            confidences.append(float(confidence))
 
-            boxes.append([x1, y1, x2, y2])
-            classes.append(class_id)
-            confidences.append(confidence)
-
-        if not boxes:
-            return [], [], []
-
-        boxes_arr = np.array(boxes, dtype=np.float32)
-        confs_arr = np.array(confidences, dtype=np.float32)
-        keep = self.nms(boxes_arr, confs_arr, 0.45)
-
-        return (
-            boxes_arr[keep].tolist(),
-            [classes[i] for i in keep],
-            [confidences[i] for i in keep],
-        )
-
-    # Non-Maximum Suppression to remove overlapping boxes
-    def nms(self, boxes: np.ndarray, scores: np.ndarray, threshold: float) -> list:
-        x1, y1, x2, y2 = boxes[:, 0], boxes[:, 1], boxes[:, 2], boxes[:, 3]
-        areas = (x2 - x1) * (y2 - y1)
-        order = scores.argsort()[::-1]
-
-        keep = []
-        while order.size > 0:
-            i = order[0]
-            keep.append(int(i))
-
-            xx1 = np.maximum(x1[i], x1[order[1:]])
-            yy1 = np.maximum(y1[i], y1[order[1:]])
-            xx2 = np.minimum(x2[i], x2[order[1:]])
-            yy2 = np.minimum(y2[i], y2[order[1:]])
-
-            inter_w = np.maximum(0.0, xx2 - xx1)
-            inter_h = np.maximum(0.0, yy2 - yy1)
-            inter = inter_w * inter_h
-            
-            # intersection over union
-            iou = inter / (areas[i] + areas[order[1:]] - inter)
-            order = order[np.where(iou <= threshold)[0] + 1]
-
-        return keep
+        return boxes, classes, confidences
 
     # annotate frame
     def draw_boxes(self, frame: np.ndarray, boxes, classes, confidences) -> np.ndarray:
@@ -280,10 +250,10 @@ class YoloModel(Node):
                 })))
 
                 if added or removed:
-                    self.get_logger().info(f'Added: {added} | Removed: {removed}')
+                    self.get_logger().info(f'Changes - Added: {added} | Removed: {removed}')
                 else:
                     self.get_logger().info(
-                        f'No change detected. Current State: {self.items_in_cart}'
+                        f'No change detected.'
                     )
 
             except Exception as e:
