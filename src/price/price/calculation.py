@@ -278,13 +278,13 @@ class CartNode(Node):
             self.items_in_cart[key]['count']    += count
             self.items_in_cart[key]['weight_g'] += weight_g
         else:
-        #     self.items_in_cart[key] = {
-        #         'item_name': item.get('item_name', 'Unknown'),
-        #         'item_type': item.get('item_type', 'normal'),
-        #         'price':     item.get('price', 0.0),
-        #         'count':     count,
-        #         'weight_g':  weight_g,
-        #     }
+            self.items_in_cart[key] = {
+                'item_name': item.get('item_name', 'Unknown'),
+                'item_type': item.get('item_type', 'normal'),
+                'price':     item.get('price', 0.0),
+                'count':     count,
+                'weight_g':  weight_g,
+            }
             return
 
     def cart_remove(self, key: str, count: int = 1):
@@ -390,7 +390,7 @@ class CartNode(Node):
 
     def _save_frame(self, frame, action: str):
         ts       = int(time.time())
-        filename = f'/tmp/{action}_annotated.jpg'
+        filename = f'/tmp/annotated.jpg'
         try:
             cv2.imwrite(filename, frame)
             self.get_logger().info(f'Frame saved: {filename}')

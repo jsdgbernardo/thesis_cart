@@ -20,7 +20,7 @@ class Receipt:
         items = []
         for v in self.items_in_cart.values():
             if v.get('item_type') == 'produce':
-                weight_kg = v.get('delta_weight', 0.0) / 1000.0
+                weight_kg = v.get('weight_kg', 0.0) / 1000.0
                 subtotal  = round(v['price'] * weight_kg, 2)
             else:
                 subtotal = round(v['price'] * v['count'], 2)
