@@ -16,7 +16,7 @@
     "weight_tolerance": 0.0,
     "price": 0.0,
     "yolo_class_id": "Chicken-Leg",
-    "x_coordinate": -0.4767124652862549,
+    "x_coordinate": 2.48873233795166,
     "y_coordinate": -0.5248453617095947
   },
   "chicken_quarter": {
@@ -177,7 +177,7 @@
     "price": 16.40,
     "yolo_class_id": "Sugar",
     "x_coordinate": 4.447297096252441,
-    "y_coordinate": 7.887138366699219
+    "y_coordinate": 7.487138366699219
   },
   "noodles": {
     "item_name": "Nissin Seafood Cup Noodles",
