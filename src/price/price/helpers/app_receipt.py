@@ -22,12 +22,8 @@ class Receipt:
         # price calculation
         for v in self.items_in_cart.values():
             if v.get('item_type') == 'produce':
-                weight_kg = delta_weight / 1000.0
-                item_cost = round(v['price'] * weight_kg, 2)
-                v['subtotal'] = round(v.get('subtotal', 0) + item_cost, 2)
-
-                # v['weight_g'] += delta_weight
-                # v['subtotal'] = v['price'] * (v['weight_g'] / 1000)
+                weight_kg = v['weight_g'] / 1000.0
+                v['subtotal'] = round(v['price'] * weight_kg, 2)
             else:
                 v['subtotal'] = round(v['price'] * v['count'], 2)
 

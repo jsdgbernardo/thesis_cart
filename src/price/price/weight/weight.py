@@ -20,6 +20,7 @@ class WeightSensor:
         self.readings_buffer = []
         self.change_detected = False
         self.start_weight = None
+        self.change_start_time = None
 
         time.sleep(0.5)
 
@@ -52,6 +53,7 @@ class WeightSensor:
         result = None
         
         if not self.change_detected and abs(delta_weight) > self.minimum_item_weight:
+            self.change_start_time = time.time()
             self.change_detected = True
             self.start_weight = self.prev_weight
             self.get_logger().info('Weight change detected. Waiting to stabilize...')
@@ -62,6 +64,9 @@ class WeightSensor:
             stability = abs(max_w - min_w)
             
             if stability < self.stability_tolerance:
+                elapsed = time.time() - self.change_start_time
+                self.get_logger().info(f'Weight stabilized in {elapsed}s')
+                
                 final_weight = sum(self.readings_buffer) / len(self.readings_buffer)
                 total_delta = final_weight - self.start_weight
 

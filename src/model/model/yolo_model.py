@@ -50,8 +50,7 @@ class YoloModel(Node):
 
         # access ONNX model
         model_dir = get_package_share_directory('model')
-        model_path = os.path.join(model_dir, 'onnx', 'my_model.onnx')
-        metadata_path = os.path.join(model_dir, 'my_model_ncnn_model', 'metadata.yaml')
+        model_path = os.path.join(model_dir, 'onnx', 's_epoch60.onnx')
 
         # access item database
         price_dir = get_package_share_directory('price')
@@ -88,7 +87,7 @@ class YoloModel(Node):
     # setup
 
     def _load_class_names(self, class_names_path: str, json_path: str) -> list:
-        # Load ground-truth index order from model export
+        # Load raw YOLO class names from model export
         try:
             with open(class_names_path, 'r') as f:
                 index_map = json.load(f)
@@ -96,29 +95,8 @@ class YoloModel(Node):
             self.get_logger().error(f'Failed to load class_names.json: {e}')
             return []
 
-        # Load friendly display names from grocery_items.json
-        yolo_id_to_name = {}
-        try:
-            with open(json_path, 'r') as f:
-                items_data = json.load(f)
-            for value in items_data.values():
-                entries = value if isinstance(value, list) else [value]
-                for item in entries:
-                    yolo_id = item.get('yolo_class_id')
-                    item_name = item.get('item_name')
-                    if yolo_id and item_name:
-                        yolo_id_to_name.setdefault(yolo_id, item_name)
-        except Exception as e:
-            self.get_logger().warn(f'Failed to load grocery_items.json: {e}')
-
         num_classes = max(int(k) for k in index_map.keys()) + 1
-        class_names = []
-        for i in range(num_classes):
-            yolo_id = index_map.get(str(i), f'class_{i}')
-            display_name = yolo_id_to_name.get(yolo_id, yolo_id)
-            class_names.append(display_name)
-            # self.get_logger().info(f'  [{i}] {yolo_id} -> {display_name}')
-
+        class_names = [index_map.get(str(i), f'class_{i}') for i in range(num_classes)]
         return class_names
 
     def _class_id_to_name(self, class_id: int) -> str:
@@ -181,8 +159,8 @@ class YoloModel(Node):
 
         for box, class_id, conf in zip(boxes, classes, confidences):
             x1, y1, x2, y2 = [int(v) for v in box]
-            name = self._class_id_to_name(class_id)
-            label = f'{name}: {conf:.2f}'
+            class_name = self.class_names[class_id] if class_id < len(self.class_names) else f'class_{class_id}'
+            label = f'{class_name}: {conf:.2f}'
 
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 2)
             (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
