@@ -62,8 +62,8 @@
   "soy_sauce": {
     "item_name": "Datu Puti Soy Sauce",
     "item_type": "normal",
-    "expected_weight": 381.8,
-    "weight_tolerance": 3.5,
+    "expected_weight": 381.3,
+    "weight_tolerance": 1.5,
     "price": 22.50,
     "yolo_class_id": "Datu-Puti-Soy-Sauce",
     "x_coordinate": 7.509736061096191,
@@ -72,8 +72,8 @@
   "vinegar": {
     "item_name": "Datu Puti Vinegar",
     "item_type": "normal",
-    "expected_weight": 363.9,
-    "weight_tolerance": 3.5,
+    "expected_weight": 363.20,
+    "weight_tolerance": 2,
     "price": 16.10,
     "yolo_class_id": "Datu-Puti-Vinegar",
     "x_coordinate": 2.891848087310791,
@@ -102,8 +102,8 @@
   "dishwashing_liquid": {
     "item_name": "Joy Dishwashing Liquid",
     "item_type": "normal",
-    "expected_weight": 374.4,
-    "weight_tolerance": 3.5,
+    "expected_weight": 374.30,
+    "weight_tolerance": 3,
     "price": 129.0,
     "yolo_class_id": "Joy-Dishwashing-Liquid",
     "x_coordinate": 2.8274645805358887,
@@ -111,20 +111,20 @@
   },
   "milk": [
     { 
-      "item_name": "Nestle Fresh Milk 1L",
+      "item_name": "Nestle Fresh Milk Big",
       "item_type": "normal",
-      "expected_weight": 1071,
-      "weight_tolerance": 3.5,
+      "expected_weight": 1070.50,
+      "weight_tolerance": 2.5,
       "price": 118.75,
       "yolo_class_id": "Nestle-Fresh-Milk",
       "x_coordinate": 7.315138816833496,
       "y_coordinate": 7.857551574707031
     },
     {
-      "item_name": "Nestle Fresh Milk 250mL",
+      "item_name": "Nestle Fresh Milk Small",
       "item_type": "normal",
-      "expected_weight": 271.5,
-      "weight_tolerance": 3.5,
+      "expected_weight": 270.80,
+      "weight_tolerance": 2,
       "price": 41.25,
       "yolo_class_id": "Nestle-Fresh-Milk",
       "x_coordinate": 7.315138816833496,
@@ -134,8 +134,8 @@
   "noodles": {
     "item_name": "Nissin Seafood Cup Noodles",
     "item_type": "normal",
-    "expected_weight": 81.9,
-    "weight_tolerance": 3.5,
+    "expected_weight": 82.40,
+    "weight_tolerance": 2,
     "price": 31.95,
     "yolo_class_id": "Nissin-Seafood-Cup-Noodles",
     "x_coordinate": 2.891848087310791,
@@ -163,17 +163,17 @@
   },
   "piattos": [
     { 
-      "item_name": "Piattos Cheese",
+      "item_name": "Piattos Cheese Big",
       "item_type": "normal",
-      "expected_weight": 90.7,
-      "weight_tolerance": 3.5,
+      "expected_weight": 90.80,
+      "weight_tolerance": 2,
       "price": 40.0,
       "yolo_class_id": "Piattos-Cheese",
       "x_coordinate": 5.198779106140137,
       "y_coordinate": 5.438882827758789
     },
     {
-      "item_name": "Piattos Cheese 40g",
+      "item_name": "Piattos Cheese Small",
       "item_type": "normal",
       "expected_weight": 45.0,
       "weight_tolerance": 3.5,
@@ -185,21 +185,21 @@
   ],
   "pringles": [
     { 
-      "item_name": "Pringles Sour Cream 158g",
+      "item_name": "Pringles Sour Cream Big",
       "item_type": "normal",
-      "expected_weight": 204.2,
-      "weight_tolerance": 3.5,
+      "expected_weight": 204.60,
+      "weight_tolerance": 2,
       "price": 138.0,
       "yolo_class_id": "Pringles-Sour-Cream",
       "x_coordinate": 7.509736061096191,
       "y_coordinate": 5.383303642272949
     },
     {
-      "item_name": "Pringles Sour Cream",
+      "item_name": "Pringles Sour Cream Small",
       "item_type": "normal",
-      "expected_weight": 45.0,
+      "expected_weight": 63.35,
       "weight_tolerance": 3.5,
-      "price": 0.0,
+      "price": 138.0,
       "yolo_class_id": "Pringles-Sour-Cream",
       "x_coordinate": 7.509736061096191,
       "y_coordinate": 5.383303642272949
@@ -218,7 +218,7 @@
   "tuna":{
     "item_name": "San Marino Corned Tuna",
     "item_type": "normal",
-    "expected_weight": 215.5,
+    "expected_weight": 217.10,
     "weight_tolerance": 2,
     "price": 47.0,
     "yolo_class_id": "San-Marino-Corned-Tuna",
@@ -238,8 +238,8 @@
   "sugar": {
     "item_name": "White Sugar",
     "item_type": "normal",
-    "expected_weight": 250.7,
-    "weight_tolerance": 3.5,
+    "expected_weight": 250.80,
+    "weight_tolerance": 2,
     "price": 16.40,
     "yolo_class_id": "Sugar",
     "x_coordinate": 4.447297096252441,

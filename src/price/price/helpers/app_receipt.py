@@ -17,20 +17,26 @@ class Receipt:
         self.receipt_publisher = node.create_publisher(String, 'app/receipt', 10)
 
     def write_cart_file(self, delta_weight: float = 0.0):
-        items = []
+        items = []        
+
+        # price calculation
         for v in self.items_in_cart.values():
             if v.get('item_type') == 'produce':
-                weight_kg = v.get('weight_kg', 0.0) / 1000.0
-                subtotal  = round(v['price'] * weight_kg, 2)
+                weight_kg = v['weight_g'] / 1000.0
+                v['subtotal'] = round(v['price'] * weight_kg, 2)
             else:
-                subtotal = round(v['price'] * v['count'], 2)
+                v['subtotal'] = round(v['price'] * v['count'], 2)
 
-            items.append({
-                'item_name': v['item_name'],
-                'price':     v['price'],
-                'count':     v['count'],
-                'subtotal':  subtotal,
-            })
+            try: 
+                items.append({
+                    'item_name': v['item_name'],
+                    'price':     v['price'],
+                    'count':     v['count'],
+                    'subtotal':  v['subtotal'],
+                })
+                self.get_logger().info(f'Price calculated for {v["item_name"]}: P{v["subtotal"]}')
+            except KeyError as e:
+                self.get_logger().error(f'Missing key in item data: {e} - {v}')
 
         total   = round(sum(i['subtotal'] for i in items), 2)
         payload = {
@@ -42,7 +48,7 @@ class Receipt:
         try:
             with open(self.cart_path, 'w') as f:
                 json.dump(payload, f, indent=2)
-            self.get_logger().info(f'cart.json updated at {self.cart_path}')
+            self.get_logger().info(f'Receipt updated. {self.cart_path}')
         except Exception as e:
             self.get_logger().error(f'Failed to write cart file: {e}')
 
