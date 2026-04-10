@@ -56,7 +56,8 @@ def generate_launch_description():
         ),
         launch_arguments={
             'use_sim_time': 'false',
-            'map_subscribe_transient_local': 'true'
+            'map_subscribe_transient_local': 'true',
+            'params_file': os.path.join(launch_path, 'config', 'nav2_astar.yaml')
         }.items(),
         condition=IfCondition(astar)
     )

@@ -66,17 +66,17 @@ def generate_launch_description():
         )])
     )
 
-    collision_avoidance = Node(
-        package='collision_avoidance',
-        executable='collision_avoidance_node',
-        name='collision_avoidance_node',
-        output='both',
-        parameters=[os.path.join(
-            get_package_share_directory('collision_avoidance'),
-            'config',
-            'collision_params.yaml'
-        )]
-    )
+    # collision_avoidance = Node(
+    #     package='collision_avoidance',
+    #     executable='collision_avoidance_node',
+    #     name='collision_avoidance_node',
+    #     output='both',
+    #     parameters=[os.path.join(
+    #         get_package_share_directory('collision_avoidance'),
+    #         'config',
+    #         'collision_params.yaml'
+    #     )]
+    # )
 
     # Controller params file
     controller_params_file = PathJoinSubstitution(
