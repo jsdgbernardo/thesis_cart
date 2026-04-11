@@ -31,6 +31,8 @@ setup(
             'brute_force_node = path_planning.brute_force_node:main',
             'heuristic_node = path_planning.heuristic_node:main',
             'meta_heuristic_node = path_planning.meta_heuristic_node:main',
+            'kidnap_test_node = path_planning.kidnap_test_node:main',
+            'ant_colony_node = path_planning.ant_colony_node:main',
         ],
     },
 )

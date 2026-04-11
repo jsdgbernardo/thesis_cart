@@ -23,7 +23,7 @@ def _get_launch_description() -> LaunchDescription:
     return LaunchDescription([
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(launch_path_file),
-            launch_arguments={'planner': 'heuristic'}.items(),
+            launch_arguments={'planner': 'metaheuristic'}.items(),
         ),
         OpaqueFunction(function=_start_test_thread),
     ])
@@ -66,23 +66,23 @@ class ShoppingListTester:
         self.planner_command = ['ros2', 'launch', 'path_planning', 'launch_planner.launch.py', 'astar:=true']
 
         # spatially distributed items
-        self.messages = [
-            'chicken_leg',
-            'chicken_leg,onion',
-            'chicken_leg,onion,string_beans',
-            'chicken_leg,onion,string_beans,piattos',
-            'chicken_leg,onion,string_beans,piattos,sugar',
-            'chicken_leg,onion,string_beans,piattos,milk,sugar',
-            'chicken_leg,carrot,string_beans,onion,piattos,milk,sugar',
-            'chicken_leg,carrot,string_beans,tuna,piattos,milk,sugar,onion',
-            'chicken_leg,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar',
-            'chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar',
-            'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar',
-            'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar',
-            'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid',
-            'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk',
-            'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk',
-        ]
+        # self.messages = [
+        #     'chicken_leg',
+        #     'chicken_leg,onion',
+        #     'chicken_leg,onion,string_beans',
+        #     'chicken_leg,onion,string_beans,piattos',
+        #     'chicken_leg,onion,string_beans,piattos,sugar',
+        #     'chicken_leg,onion,string_beans,piattos,milk,sugar',
+        #     'chicken_leg,carrot,string_beans,onion,piattos,milk,sugar',
+        #     'chicken_leg,carrot,string_beans,tuna,piattos,milk,sugar,onion',
+        #     'chicken_leg,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar',
+        #     'chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar',
+        #     'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,piattos,milk,sugar',
+        #     'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar',
+        #     'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,tuna,string_beans,carrot,vinegar,piattos,milk,sugar,dishwashing_liquid',
+        #     'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,piattos,vinegar,dishwashing_liquid,sugar,milk',
+        #     'chicken_feet,chicken_leg,chicken_quarter,garlic,onion,eggplant,carrot,string_beans,tuna,soy_sauce,piattos,vinegar,dishwashing_liquid,sugar,milk',
+        # ]
 
         # # aisle items
         # self.messages = [
@@ -104,178 +104,178 @@ class ShoppingListTester:
         # ]
 
         # randomized items, 10
-        # self.messages = [
-        #     [
-        #         'pringles',
-        #         'pringles,chicken_quarter',
-        #         'pringles,chicken_quarter,dishwashing_liquid',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant,string_beans',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant,string_beans,garlic',
-        #         'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant,string_beans,garlic,milk'
-        #     ],
-        #     [
-        #         'pringles',
-        #         'pringles,tuna',
-        #         'pringles,tuna,string_beans',
-        #         'pringles,tuna,string_beans,eggplant',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar,piattos',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar,piattos,noodles',
-        #         'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar,piattos,noodles,chicken_quarter'
-        #     ],
-        #     [
-        #         'onion',
-        #         'onion,piattos',
-        #         'onion,piattos,garlic',
-        #         'onion,piattos,garlic,string_beans',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter,pringles',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter,pringles,carrot',
-        #         'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter,pringles,carrot,chicken_feet'
-        #     ],
-        #     [
-        #         'pringles',
-        #         'pringles,eggplant',
-        #         'pringles,eggplant,carrot',
-        #         'pringles,eggplant,carrot,dishwashing_liquid',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna,chicken_quarter',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna,chicken_quarter,sugar',
-        #         'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna,chicken_quarter,sugar,chicken_feet'
-        #     ],
-        #     [
-        #         'garlic',
-        #         'garlic,string_beans',
-        #         'garlic,string_beans,chicken_feet',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant,onion',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant,onion,sugar',
-        #         'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant,onion,sugar,tuna'
-        #     ],
-        #     [
-        #         'chicken_feet',
-        #         'chicken_feet,eggplant',
-        #         'chicken_feet,eggplant,garlic',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans,carrot',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans,carrot,pringles',
-        #         'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans,carrot,pringles,noodles'
-        #     ],
-        #     [
-        #         'tuna',
-        #         'tuna,chicken_leg',
-        #         'tuna,chicken_leg,garlic',
-        #         'tuna,chicken_leg,garlic,noodles',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos,dishwashing_liquid',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos,dishwashing_liquid,pringles',
-        #         'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos,dishwashing_liquid,pringles,chicken_feet'
-        #     ],
-        #     [
-        #         'string_beans',
-        #         'string_beans,tuna',
-        #         'string_beans,tuna,dishwashing_liquid',
-        #         'string_beans,tuna,dishwashing_liquid,piattos',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet,sugar',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet,sugar,noodles',
-        #         'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet,sugar,noodles,garlic'
-        #     ],
-        #     [
-        #         'tuna',
-        #         'tuna,carrot',
-        #         'tuna,carrot,chicken_leg',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles,sugar',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles,sugar,milk',
-        #         'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles,sugar,milk,piattos'
-        #     ],
-        #     [
-        #         'chicken_leg',
-        #         'chicken_leg,pringles',
-        #         'chicken_leg,pringles,dishwashing_liquid',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter,chicken_feet',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter,chicken_feet,noodles',
-        #         'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter,chicken_feet,noodles,tuna'
-        #     ]
-        # ]
+        self.messages = [
+            [
+                'pringles',
+                'pringles,chicken_quarter',
+                'pringles,chicken_quarter,dishwashing_liquid',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant,string_beans',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant,string_beans,garlic',
+                'pringles,chicken_quarter,dishwashing_liquid,chicken_leg,carrot,onion,sugar,piattos,noodles,tuna,chicken_feet,eggplant,string_beans,garlic,milk'
+            ],
+            [
+                'pringles',
+                'pringles,tuna',
+                'pringles,tuna,string_beans',
+                'pringles,tuna,string_beans,eggplant',
+                'pringles,tuna,string_beans,eggplant,chicken_feet',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar,piattos',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar,piattos,noodles',
+                'pringles,tuna,string_beans,eggplant,chicken_feet,garlic,milk,chicken_leg,onion,carrot,dishwashing_liquid,sugar,piattos,noodles,chicken_quarter'
+            ],
+            [
+                'onion',
+                'onion,piattos',
+                'onion,piattos,garlic',
+                'onion,piattos,garlic,string_beans',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter,pringles',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter,pringles,carrot',
+                'onion,piattos,garlic,string_beans,dishwashing_liquid,noodles,chicken_leg,milk,eggplant,tuna,sugar,chicken_quarter,pringles,carrot,chicken_feet'
+            ],
+            [
+                'pringles',
+                'pringles,eggplant',
+                'pringles,eggplant,carrot',
+                'pringles,eggplant,carrot,dishwashing_liquid',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna,chicken_quarter',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna,chicken_quarter,sugar',
+                'pringles,eggplant,carrot,dishwashing_liquid,garlic,onion,milk,noodles,chicken_leg,piattos,string_beans,tuna,chicken_quarter,sugar,chicken_feet'
+            ],
+            [
+                'garlic',
+                'garlic,string_beans',
+                'garlic,string_beans,chicken_feet',
+                'garlic,string_beans,chicken_feet,chicken_quarter',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant,onion',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant,onion,sugar',
+                'garlic,string_beans,chicken_feet,chicken_quarter,dishwashing_liquid,milk,piattos,carrot,noodles,chicken_leg,pringles,eggplant,onion,sugar,tuna'
+            ],
+            [
+                'chicken_feet',
+                'chicken_feet,eggplant',
+                'chicken_feet,eggplant,garlic',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans,carrot',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans,carrot,pringles',
+                'chicken_feet,eggplant,garlic,dishwashing_liquid,tuna,chicken_quarter,milk,piattos,sugar,chicken_leg,onion,string_beans,carrot,pringles,noodles'
+            ],
+            [
+                'tuna',
+                'tuna,chicken_leg',
+                'tuna,chicken_leg,garlic',
+                'tuna,chicken_leg,garlic,noodles',
+                'tuna,chicken_leg,garlic,noodles,eggplant',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos,dishwashing_liquid',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos,dishwashing_liquid,pringles',
+                'tuna,chicken_leg,garlic,noodles,eggplant,onion,string_beans,sugar,milk,carrot,chicken_quarter,piattos,dishwashing_liquid,pringles,chicken_feet'
+            ],
+            [
+                'string_beans',
+                'string_beans,tuna',
+                'string_beans,tuna,dishwashing_liquid',
+                'string_beans,tuna,dishwashing_liquid,piattos',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet,sugar',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet,sugar,noodles',
+                'string_beans,tuna,dishwashing_liquid,piattos,eggplant,onion,chicken_quarter,milk,carrot,chicken_leg,pringles,chicken_feet,sugar,noodles,garlic'
+            ],
+            [
+                'tuna',
+                'tuna,carrot',
+                'tuna,carrot,chicken_leg',
+                'tuna,carrot,chicken_leg,dishwashing_liquid',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles,sugar',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles,sugar,milk',
+                'tuna,carrot,chicken_leg,dishwashing_liquid,onion,chicken_quarter,pringles,eggplant,garlic,string_beans,chicken_feet,noodles,sugar,milk,piattos'
+            ],
+            [
+                'chicken_leg',
+                'chicken_leg,pringles',
+                'chicken_leg,pringles,dishwashing_liquid',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter,chicken_feet',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter,chicken_feet,noodles',
+                'chicken_leg,pringles,dishwashing_liquid,eggplant,sugar,garlic,piattos,carrot,onion,string_beans,milk,chicken_quarter,chicken_feet,noodles,tuna'
+            ]
+        ]
 
         self.loops = len(self.messages)
 
@@ -295,7 +295,7 @@ class ShoppingListTester:
         while True:
             node_names = [name for name, ns in self.node.get_node_names_and_namespaces()]
             if any('planner' in name.lower() for name in node_names):
-                time.sleep(6.0)  # Give it more time to fully initialize
+                time.sleep(6.5)  # Give it more time to fully initialize
                 self.node.get_logger().info('Planner node detected and initialized.')
                 break
             rclpy.spin_once(self.node, timeout_sec=1.0)
@@ -309,7 +309,7 @@ class ShoppingListTester:
         self.node.get_logger().info('Shopping list test node created.')
 
         # Launch the path system (launch_path.launch.py with planner='none') and keep it running
-        path_command = ['ros2', 'launch', 'path_planning', 'launch_path.launch.py', 'planner:=heuristic]
+        path_command = ['ros2', 'launch', 'path_planning', 'launch_path.launch.py', 'planner:=metaheuristic']
         path_proc = subprocess.Popen(
             path_command,
             stdout=subprocess.DEVNULL,
@@ -323,9 +323,9 @@ class ShoppingListTester:
             self.node.get_logger().info('Waiting for path system to initialize...')
             self._sleep_with_spin(8.0)
 
-            for _ in range(1):
+            for run in self.messages:
 
-                for iteration, payload in enumerate(self.messages, start=1):
+                for iteration, payload in enumerate(run, start=1):
 
                     self.node.get_logger().info(f'Iteration {iteration}/{self.loops}: Launching planner...')
 

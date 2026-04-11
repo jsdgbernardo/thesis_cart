@@ -1,4 +1,5 @@
 import rclpy
+import gc
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.time import Time
@@ -270,6 +271,9 @@ class HeuristicNode(Node):
                 self.get_logger().error('No valid path found for selected items.')
         except Exception as e:
             self.get_logger().error(f'Exception in computer_and_publish_path: {e}\n{traceback.format_exc()}')
+        finally:
+            # Force garbage collection to clean up futures and callbacks
+            gc.collect()
 
     # Concatenate path segments between start and each successive goal
     def compute_full_path(self, start_pose, goals):
@@ -415,7 +419,7 @@ def main(args=None):
         format="[%(asctime)s] %(message)s"
     )
 
-    logging.info(f"Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds")
+    # logging.info(f"Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds")
 
     rclpy.init(args=args)
     node = HeuristicNode()
