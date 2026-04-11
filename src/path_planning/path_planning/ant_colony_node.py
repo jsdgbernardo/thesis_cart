@@ -30,9 +30,9 @@ class ItemCoordinates:
         self.x = x
         self.y = y
 
-class MetaHeuristicNode(Node):
+class AntColonyNode(Node):
     def __init__(self):
-        super().__init__('meta_heuristic_node')
+        super().__init__('ant_colony_node')
 
         # allow overriding action name via ROS parameter
         self.declare_parameter('action_name', 'compute_path_to_pose')
@@ -87,7 +87,7 @@ class MetaHeuristicNode(Node):
         self.path_publisher = self.create_publisher(Path, 'best_path', path_qos)
         self.order_publisher = self.create_publisher(String, 'goal_order', qos_profile)
         
-        self.get_logger().info(f'MetaHeuristicNode initialized.')
+        self.get_logger().info(f'AntColonyNode initialized.')
 
     # Load items and their locations from JSON file
     def load_items(self):
@@ -187,7 +187,7 @@ class MetaHeuristicNode(Node):
     def amcl_callback(self, msg):
         self.current_pose = msg.pose.pose
 
-    # Compute Genetic Algorithm + A* Path for the given shopping list items
+    # Compute ACO + A* Path for the given shopping list items
     def computer_and_publish_path(self, items):
         try:
 
@@ -208,7 +208,7 @@ class MetaHeuristicNode(Node):
                 return
             
             if n < 2:
-                self.get_logger().warn("Not enough goals for GA. Using direct path.")
+                self.get_logger().warn("Not enough goals for ACO. Using direct path.")
                 # handle single goal directly
                 seg_path, seg_cost = self.compute_path_segment(start_pose, goal_poses[0])
                 if seg_path:
@@ -219,105 +219,126 @@ class MetaHeuristicNode(Node):
                     logging.info(f"\t{len(items)}\t{items[0].name}\t{seg_cost}\t{elapsed}")
                 return
 
-            self.get_logger().info(f'Computing GA path for {n} goal poses. This may take some time...')
+            self.get_logger().info(f'Computing SCO path for {n} goal poses. This may take some time...')
 
             # Pairwase A* costs cache
             cost_cache = {}
 
-            def get_segment_cost(pose_a, pose_b):
-                key = (id(pose_a), id(pose_b))
-                if key not in cost_cache:
-                    path, cost = self.compute_path_segment(pose_a, pose_b)
-                    if path is None:
-                        return float('inf'), None
-                    cost_cache[key] = (cost, path)
-                return cost_cache[key]
-            
-            def fitness(order):
+            # ACO parameters scales with number of items
+            num_ants = max(10, n * 3)
+            iterations = max(20, n * 6)
+            alpha = 1.0      # pheromone importance
+            beta = 3.0       # heuristic importance
+            evaporation = 0.5
+            Q = 100.0        # pheromone deposit factor
+
+            base = list(range(n))
+
+            tau = [[1.0 for _ in range(n)] for _ in range(n)]
+
+            def heuristic(i, j):
+                cost, _ = get_segment_cost(goal_poses[i], goal_poses[j])
+                if cost == float('inf') or cost == 0:
+                    return 1e-6
+                return 1.0 / cost
+
+            def probability(i, j, visited):
+                return (tau[i][j] ** alpha) * (heuristic(i, j) ** beta) * (0.0 if j in visited else 1.0)
+
+            def construct_solution():
+                visited = []
+                current = None
+
+                # start from robot pose (virtual node -1)
+                remaining = set(range(n))
+                current = None
+
+                while remaining:
+                    probs = []
+                    candidates = list(remaining)
+
+                    for j in candidates:
+                        if current is None:
+                            # first move: from start_pose
+                            cost, _ = get_segment_cost(start_pose, goal_poses[j])
+                            h = 1.0 / cost if cost != float('inf') and cost > 0 else 1e-6
+                            p = h
+                        else:
+                            i = current
+                            p = probability(i, j, visited)
+
+                        probs.append(p)
+
+                    total = sum(probs)
+                    if total == 0:
+                        next_city = random.choice(list(remaining))
+                    else:
+                        probs = [p / total for p in probs]
+                        next_city = random.choices(candidates, weights=probs, k=1)[0]
+
+                    visited.append(next_city)
+                    remaining.remove(next_city)
+                    current = next_city
+
+                return visited
+
+            def tour_cost(order):
                 total_cost = 0.0
                 current_pose = start_pose
+
                 for idx in order:
                     cost, _ = get_segment_cost(current_pose, goal_poses[idx])
                     if cost == float('inf'):
-                        return float('inf')  # Invalid path segment
+                        return float('inf')
                     total_cost += cost
                     current_pose = goal_poses[idx]
+
                 return total_cost
 
-            def tournament_selection(population, k):
-                candidates = random.sample(population, k)
-                return min(candidates, key=lambda x: fitness(x))
+            best_order = None
+            best_cost = float('inf')
             
-            # GA parameters scales with number of items
-            population_size = max(15, n*3)
-            generations = max(30, n*8)
-            mutation_rate = 0.2 if n <= 3 else 0.1 if n <= 7 else 0.05
-            tournament_k = 2 if n <= 4 else 3 if n <= 10 else 4
+            # ACO loop
+            for it in range(iterations):
 
-            # if n <= 4:
-            #     population_size = 15
-            #     generations = 25
-            #     mutation_rate = 0.08
-            #     tournament_k = 2
-            # elif n <= 7:
-            #     population_size = 25
-            #     generations = 45
-            #     mutation_rate = 0.07
-            #     tournament_k = 3
-            # elif n <= 10:
-            #     population_size = 35
-            #     generations = 55
-            #     mutation_rate = 0.05
-            #     tournament_k = 3
-            # else:
-            #     population_size = 50
-            #     generations = 70
-            #     mutation_rate = 0.05
-            #     tournament_k = 4
+                all_solutions = []
+                all_costs = []
 
-            # initialize population
-            population = []
-            base = list(range(n))
-            for _ in range(population_size):
-                candidate = base.copy()
-                random.shuffle(candidate)
-                population.append(candidate)
+                # each ant builds a solution
+                for _ in range(num_ants):
+                    sol = construct_solution()
+                    c = tour_cost(sol)
 
-            # GA loop
-            for _ in range(generations):
-                population.sort(key=lambda x: fitness(x))
-                next_generation = population[:2] # elitism: keep top 2
+                    all_solutions.append(sol)
+                    all_costs.append(c)
 
-                while (len(next_generation) < population_size):
-                    parent1 = tournament_selection(population, tournament_k)
-                    parent2 = tournament_selection(population, tournament_k)
+                    if c < best_cost:
+                        best_cost = c
+                        best_order = sol
 
-                    # ordered crossover
-                    start, end = sorted(random.sample(range(n), 2))
-                    child = [None] * n
-                    
-                    for i in range(start, end):
-                        child[i] = parent1[i]
+                # -----------------------------
+                # EVAPORATION
+                # -----------------------------
+                for i in range(n):
+                    for j in range(n):
+                        tau[i][j] *= (1 - evaporation)
+                        if tau[i][j] < 1e-6:
+                            tau[i][j] = 1e-6
 
-                    child_index = end
-                    for i in range(n):
-                        gene = parent2[(end + i) % n]
-                        if gene not in child:
-                            child[child_index % n] = gene
-                            child_index += 1
-                    
-                    # mutation
-                    if random.random() < mutation_rate:
-                        i, j = random.sample(range(n), 2)
-                        child[i], child[j] = child[j], child[i]
+                # -----------------------------
+                # PHEROMONE UPDATE
+                # -----------------------------
+                for sol, cost in zip(all_solutions, all_costs):
+                    if cost == float('inf'):
+                        continue
 
-                    next_generation.append(child)
+                    deposit = Q / cost
 
-                population = next_generation
-
-            # best solution
-            best_order_indices = min(population, key=lambda x: fitness(x))
-            best_cost = fitness(best_order_indices)
+                    for k in range(len(sol) - 1):
+                        i = sol[k]
+                        j = sol[k + 1]
+                        tau[i][j] += deposit
+                        tau[j][i] += deposit  # symmetric reinforcement
 
             # build path
             best_path = Path()
@@ -327,7 +348,7 @@ class MetaHeuristicNode(Node):
             current_pose = start_pose
 
             # concatenate path segments from the best order
-            for idx in best_order_indices:
+            for idx in best_order:
                 cost, segment_path = get_segment_cost(current_pose, goal_poses[idx])
                 if segment_path is None:
                     self.get_logger().error(f'Failed to compute path segment from {current_pose} to {goal_poses[idx]}')
@@ -347,9 +368,9 @@ class MetaHeuristicNode(Node):
             best_order = [items[i].name for i in best_order_indices]
 
             if best_path:
-                self.get_logger().info(f'GA cost: {best_cost:.2f} for order: {best_order}')
+                self.get_logger().info(f'ACO cost: {best_cost:.2f} for order: {best_order}')
             else:
-                self.get_logger().error('GA planner failed to produce a valid path.')
+                self.get_logger().error('ACO planner failed to produce a valid path.')
 
             if best_path:
                 # publish path and order
@@ -503,7 +524,7 @@ class MetaHeuristicNode(Node):
 def main(args=None):
 
     logging.basicConfig(
-        filename="metaheuristic.txt",
+        filename="antcolony.txt",
         level=logging.INFO,
         format="[%(asctime)s] %(message)s"
     )
@@ -511,7 +532,7 @@ def main(args=None):
     # logging.info(f"Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds")
 
     rclpy.init(args=args)
-    node = MetaHeuristicNode()
+    node = AntColonyNode()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
     executor.spin()

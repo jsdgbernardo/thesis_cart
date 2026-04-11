@@ -4,3 +4,12 @@
 [2026-04-08 12:09:17,297] 	3	chicken_leg,onion,string_beans	16.14457948050968	1.2289061546325684
 [2026-04-08 12:09:37,462] 	4	chicken_leg,onion,string_beans,piattos	24.168524219849864	8.05641484260559
 [2026-04-08 12:11:43,471] 	5	chicken_leg,onion,string_beans,piattos,sugar	32.013931021617054	103.91511297225952
+[2026-04-09 18:19:20,782] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-10 15:10:54,412] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-10 15:13:04,024] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-10 15:13:58,291] 	1	chicken_leg	4.709008106688194	0.08386373519897461
+[2026-04-10 15:14:45,222] 	2	chicken_leg,onion	13.030072479279465	0.3214128017425537
+[2026-04-10 15:15:36,872] 	3	chicken_leg,onion,string_beans	21.09348624544558	1.34696626663208
+[2026-04-10 15:16:39,225] 	4	chicken_leg,onion,string_beans,piattos	29.117430984785763	8.579690217971802
+[2026-04-10 15:19:27,723] 	5	chicken_leg,onion,string_beans,piattos,sugar	36.962965795157956	109.83948945999146
+[2026-04-10 15:23:38,208] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
