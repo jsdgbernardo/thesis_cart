@@ -219,10 +219,19 @@ class AntColonyNode(Node):
                     logging.info(f"\t{len(items)}\t{items[0].name}\t{seg_cost}\t{elapsed}")
                 return
 
-            self.get_logger().info(f'Computing SCO path for {n} goal poses. This may take some time...')
+            self.get_logger().info(f'Computing ACO path for {n} goal poses. This may take some time...')
 
-            # Pairwase A* costs cache
+            # Pairwise A* costs cache
             cost_cache = {}
+            def get_segment_cost(pose_a, pose_b):
+                key = (id(pose_a), id(pose_b))
+                if key not in cost_cache:
+                    path, cost = self.compute_path_segment(pose_a, pose_b)
+                    if path is None:
+                        return float('inf'), None
+                    cost_cache[key] = (cost, path)
+                return cost_cache[key]
+
 
             # ACO parameters scales with number of items
             num_ants = max(10, n * 3)
@@ -365,7 +374,7 @@ class AntColonyNode(Node):
             end_time = time.time() # record end time for performance measurement
             elapsed = end_time - start_time
             
-            best_order = [items[i].name for i in best_order_indices]
+            best_order = [items[i].name for i in best_order]
 
             if best_path:
                 self.get_logger().info(f'ACO cost: {best_cost:.2f} for order: {best_order}')

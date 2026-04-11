@@ -22,7 +22,7 @@ def generate_launch_description():
     planner_arg = DeclareLaunchArgument(
         'planner',
         default_value='brute_force',
-        description='Approach to use (brute_force, heuristic, metaheuristic)'
+        description='Approach to use (brute_force, heuristic, metaheuristic, aco)'
     )
 
     # Items manager node
@@ -68,11 +68,20 @@ def generate_launch_description():
         condition=IfCondition(PythonExpression(['"', planner, '" == "metaheuristic"']))
     )
 
+    aco = Node(
+        package='path_planning',
+        executable='ant_colony_node',
+        name='ant_colony_node',
+        output='screen',
+        condition=IfCondition(PythonExpression(['"', planner, '" == "aco"']))
+    )
+
     return LaunchDescription([
         planner_arg,
         rosbridge_launch,
         items_manager,
         brute_force,
         heuristic,
-        meta_heuristic
+        meta_heuristic,
+        aco
     ])
