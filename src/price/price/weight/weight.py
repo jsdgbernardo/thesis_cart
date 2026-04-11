@@ -11,7 +11,7 @@ class WeightSensor:
         self.hx.reset()
 
         # calibration 
-        self.calibration_value = -117.50
+        self.calibration_value = -115.9
 
         self.minimum_item_weight = 5
         self.stability_samples = 5
