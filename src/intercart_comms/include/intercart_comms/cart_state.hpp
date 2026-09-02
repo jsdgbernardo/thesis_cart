@@ -8,5 +8,5 @@ struct CartState
   int cart_id;
   geometry_msgs::msg::Pose pose;
   geometry_msgs::msg::Twist velocity;
-  int intent;   // 0 = proceed, 1 = slow, 2 = stop
+  int intent;
 };
