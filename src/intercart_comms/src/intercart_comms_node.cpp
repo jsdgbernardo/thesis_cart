@@ -14,13 +14,36 @@ IntercartCommNode::IntercartCommNode()
   self_state_.cart_id =
     this->get_parameter("cart_id").as_int();
 
-  // Initialize this cart's state
-  self_state_.pose.position.x = 0.0;
-  self_state_.pose.position.y = 0.0;
+  // // Initialize this cart's state
+  // self_state_.pose.position.x = 0.0;
+  // self_state_.pose.position.y = 0.0;
+  // self_state_.pose.position.z = 0.0;
+
+  // self_state_.velocity.linear.x = 0.0;
+  // self_state_.velocity.linear.y = 0.0;
+  // self_state_.velocity.linear.z = 0.0;
+
+  // Read simulation parameters
+  double initial_x =
+    this->declare_parameter("initial_x", 0.0);
+
+  double initial_y =
+    this->declare_parameter("initial_y", 0.0);
+
+  double velocity_x =
+    this->declare_parameter("velocity_x", 0.0);
+
+  double velocity_y =
+    this->declare_parameter("velocity_y", 0.0);
+
+  // Initialize this cart's position
+  self_state_.pose.position.x = initial_x;
+  self_state_.pose.position.y = initial_y;
   self_state_.pose.position.z = 0.0;
 
-  self_state_.velocity.linear.x = 0.0;
-  self_state_.velocity.linear.y = 0.0;
+  // Initialize this cart's velocity
+  self_state_.velocity.linear.x = velocity_x;
+  self_state_.velocity.linear.y = velocity_y;
   self_state_.velocity.linear.z = 0.0;
 
   self_state_.intent = 0;
@@ -79,14 +102,22 @@ IntercartCommNode::IntercartCommNode()
   // Timer: periodically broadcast cart state
   // --------------------------------------------------
 
+  // state_timer_ =
+  //   this->create_wall_timer(
+  //     std::chrono::milliseconds(100),
+  //     std::bind(
+  //       &IntercartCommNode::publish_self_state,
+  //       this
+  //     )
+  //   );
   state_timer_ =
-    this->create_wall_timer(
-      std::chrono::milliseconds(100),
-      std::bind(
-        &IntercartCommNode::publish_self_state,
-        this
-      )
-    );
+  this->create_wall_timer(
+    std::chrono::milliseconds(100),
+    std::bind(
+      &IntercartCommNode::update_simulation,
+      this
+    )
+  );
 
   RCLCPP_INFO(
     this->get_logger(),
@@ -162,6 +193,27 @@ void IntercartCommNode::self_velocity_callback(
   const geometry_msgs::msg::Twist::SharedPtr msg)
 {
   self_state_.velocity = *msg;
+}
+
+
+// =====================================================
+// Update simulated cart position
+// =====================================================
+
+void IntercartCommNode::update_simulation()
+{
+  // Simulation timestep: 0.1 seconds
+  const double dt = 0.1;
+
+  // Update position using velocity
+  self_state_.pose.position.x +=
+    self_state_.velocity.linear.x * dt;
+
+  self_state_.pose.position.y +=
+    self_state_.velocity.linear.y * dt;
+
+  // Broadcast updated state
+  publish_self_state();
 }
 
 

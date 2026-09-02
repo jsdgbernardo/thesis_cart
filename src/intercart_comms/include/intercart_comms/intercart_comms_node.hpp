@@ -37,8 +37,12 @@ private:
 
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr vel_sub_;
 
-  // Timer for periodic state broadcasting
+  // // Timer for periodic state broadcasting
+  // rclcpp::TimerBase::SharedPtr state_timer_;
+  // Timer for periodic simulation and state broadcasting
   rclcpp::TimerBase::SharedPtr state_timer_;
+  // Update simulated position
+  void update_simulation();
 
   // Store the most recent state of every neighboring cart
   std::map<int, CartState> neighbors_;
