@@ -7,7 +7,8 @@ IntercartCommNode::IntercartCommNode()
 : Node("intercart_comm_node"),
   resolver_(
     this->declare_parameter("safety_radius", 1.2),
-    this->declare_parameter("cart_id", 1)
+    this->declare_parameter("cart_id", 1),
+    this->declare_parameter("prediction_horizon", 3.0)
   )
 {
   // Store this cart's ID
@@ -169,12 +170,27 @@ void IntercartCommNode::neighbor_callback(
     neighbor_vector.push_back(entry.second);
   }
 
-  // Run conflict resolution
+  // // Run conflict resolution
+  // int decision =
+  //   resolver_.resolve(
+  //     self_state_,
+  //     neighbor_vector
+  //   );
+
+  // // Publish the decision
+  // std_msgs::msg::Int32 intent_msg;
+
+  // intent_msg.data = decision;
+
+  // intent_pub_->publish(intent_msg);
   int decision =
     resolver_.resolve(
       self_state_,
       neighbor_vector
     );
+
+  // Store this cart's latest decision
+  self_state_.intent = decision;
 
   // Publish the decision
   std_msgs::msg::Int32 intent_msg;
@@ -182,6 +198,28 @@ void IntercartCommNode::neighbor_callback(
   intent_msg.data = decision;
 
   intent_pub_->publish(intent_msg);
+
+  // Print readable decision to terminal
+  if (decision == 2)
+  {
+    RCLCPP_WARN_THROTTLE(
+      this->get_logger(),
+      *this->get_clock(),
+      1000,
+      "Cart %d decision: STOP",
+      self_state_.cart_id
+    );
+  }
+  else
+  {
+    RCLCPP_INFO_THROTTLE(
+      this->get_logger(),
+      *this->get_clock(),
+      1000,
+      "Cart %d decision: PROCEED",
+      self_state_.cart_id
+    );
+  }
 }
 
 

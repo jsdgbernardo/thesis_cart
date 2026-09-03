@@ -5,6 +5,8 @@ intercart_comm_node:
 
     safety_radius: 1.2
 
+    prediction_horizon: 3.0
+
     initial_x: 0.0
     initial_y: 0.0
 
