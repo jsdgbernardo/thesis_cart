@@ -11,6 +11,7 @@ find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(gazebo_msgs REQUIRED)
 
 # Generate ROS 2 interfaces
 rosidl_generate_interfaces(${PROJECT_NAME}
@@ -42,6 +43,7 @@ ament_target_dependencies(intercart_comm_node
   rclcpp
   geometry_msgs
   std_msgs
+  gazebo_msgs
 )
 
 target_include_directories(intercart_comm_node PUBLIC

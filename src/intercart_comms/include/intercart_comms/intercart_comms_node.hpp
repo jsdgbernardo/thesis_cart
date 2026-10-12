@@ -10,6 +10,9 @@
 #include "intercart_comms/conflict_resolver.hpp"
 #include "intercart_comms/msg/cart_state.hpp"
 
+#include <gazebo_msgs/msg/model_states.hpp>
+#include <string>
+
 class IntercartCommNode : public rclcpp::Node
 {
 public:
@@ -28,6 +31,9 @@ private:
   // Publish this cart's own state
   void publish_self_state();
 
+  void gazebo_model_states_callback(
+    const gazebo_msgs::msg::ModelStates::SharedPtr msg);
+
   // ROS 2 publishers/subscribers
   rclcpp::Publisher<intercart_comms::msg::CartState>::SharedPtr state_pub_;
 
@@ -36,6 +42,11 @@ private:
   rclcpp::Subscription<intercart_comms::msg::CartState>::SharedPtr neighbor_sub_;
 
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr vel_sub_;
+
+  rclcpp::Subscription<gazebo_msgs::msg::ModelStates>::SharedPtr
+    gazebo_states_sub_;
+
+  std::string gazebo_model_name_;
 
   // // Timer for periodic state broadcasting
   // rclcpp::TimerBase::SharedPtr state_timer_;
