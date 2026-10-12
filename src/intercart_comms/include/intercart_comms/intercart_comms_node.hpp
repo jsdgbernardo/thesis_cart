@@ -50,6 +50,12 @@ private:
   // This cart's own state
   CartState self_state_;
 
+  // Velocity requested by the cart/navigation system
+  geometry_msgs::msg::Twist desired_velocity_;
+
+  // Velocity allowed after inter-cart safety checks
+  geometry_msgs::msg::Twist safe_velocity_;
+
   // Collision/conflict decision system
   ConflictResolver resolver_;
 };

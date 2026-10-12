@@ -42,10 +42,20 @@ IntercartCommNode::IntercartCommNode()
   self_state_.pose.position.y = initial_y;
   self_state_.pose.position.z = 0.0;
 
-  // Initialize this cart's velocity
-  self_state_.velocity.linear.x = velocity_x;
-  self_state_.velocity.linear.y = velocity_y;
-  self_state_.velocity.linear.z = 0.0;
+  // Desired velocity from the simulated navigation command
+  desired_velocity_.linear.x = velocity_x;
+  desired_velocity_.linear.y = velocity_y;
+  desired_velocity_.linear.z = 0.0;
+
+  desired_velocity_.angular.x = 0.0;
+  desired_velocity_.angular.y = 0.0;
+  desired_velocity_.angular.z = 0.0;
+
+  // Initially, the safe velocity is the same
+  safe_velocity_ = desired_velocity_;
+
+  // The CartState broadcasts the velocity the cart is actually using
+  self_state_.velocity = safe_velocity_;
 
   self_state_.intent = 0;
 
@@ -192,6 +202,45 @@ void IntercartCommNode::neighbor_callback(
   // Store this cart's latest decision
   self_state_.intent = decision;
 
+  // --------------------------------------------------
+  // Convert the decision into a safe velocity
+  // --------------------------------------------------
+
+  if (decision == 2)
+  {
+    // STOP
+    safe_velocity_.linear.x = 0.0;
+    safe_velocity_.linear.y = 0.0;
+    safe_velocity_.linear.z = 0.0;
+
+    safe_velocity_.angular.x = 0.0;
+    safe_velocity_.angular.y = 0.0;
+    safe_velocity_.angular.z = 0.0;
+  }
+  else if (decision == 1)
+  {
+    // SLOW
+    safe_velocity_.linear.x =
+      desired_velocity_.linear.x * 0.5;
+
+    safe_velocity_.linear.y =
+      desired_velocity_.linear.y * 0.5;
+
+    safe_velocity_.linear.z =
+      desired_velocity_.linear.z * 0.5;
+
+    safe_velocity_.angular =
+      desired_velocity_.angular;
+  }
+  else
+  {
+    // PROCEED
+    safe_velocity_ = desired_velocity_;
+  }
+
+  // Broadcast the velocity the cart is actually allowed to use
+  self_state_.velocity = safe_velocity_;
+
   // Publish the decision
   std_msgs::msg::Int32 intent_msg;
 
@@ -230,7 +279,9 @@ void IntercartCommNode::neighbor_callback(
 void IntercartCommNode::self_velocity_callback(
   const geometry_msgs::msg::Twist::SharedPtr msg)
 {
-  self_state_.velocity = *msg;
+  // Store the commanded/navigation velocity.
+  // Safety logic will decide whether this can actually be used.
+  desired_velocity_ = *msg;
 }
 
 
@@ -245,10 +296,10 @@ void IntercartCommNode::update_simulation()
 
   // Update position using velocity
   self_state_.pose.position.x +=
-    self_state_.velocity.linear.x * dt;
+    safe_velocity_.linear.x * dt;
 
   self_state_.pose.position.y +=
-    self_state_.velocity.linear.y * dt;
+    safe_velocity_.linear.y * dt;
 
   // Broadcast updated state
   publish_self_state();
