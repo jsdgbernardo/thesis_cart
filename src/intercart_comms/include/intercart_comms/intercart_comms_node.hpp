@@ -48,6 +48,10 @@ private:
 
   std::string gazebo_model_name_;
 
+  // Command velocity sent to this cart's Gazebo model
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr
+  gazebo_cmd_vel_pub_;
+
   // // Timer for periodic state broadcasting
   // rclcpp::TimerBase::SharedPtr state_timer_;
   // Timer for periodic simulation and state broadcasting
