@@ -95,6 +95,7 @@ private:
   AvoidanceState avoidance_state_;
 
   double original_heading_;
+  double original_x_;
   double original_y_;
 
   int avoid_direction_;
@@ -108,4 +109,7 @@ private:
     const geometry_msgs::msg::Quaternion &q);
 
   double normalize_angle(double angle);
+
+  int choose_avoid_direction(
+  const std::vector<CartState> &neighbors);
 };

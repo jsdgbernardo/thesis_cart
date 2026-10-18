@@ -1,40 +1,3 @@
-// #include "intercart_comms/conflict_resolver.hpp"
-// #include <cmath>
-
-// ConflictResolver::ConflictResolver(float safety_radius, int self_id)
-// : safety_radius_(safety_radius), self_id_(self_id)
-// {
-// }
-
-// int ConflictResolver::resolve(const std::vector<CartState> &neighbors)
-// {
-//   for (const auto &cart : neighbors) {
-
-//     float dx = cart.pose.position.x;
-//     float dy = cart.pose.position.y;
-//     float distance = std::sqrt(dx*dx + dy*dy);
-
-//     // get the cart's own position
-//     // continuously monitor positions of other carts
-//     // project their trajectories based on current velocieties and global paths
-
-//     // if on collision course
-//     // safety radius could be used for head-on collisions
-//     if (distance < safety_radius_) {
-//       // Simple deterministic rule:
-//       // lower cart ID gets priority
-//         // how to decide priority (first come, first serve)
-//         // can follow AROW algorithm, but simpler
-//       if (cart.cart_id < self_id_) {
-//         return 2; // STOP
-//       }
-//     }
-//   }
-
-//   return 0; // PROCEED
-// }
-
-
 #include "intercart_comms/conflict_resolver.hpp"
 
 #include <algorithm>
@@ -57,6 +20,90 @@ bool ConflictResolver::hasConflict(
 {
   for (const auto &cart : neighbors)
   {
+    // =====================================================
+    // ACTIVE AVOIDANCE RIGHT-OF-WAY LOCK
+    //
+    // If another cart is currently performing an avoidance
+    // maneuver and it has equal or higher priority than us,
+    // keep yielding until it has safely moved away.
+    // =====================================================
+
+    double lock_dx =
+      cart.pose.position.x -
+      self.pose.position.x;
+
+    double lock_dy =
+      cart.pose.position.y -
+      self.pose.position.y;
+
+    double lock_distance =
+      std::sqrt(
+        lock_dx * lock_dx +
+        lock_dy * lock_dy
+      );
+
+
+    // Neighbor is actively performing avoidance
+    if (cart.intent == 3)
+    {
+      bool neighbor_has_priority = false;
+
+
+      // Priority-class comparison
+      if (cart.priority_class > self.priority_class)
+      {
+        neighbor_has_priority = true;
+      }
+
+      // Same priority class: use arrival time / ID
+      else if (cart.priority_class == self.priority_class)
+      {
+        if (
+          cart.arrival_time >= 0.0 &&
+          self.arrival_time >= 0.0
+        )
+        {
+          double arrival_difference =
+            cart.arrival_time -
+            self.arrival_time;
+
+          // Neighbor arrived clearly earlier
+          if (arrival_difference < -0.1)
+          {
+            neighbor_has_priority = true;
+          }
+
+          // Effectively tied: lower ID wins
+          else if (
+            std::abs(arrival_difference) <= 0.1 &&
+            cart.cart_id < self.cart_id
+          )
+          {
+            neighbor_has_priority = true;
+          }
+        }
+
+        // If timestamps are unavailable,
+        // fall back to cart ID.
+        else if (cart.cart_id < self.cart_id)
+        {
+          neighbor_has_priority = true;
+        }
+      }
+
+
+      // Keep yielding while the avoiding cart
+      // is still close enough to the conflict area.
+      if (
+        neighbor_has_priority &&
+        lock_distance < 5.0
+      )
+      {
+        return 2;  // STOP
+      }
+    }
+
+
     double dx =
       cart.pose.position.x -
       self.pose.position.x;
@@ -131,201 +178,130 @@ bool ConflictResolver::hasConflict(
 
 
 
-// int ConflictResolver::resolve(
-//   const CartState &self,
-//   const std::vector<CartState> &neighbors)
-// {
-//   for (const auto &cart : neighbors)
-//   {
-//     // -------------------------------------------------
-//     // 1. Relative position
-//     // -------------------------------------------------
-
-//     double dx =
-//       cart.pose.position.x -
-//       self.pose.position.x;
-
-//     double dy =
-//       cart.pose.position.y -
-//       self.pose.position.y;
-
-
-//     // -------------------------------------------------
-//     // 2. Relative velocity
-//     // -------------------------------------------------
-
-//     double dvx =
-//       cart.velocity.linear.x -
-//       self.velocity.linear.x;
-
-//     double dvy =
-//       cart.velocity.linear.y -
-//       self.velocity.linear.y;
-
-
-//     // -------------------------------------------------
-//     // 3. Current distance
-//     // -------------------------------------------------
-
-//     double current_distance =
-//       std::sqrt(
-//         dx * dx +
-//         dy * dy
-//       );
-
-
-//     // -------------------------------------------------
-//     // 4. Check whether carts are already too close
-//     // -------------------------------------------------
-
-//     bool current_conflict =
-//       current_distance < safety_radius_;
-
-
-//     // -------------------------------------------------
-//     // 5. Calculate time of closest approach
-//     // -------------------------------------------------
-
-//     double relative_speed_squared =
-//       dvx * dvx +
-//       dvy * dvy;
-
-//     double time_to_closest = 0.0;
-
-
-//     // If the carts have some relative motion
-//     if (relative_speed_squared > 0.000001)
-//     {
-//       time_to_closest =
-//         -(
-//           dx * dvx +
-//           dy * dvy
-//         ) / relative_speed_squared;
-//     }
-
-
-//     // We only care about the future.
-//     //
-//     // Clamp prediction between:
-//     //
-//     // 0 seconds
-//     //
-//     // and
-//     //
-//     // prediction_horizon_ seconds.
-
-//     time_to_closest =
-//       std::clamp(
-//         time_to_closest,
-//         0.0,
-//         prediction_horizon_
-//       );
-
-
-//     // -------------------------------------------------
-//     // 6. Predict positions at closest approach
-//     // -------------------------------------------------
-
-//     double predicted_dx =
-//       dx +
-//       dvx * time_to_closest;
-
-//     double predicted_dy =
-//       dy +
-//       dvy * time_to_closest;
-
-
-//     // -------------------------------------------------
-//     // 7. Predicted minimum separation
-//     // -------------------------------------------------
-
-//     double predicted_distance =
-//       std::sqrt(
-//         predicted_dx * predicted_dx +
-//         predicted_dy * predicted_dy
-//       );
-
-
-//     // -------------------------------------------------
-//     // 8. Determine whether a future conflict exists
-//     // -------------------------------------------------
-
-//     bool predicted_conflict =
-//       predicted_distance < safety_radius_;
-
-
-//     // -------------------------------------------------
-//     // 9. Apply temporary right-of-way rule
-//     // -------------------------------------------------
-
-//     if (current_conflict || predicted_conflict)
-//     {
-
-//       bool self_has_priority = false;
-//       bool other_has_priority = false;
-
-//       // -------------------------------------------------
-//       // Determine whether the carts are approximately
-//       // travelling in opposite directions.
-//       // -------------------------------------------------
-
-//       double self_vx = self.velocity.linear.x;
-//       double self_vy = self.velocity.linear.y;
-
-//       double other_vx = cart.velocity.linear.x;
-//       double other_vy = cart.velocity.linear.y;
-
-//       double dot_product =
-//         self_vx * other_vx +
-//         self_vy * other_vy;
-
-
-//       // Negative dot product means that the velocity
-//       // vectors generally point in opposite directions.
-//       bool opposite_direction =
-//         dot_product < -0.01;
-
-
-//       // -------------------------------------------------
-//       // Temporary right-of-way rule:
-//       //
-//       // lower cart ID = higher priority
-//       // -------------------------------------------------
-
-//       if (cart.cart_id < self_id_)
-//       {
-//         // Another cart has higher priority.
-//         return 2;   // STOP
-//       }
-//       else
-//       {
-//         // This cart has higher priority.
-
-//         if (opposite_direction)
-//         {
-//           return 3;   // AVOID
-//         }
-
-//         return 0;     // PROCEED
-//       }
-//     }
-//   }
-
-
-//   return 0;   // PROCEED
-// }
-
-
-
 int ConflictResolver::resolve(
   const CartState &self,
   const std::vector<CartState> &neighbors)
 {
+  // =====================================================
+  // FIRST PASS
+  // CHECK ALL CARTS FOR ACTIVE HIGHER-PRIORITY AVOIDANCE
+  //
+  // This is checked BEFORE normal collision prediction.
+  // If another higher-priority cart is actively avoiding
+  // nearby, this cart must keep yielding.
+  // =====================================================
+
   for (const auto &cart : neighbors)
   {
-    // =====================================================
-    // 1. RELATIVE POSITION
-    // =====================================================
+    // Only care about carts currently broadcasting AVOID.
+    if (cart.intent != 3)
+    {
+      continue;
+    }
+
+    double dx =
+      cart.pose.position.x -
+      self.pose.position.x;
+
+    double dy =
+      cart.pose.position.y -
+      self.pose.position.y;
+
+    double distance =
+      std::sqrt(
+        dx * dx +
+        dy * dy
+      );
+
+
+    bool neighbor_has_priority = false;
+
+
+    // -----------------------------------------------------
+    // 1. PRIORITY CLASS
+    // -----------------------------------------------------
+
+    if (
+      cart.priority_class >
+      self.priority_class
+    )
+    {
+      neighbor_has_priority = true;
+    }
+
+
+    // -----------------------------------------------------
+    // 2. SAME PRIORITY CLASS
+    //    Compare arrival time
+    // -----------------------------------------------------
+
+    else if (
+      cart.priority_class ==
+      self.priority_class
+    )
+    {
+      if (
+        cart.arrival_time >= 0.0 &&
+        self.arrival_time >= 0.0
+      )
+      {
+        double difference =
+          cart.arrival_time -
+          self.arrival_time;
+
+        // Neighbor arrived earlier
+        if (difference < -0.1)
+        {
+          neighbor_has_priority = true;
+        }
+
+        // Nearly simultaneous:
+        // lower cart ID wins
+        else if (
+          std::abs(difference) <= 0.1 &&
+          cart.cart_id < self.cart_id
+        )
+        {
+          neighbor_has_priority = true;
+        }
+      }
+
+      // If arrival times are unavailable,
+      // use cart ID as deterministic fallback.
+      else if (
+        cart.cart_id <
+        self.cart_id
+      )
+      {
+        neighbor_has_priority = true;
+      }
+    }
+
+
+    // -----------------------------------------------------
+    // ACTIVE AVOIDANCE LOCK
+    // -----------------------------------------------------
+
+    if (
+      neighbor_has_priority &&
+      distance < 5.0
+    )
+    {
+      return 2;  // STOP
+    }
+  }
+
+
+  // =====================================================
+  // SECOND PASS
+  // NORMAL COLLISION PREDICTION AND RIGHT-OF-WAY
+  // =====================================================
+
+  for (const auto &cart : neighbors)
+  {
+    // -----------------------------------------------------
+    // Relative position
+    // -----------------------------------------------------
 
     double dx =
       cart.pose.position.x -
@@ -336,9 +312,9 @@ int ConflictResolver::resolve(
       self.pose.position.y;
 
 
-    // =====================================================
-    // 2. RELATIVE VELOCITY
-    // =====================================================
+    // -----------------------------------------------------
+    // Relative velocity
+    // -----------------------------------------------------
 
     double dvx =
       cart.velocity.linear.x -
@@ -349,9 +325,9 @@ int ConflictResolver::resolve(
       self.velocity.linear.y;
 
 
-    // =====================================================
-    // 3. CURRENT DISTANCE
-    // =====================================================
+    // -----------------------------------------------------
+    // Current distance
+    // -----------------------------------------------------
 
     double current_distance =
       std::sqrt(
@@ -363,9 +339,9 @@ int ConflictResolver::resolve(
       current_distance < safety_radius_;
 
 
-    // =====================================================
-    // 4. PREDICT CLOSEST APPROACH
-    // =====================================================
+    // -----------------------------------------------------
+    // Predict time of closest approach
+    // -----------------------------------------------------
 
     double relative_speed_squared =
       dvx * dvx +
@@ -390,9 +366,9 @@ int ConflictResolver::resolve(
       );
 
 
-    // =====================================================
-    // 5. PREDICTED MINIMUM DISTANCE
-    // =====================================================
+    // -----------------------------------------------------
+    // Predicted minimum distance
+    // -----------------------------------------------------
 
     double predicted_dx =
       dx +
@@ -412,9 +388,10 @@ int ConflictResolver::resolve(
       predicted_distance < safety_radius_;
 
 
-    // =====================================================
-    // 6. IF NO CONFLICT WITH THIS CART, CHECK NEXT CART
-    // =====================================================
+    // -----------------------------------------------------
+    // No conflict with this cart?
+    // Check the next cart.
+    // -----------------------------------------------------
 
     if (
       !current_conflict &&
@@ -425,9 +402,9 @@ int ConflictResolver::resolve(
     }
 
 
-    // =====================================================
-    // 7. DETERMINE WHETHER THIS IS HEAD-ON
-    // =====================================================
+    // -----------------------------------------------------
+    // Determine whether this is head-on
+    // -----------------------------------------------------
 
     double self_vx =
       self.velocity.linear.x;
@@ -450,13 +427,7 @@ int ConflictResolver::resolve(
 
 
     // =====================================================
-    // 8. DETERMINE RIGHT-OF-WAY
-    //
-    // Priority order:
-    //
-    // 1. Priority class
-    // 2. Earlier conflict arrival time
-    // 3. Lower cart ID
+    // RIGHT-OF-WAY
     // =====================================================
 
     bool self_has_priority = false;
@@ -464,7 +435,7 @@ int ConflictResolver::resolve(
 
 
     // -----------------------------------------------------
-    // 8A. PRIORITY CLASS
+    // 1. Priority class
     // -----------------------------------------------------
 
     if (
@@ -484,8 +455,7 @@ int ConflictResolver::resolve(
 
 
     // -----------------------------------------------------
-    // 8B. ARRIVAL TIME
-    // Only checked if priority classes are equal.
+    // 2. Arrival time
     // -----------------------------------------------------
 
     else if (
@@ -497,9 +467,6 @@ int ConflictResolver::resolve(
         self.arrival_time -
         cart.arrival_time;
 
-      // Earlier cart wins.
-      //
-      // Times within 0.1 seconds are treated as a tie.
       if (arrival_difference < -0.1)
       {
         self_has_priority = true;
@@ -512,11 +479,7 @@ int ConflictResolver::resolve(
 
 
     // -----------------------------------------------------
-    // 8C. CART ID TIE-BREAKER
-    //
-    // This runs if:
-    // - both priority classes are equal, AND
-    // - arrival times are unavailable or effectively tied.
+    // 3. Cart ID tie-break
     // -----------------------------------------------------
 
     if (
@@ -524,7 +487,10 @@ int ConflictResolver::resolve(
       !other_has_priority
     )
     {
-      if (self.cart_id < cart.cart_id)
+      if (
+        self.cart_id <
+        cart.cart_id
+      )
       {
         self_has_priority = true;
       }
@@ -536,7 +502,7 @@ int ConflictResolver::resolve(
 
 
     // =====================================================
-    // 9. CONVERT RIGHT-OF-WAY INTO AN INTENT
+    // TURN PRIORITY INTO AN INTENT
     // =====================================================
 
     if (other_has_priority)
@@ -547,20 +513,16 @@ int ConflictResolver::resolve(
 
     if (self_has_priority)
     {
-      // If this is head-on, the winning cart
-      // must physically maneuver around the other cart.
       if (opposite_direction)
       {
         return 3;  // AVOID
       }
 
-      // For an intersection/crossing conflict,
-      // the winner proceeds normally.
       return 0;  // PROCEED
     }
   }
 
 
-  // No conflicts detected with any neighboring cart
+  // No conflict with any cart
   return 0;  // PROCEED
 }
