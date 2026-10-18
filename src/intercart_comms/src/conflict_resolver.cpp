@@ -180,20 +180,49 @@ int ConflictResolver::resolve(
 
     if (current_conflict || predicted_conflict)
     {
-      // TEMPORARY rule:
+      // -------------------------------------------------
+      // Determine whether the carts are approximately
+      // travelling in opposite directions.
+      // -------------------------------------------------
+
+      double self_vx = self.velocity.linear.x;
+      double self_vy = self.velocity.linear.y;
+
+      double other_vx = cart.velocity.linear.x;
+      double other_vy = cart.velocity.linear.y;
+
+      double dot_product =
+        self_vx * other_vx +
+        self_vy * other_vy;
+
+
+      // Negative dot product means that the velocity
+      // vectors generally point in opposite directions.
+      bool opposite_direction =
+        dot_product < -0.01;
+
+
+      // -------------------------------------------------
+      // Temporary right-of-way rule:
       //
-      // Lower cart ID gets priority.
-      //
-      // Example:
-      //
-      // Cart 1 vs Cart 2
-      //
-      // Cart 1 -> PROCEED
-      // Cart 2 -> STOP
+      // lower cart ID = higher priority
+      // -------------------------------------------------
 
       if (cart.cart_id < self_id_)
       {
+        // Another cart has higher priority.
         return 2;   // STOP
+      }
+      else
+      {
+        // This cart has higher priority.
+
+        if (opposite_direction)
+        {
+          return 3;   // AVOID
+        }
+
+        return 0;     // PROCEED
       }
     }
   }

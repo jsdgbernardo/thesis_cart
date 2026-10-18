@@ -73,4 +73,31 @@ private:
 
   // Collision/conflict decision system
   ConflictResolver resolver_;
+
+
+  enum class AvoidanceState
+  {
+    NORMAL,
+    TURN_OUT,
+    PASS,
+    TURN_BACK,
+    RETURN_TO_PATH
+  };
+
+  AvoidanceState avoidance_state_;
+
+  double original_heading_;
+  double original_y_;
+
+  int avoid_direction_;
+
+  int avoidance_neighbor_id_;
+
+
+  void update_avoidance();
+
+  double get_yaw(
+    const geometry_msgs::msg::Quaternion &q);
+
+  double normalize_angle(double angle);
 };
