@@ -96,7 +96,7 @@ bool ConflictResolver::hasConflict(
       // is still close enough to the conflict area.
       if (
         neighbor_has_priority &&
-        lock_distance < 5.0
+        lock_distance < 3.0
       )
       {
         return 2;  // STOP
@@ -290,6 +290,125 @@ int ConflictResolver::resolve(
       return 2;  // STOP
     }
   }
+
+
+
+    // =====================================================
+    // WAITING-ORDER LOCK
+    //
+    // If another cart is currently STOPPED and has a
+    // higher right-of-way rank than us, remain stopped.
+    //
+    // This preserves the queue/order after a higher
+    // priority cart has cleared the conflict.
+    // =====================================================
+
+    for (const auto &cart : neighbors)
+    {
+      // Only evaluate carts that are currently waiting.
+      if (cart.intent != 2)
+      {
+        continue;
+      }
+
+
+      double dx =
+        cart.pose.position.x -
+        self.pose.position.x;
+
+      double dy =
+        cart.pose.position.y -
+        self.pose.position.y;
+
+      double distance =
+        std::sqrt(
+          dx * dx +
+          dy * dy
+        );
+
+
+      // Only coordinate with reasonably nearby waiting carts.
+      if (distance > 4.0)
+      {
+        continue;
+      }
+
+
+      bool other_goes_first = false;
+
+
+      // =====================================================
+      // 1. PRIORITY CLASS
+      // =====================================================
+
+      if (
+        cart.priority_class >
+        self.priority_class
+      )
+      {
+        other_goes_first = true;
+      }
+
+
+      // =====================================================
+      // 2. SAME PRIORITY CLASS:
+      //    earlier arrival time wins
+      // =====================================================
+
+      else if (
+        cart.priority_class ==
+        self.priority_class
+      )
+      {
+        if (
+          cart.arrival_time >= 0.0 &&
+          self.arrival_time >= 0.0
+        )
+        {
+          double difference =
+            cart.arrival_time -
+            self.arrival_time;
+
+
+          // Other cart arrived earlier
+          if (difference < -0.1)
+          {
+            other_goes_first = true;
+          }
+
+
+          // Arrival times effectively tied:
+          // lower cart ID wins
+          else if (
+            std::abs(difference) <= 0.1 &&
+            cart.cart_id < self.cart_id
+          )
+          {
+            other_goes_first = true;
+          }
+        }
+
+
+        // If arrival timestamps are not available,
+        // use cart ID as deterministic fallback.
+        else if (
+          cart.cart_id <
+          self.cart_id
+        )
+        {
+          other_goes_first = true;
+        }
+      }
+
+
+      // Higher-ranked waiting cart gets released first.
+      if (other_goes_first)
+      {
+        return 2;  // remain STOPPED
+      }
+    }
+
+
 
 
   // =====================================================
