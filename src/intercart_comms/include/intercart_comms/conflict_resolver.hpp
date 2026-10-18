@@ -17,6 +17,10 @@ public:
     const CartState &self,
     const std::vector<CartState> &neighbors);
 
+  bool hasConflict(
+    const CartState &self,
+    const std::vector<CartState> &neighbors);
+
 private:
 
   float safety_radius_;

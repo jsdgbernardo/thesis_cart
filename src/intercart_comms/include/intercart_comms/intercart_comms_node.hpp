@@ -65,6 +65,14 @@ private:
   // This cart's own state
   CartState self_state_;
 
+
+  int priority_class_;
+
+  double conflict_arrival_time_;
+
+  bool conflict_active_;
+
+
   // Velocity requested by the cart/navigation system
   geometry_msgs::msg::Twist desired_velocity_;
 

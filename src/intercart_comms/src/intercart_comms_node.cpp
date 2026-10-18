@@ -36,6 +36,20 @@ IntercartCommNode::IntercartCommNode()
     "/" + gazebo_model_name_ + "/cmd_vel";
 
 
+
+  priority_class_ =
+    this->declare_parameter(
+      "priority_class",
+      0
+    );
+
+  conflict_arrival_time_ = -1.0;
+
+  conflict_active_ = false;
+
+
+
+
   // =====================================================
   // 3. SIMULATION PARAMETERS
   // =====================================================
@@ -60,6 +74,13 @@ IntercartCommNode::IntercartCommNode()
   self_state_.pose.position.x = initial_x;
   self_state_.pose.position.y = initial_y;
   self_state_.pose.position.z = 0.0;
+
+
+  self_state_.priority_class =
+  priority_class_;
+
+  self_state_.arrival_time =
+    -1.0;
 
 
   // =====================================================
@@ -200,10 +221,19 @@ IntercartCommNode::IntercartCommNode()
 void IntercartCommNode::neighbor_callback(
   const intercart_comms::msg::CartState::SharedPtr msg)
 {
+  // --------------------------------------------------
+  // Ignore our own broadcast
+  // --------------------------------------------------
+
   if (msg->cart_id == self_state_.cart_id)
   {
     return;
   }
+
+
+  // --------------------------------------------------
+  // Convert received ROS message to internal CartState
+  // --------------------------------------------------
 
   CartState cart;
 
@@ -212,7 +242,19 @@ void IntercartCommNode::neighbor_callback(
   cart.velocity = msg->velocity;
   cart.intent = msg->intent;
 
+  cart.priority_class =
+    msg->priority_class;
+
+  cart.arrival_time =
+    msg->arrival_time;
+
+
+  // --------------------------------------------------
+  // Store/update this neighbor
+  // --------------------------------------------------
+
   neighbors_[cart.cart_id] = cart;
+
 
   RCLCPP_INFO_THROTTLE(
     this->get_logger(),
@@ -224,6 +266,11 @@ void IntercartCommNode::neighbor_callback(
     cart.pose.position.y
   );
 
+
+  // --------------------------------------------------
+  // Convert neighbor map to vector
+  // --------------------------------------------------
+
   std::vector<CartState> neighbor_vector;
 
   for (const auto &entry : neighbors_)
@@ -231,13 +278,86 @@ void IntercartCommNode::neighbor_callback(
     neighbor_vector.push_back(entry.second);
   }
 
+
+  // ==================================================
+  // NEW CODE STARTS HERE
+  // ==================================================
+
+  bool conflict_now =
+    resolver_.hasConflict(
+      self_state_,
+      neighbor_vector
+    );
+
+
+  if (
+    conflict_now &&
+    !conflict_active_
+  )
+  {
+    conflict_active_ = true;
+
+    conflict_arrival_time_ =
+      this->get_clock()->now().seconds();
+
+    self_state_.arrival_time =
+      conflict_arrival_time_;
+
+    RCLCPP_INFO(
+      this->get_logger(),
+      "Cart %d entered negotiation at %.3f",
+      self_state_.cart_id,
+      conflict_arrival_time_
+    );
+  }
+
+
+  if (
+    !conflict_now &&
+    conflict_active_ &&
+    avoidance_state_ == AvoidanceState::NORMAL
+  )
+  {
+    conflict_active_ = false;
+
+    conflict_arrival_time_ = -1.0;
+
+    self_state_.arrival_time = -1.0;
+
+    RCLCPP_INFO(
+      this->get_logger(),
+      "Cart %d conflict cleared",
+      self_state_.cart_id
+    );
+  }
+
+
+  // ==================================================
+  // NEW CODE ENDS HERE
+  // ==================================================
+
+
+  // --------------------------------------------------
+  // Right-of-way / collision decision
+  // --------------------------------------------------
+
   int decision =
     resolver_.resolve(
       self_state_,
       neighbor_vector
     );
 
+
+  // --------------------------------------------------
+  // Store intent
+  // --------------------------------------------------
+
   self_state_.intent = decision;
+
+
+  // --------------------------------------------------
+  // Start avoidance maneuver if needed
+  // --------------------------------------------------
 
   if (
     decision == 3 &&
@@ -260,6 +380,10 @@ void IntercartCommNode::neighbor_callback(
     );
   }
 
+
+  // --------------------------------------------------
+  // Normal intent-to-velocity logic
+  // --------------------------------------------------
 
   if (avoidance_state_ == AvoidanceState::NORMAL)
   {
@@ -289,17 +413,25 @@ void IntercartCommNode::neighbor_callback(
     }
     else
     {
-      safe_velocity_ = desired_velocity_;
+      safe_velocity_ =
+        desired_velocity_;
     }
   }
 
-  // self_state_.velocity = safe_velocity_;
 
+  // --------------------------------------------------
+  // Publish intent
+  // --------------------------------------------------
 
   std_msgs::msg::Int32 intent_msg;
   intent_msg.data = decision;
+
   intent_pub_->publish(intent_msg);
 
+
+  // --------------------------------------------------
+  // Readable logging
+  // --------------------------------------------------
 
   if (decision == 3)
   {
@@ -342,6 +474,179 @@ void IntercartCommNode::neighbor_callback(
     );
   }
 }
+
+// void IntercartCommNode::neighbor_callback(
+//   const intercart_comms::msg::CartState::SharedPtr msg)
+// {
+//   if (msg->cart_id == self_state_.cart_id)
+//   {
+//     return;
+//   }
+
+//   CartState cart;
+
+//   cart.cart_id = msg->cart_id;
+//   cart.pose = msg->pose;
+//   cart.velocity = msg->velocity;
+//   cart.intent = msg->intent;
+
+//   cart.priority_class =
+//     msg->priority_class;
+
+//   cart.arrival_time =
+//     msg->arrival_time;
+
+//   neighbors_[cart.cart_id] = cart;
+
+//   RCLCPP_INFO_THROTTLE(
+//     this->get_logger(),
+//     *this->get_clock(),
+//     1000,
+//     "Received state from Cart %d: x=%.2f y=%.2f",
+//     cart.cart_id,
+//     cart.pose.position.x,
+//     cart.pose.position.y
+//   );
+
+//   std::vector<CartState> neighbor_vector;
+
+//   for (const auto &entry : neighbors_)
+//   {
+//     neighbor_vector.push_back(entry.second);
+//   }
+
+//   int decision =
+//     resolver_.resolve(
+//       self_state_,
+//       neighbor_vector
+//     );
+
+//   if (
+//     decision != 0 &&
+//     !conflict_active_
+//   )
+//   {
+//     conflict_active_ = true;
+
+//     conflict_arrival_time_ =
+//       this->get_clock()->now().seconds();
+
+//     self_state_.arrival_time =
+//       conflict_arrival_time_;
+
+//     RCLCPP_INFO(
+//       this->get_logger(),
+//       "Cart %d entered conflict negotiation at %.3f",
+//       self_state_.cart_id,
+//       conflict_arrival_time_
+//     );
+//   }
+
+//   self_state_.intent = decision;
+
+//   if (
+//     decision == 3 &&
+//     avoidance_state_ == AvoidanceState::NORMAL
+//   )
+//   {
+//     original_heading_ =
+//       get_yaw(self_state_.pose.orientation);
+
+//     original_y_ =
+//       self_state_.pose.position.y;
+
+//     avoidance_state_ =
+//       AvoidanceState::TURN_OUT;
+
+//     RCLCPP_WARN(
+//       this->get_logger(),
+//       "Cart %d starting avoidance maneuver",
+//       self_state_.cart_id
+//     );
+//   }
+
+
+//   if (avoidance_state_ == AvoidanceState::NORMAL)
+//   {
+//     if (decision == 2)
+//     {
+//       safe_velocity_.linear.x = 0.0;
+//       safe_velocity_.linear.y = 0.0;
+//       safe_velocity_.linear.z = 0.0;
+
+//       safe_velocity_.angular.x = 0.0;
+//       safe_velocity_.angular.y = 0.0;
+//       safe_velocity_.angular.z = 0.0;
+//     }
+//     else if (decision == 1)
+//     {
+//       safe_velocity_.linear.x =
+//         desired_velocity_.linear.x * 0.5;
+
+//       safe_velocity_.linear.y =
+//         desired_velocity_.linear.y * 0.5;
+
+//       safe_velocity_.linear.z =
+//         desired_velocity_.linear.z * 0.5;
+
+//       safe_velocity_.angular =
+//         desired_velocity_.angular;
+//     }
+//     else
+//     {
+//       safe_velocity_ = desired_velocity_;
+//     }
+//   }
+
+//   // self_state_.velocity = safe_velocity_;
+
+
+//   std_msgs::msg::Int32 intent_msg;
+//   intent_msg.data = decision;
+//   intent_pub_->publish(intent_msg);
+
+
+//   if (decision == 3)
+//   {
+//     RCLCPP_WARN_THROTTLE(
+//       this->get_logger(),
+//       *this->get_clock(),
+//       1000,
+//       "Cart %d decision: AVOID",
+//       self_state_.cart_id
+//     );
+//   }
+//   else if (decision == 2)
+//   {
+//     RCLCPP_WARN_THROTTLE(
+//       this->get_logger(),
+//       *this->get_clock(),
+//       1000,
+//       "Cart %d decision: STOP",
+//       self_state_.cart_id
+//     );
+//   }
+//   else if (decision == 1)
+//   {
+//     RCLCPP_INFO_THROTTLE(
+//       this->get_logger(),
+//       *this->get_clock(),
+//       1000,
+//       "Cart %d decision: SLOW",
+//       self_state_.cart_id
+//     );
+//   }
+//   else
+//   {
+//     RCLCPP_INFO_THROTTLE(
+//       this->get_logger(),
+//       *this->get_clock(),
+//       1000,
+//       "Cart %d decision: PROCEED",
+//       self_state_.cart_id
+//     );
+//   }
+// }
 
 
 // =====================================================
@@ -578,7 +883,7 @@ void IntercartCommNode::update_avoidance()
         }
       }
 
-      
+
       // =====================================================
       // B. Now we are almost exactly on the old path.
       //    Stop and straighten the heading.
@@ -692,6 +997,12 @@ void IntercartCommNode::publish_self_state()
   msg.pose = self_state_.pose;
   msg.velocity = self_state_.velocity;
   msg.intent = self_state_.intent;
+
+  msg.priority_class =
+    self_state_.priority_class;
+
+  msg.arrival_time =
+    self_state_.arrival_time;
 
   state_pub_->publish(msg);
 }
