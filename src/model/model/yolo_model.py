@@ -8,6 +8,8 @@
 #                           -> count items -> camera/detections     
 #                           -> diff against previous -> camera/diff
 
+# put a filter in btwn that can mask the new item
+
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -60,8 +62,15 @@ class YoloModel(Node):
         class_names_path = os.path.join(price_dir, 'items', 'class_names.json')
         self.class_names = self._load_class_names(class_names_path, json_path)
 
+        opts = onnxruntime.SessionOptions()
+        opts.intra_op_num_threads = 4
+        opts.inter_op_num_threads = 1
+        opts.execution_mode = onnxruntime.ExecutionMode.ORT_SEQUENTIAL
+        opts.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL
+
         self.session = onnxruntime.InferenceSession(
             model_path,
+            sess_options=opts,
             providers=['CPUExecutionProvider']
         )
         self.get_logger().info(f'ONNX model has been loaded.')
@@ -154,13 +163,13 @@ class YoloModel(Node):
         return boxes, classes, confidences
 
     # annotate frame
-    def draw_boxes(self, frame: np.ndarray, boxes, classes, confidences) -> np.ndarray:
+    def draw_boxes(self, frame: np.ndarray, boxes, classes, confidences, inference_time_ms: float) -> np.ndarray:
         annotated = frame.copy()
 
         for box, class_id, conf in zip(boxes, classes, confidences):
             x1, y1, x2, y2 = [int(v) for v in box]
             class_name = self.class_names[class_id] if class_id < len(self.class_names) else f'class_{class_id}'
-            label = f'{class_name}: {conf:.2f}'
+            label = f'{class_name}: {conf:.2f}%'
 
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 2)
             (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
@@ -186,7 +195,9 @@ class YoloModel(Node):
 
             try:
                 input_data = self.preprocess(frame)
+                infer_start = time.time()
                 outputs = self.session.run(self.output_names, {self.input_name: input_data})
+                inference_time_ms = (time.time() - infer_start) * 1000.0
                 boxes, classes, confidences = self.postprocess(outputs, frame.shape)
 
                 # counts how many of each item was detected in the frame
@@ -212,8 +223,44 @@ class YoloModel(Node):
                 diff_data = {'added': added, 'removed': removed}
                 self.diff_pub.publish(String(data=json.dumps(diff_data)))
 
+                detections = []
+                for box, class_id, conf in zip(boxes, classes, confidences):
+                    detections.append({
+                        'class_id': class_id,
+                        'class_name': self._class_id_to_name(class_id),
+                        'confidence': conf,
+                        'box': box,
+                    })
+
+                selected_item = None
+                
+                # If items are removed (and nothing added), select one of the removed items
+                if removed:
+                    removed_name = list(removed.keys())[0]
+                    selected_item = {
+                        'class_name': removed_name,
+                        'confidence': 0.0,
+                        'box': [],
+                        'class_id': -1,
+                        'is_new': False
+                    }
+                # If items are added, select one from detections that was added
+                elif added:
+                    added_names = set(added.keys())
+                    for detection in detections:
+                        if detection['class_name'] in added_names:
+                            selected_item = detection
+                            break
+
+                # Fallback to highest confidence detection
+                if selected_item is None and detections:
+                    selected_item = max(detections, key=lambda d: d['confidence'])
+
+                if selected_item is not None:
+                    selected_item['is_new'] = selected_item['class_name'] in (added or {})
+
                 # publish annotated image
-                annotated = self.draw_boxes(frame, boxes, classes, confidences)
+                annotated = self.draw_boxes(frame, boxes, classes, confidences, inference_time_ms)
                 self.image_pub.publish(
                     self.bridge.cv2_to_imgmsg(annotated, encoding='bgr8')
                 )
@@ -222,7 +269,24 @@ class YoloModel(Node):
                     'class_names': [self._class_id_to_name(c) for c in classes],
                     'confidences': confidences,
                     'boxes': boxes,
+                    'inference_time_ms': inference_time_ms,
+                    'selected_item': selected_item,
+                    'added': added,
+                    'removed': removed,
                 })))
+
+                selected_name = selected_item.get('class_name') if selected_item else None
+                selected_confidence = (
+                    selected_item.get('confidence') if selected_item else None
+                )
+                selected_confidence_str = (
+                    f"{selected_confidence:.2f}" if selected_confidence is not None else "None"
+                )
+                class_names = [self._class_id_to_name(c) for c in classes]
+                detections_str = ', '.join([f'{name}: {conf:.2f}' for name, conf in zip(class_names, confidences)])
+                self.get_logger().info(
+                    f"All detections: {detections_str} | Inference time: {inference_time_ms} ms"
+                )
 
                 if added or removed:
                     self.get_logger().info(f'Changes - Added: {added} | Removed: {removed}')

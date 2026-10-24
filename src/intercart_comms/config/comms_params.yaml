@@ -1,4 +1,14 @@
 intercart_comm_node:
   ros__parameters:
+
     cart_id: 1
+
     safety_radius: 1.2
+
+    prediction_horizon: 3.0
+
+    initial_x: 0.0
+    initial_y: 0.0
+
+    velocity_x: 0.5
+    velocity_y: 0.0
