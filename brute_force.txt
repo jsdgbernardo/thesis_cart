@@ -13,3 +13,4 @@
 [2026-04-10 15:16:39,225] 	4	chicken_leg,onion,string_beans,piattos	29.117430984785763	8.579690217971802
 [2026-04-10 15:19:27,723] 	5	chicken_leg,onion,string_beans,piattos,sugar	36.962965795157956	109.83948945999146
 [2026-04-10 15:23:38,208] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds
+[2026-04-13 18:41:59,812] Program initialized. Format is number of items, order of items, path length in meters, then comptutation time in seconds

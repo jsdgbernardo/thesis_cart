@@ -234,8 +234,8 @@ class AntColonyNode(Node):
 
 
             # ACO parameters scales with number of items
-            num_ants = max(10, n * 3)
-            iterations = max(20, n * 6)
+            num_ants = n * 2
+            iterations = n * 4
             alpha = 1.0      # pheromone importance
             beta = 3.0       # heuristic importance
             evaporation = 0.5
