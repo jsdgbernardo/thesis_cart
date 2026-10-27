@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'?>
+<sdf version="1.6">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <plugin name="gazebo_ros_state" filename="libgazebo_ros_state.so">
+      <ros>
+        <namespace>/gazebo</namespace>
+      </ros>
+      <update_rate>20.0</update_rate>
+    </plugin>
+    <model name="shelf_NE">
+      <static>true</static>
+      <pose>3.45 3.45 0 0 0 0</pose>
+      <link name="shelf_link">
+        <collision name="shelf_collision">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="shelf_visual">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.45 0.53 0.60 1</ambient>
+            <diffuse>0.58 0.67 0.74 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="shelf_NW">
+      <static>true</static>
+      <pose>-3.45 3.45 0 0 0 0</pose>
+      <link name="shelf_link">
+        <collision name="shelf_collision">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="shelf_visual">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.45 0.53 0.60 1</ambient>
+            <diffuse>0.58 0.67 0.74 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="shelf_SE">
+      <static>true</static>
+      <pose>3.45 -3.45 0 0 0 0</pose>
+      <link name="shelf_link">
+        <collision name="shelf_collision">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="shelf_visual">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.45 0.53 0.60 1</ambient>
+            <diffuse>0.58 0.67 0.74 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="shelf_SW">
+      <static>true</static>
+      <pose>-3.45 -3.45 0 0 0 0</pose>
+      <link name="shelf_link">
+        <collision name="shelf_collision">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="shelf_visual">
+          <pose>0 0 0.75 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>5.1 5.1 1.5</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>0.45 0.53 0.60 1</ambient>
+            <diffuse>0.58 0.67 0.74 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>

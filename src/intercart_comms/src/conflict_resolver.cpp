@@ -282,9 +282,54 @@ int ConflictResolver::resolve(
     // ACTIVE AVOIDANCE LOCK
     // -----------------------------------------------------
 
+    // =============================================
+    // CHECK WHETHER THE TWO CARTS HAVE ALREADY
+    // SAFELY PASSED ONE ANOTHER
+    // =============================================
+
+    const auto &self_q = self.pose.orientation;
+    const auto &other_q = cart.pose.orientation;
+
+    double self_yaw = std::atan2(
+      2.0 * (self_q.w * self_q.z + self_q.x * self_q.y),
+      1.0 - 2.0 * (self_q.y * self_q.y + self_q.z * self_q.z)
+    );
+
+    double other_yaw = std::atan2(
+      2.0 * (other_q.w * other_q.z + other_q.x * other_q.y),
+      1.0 - 2.0 * (other_q.y * other_q.y + other_q.z * other_q.z)
+    );
+
+    // Other cart's location relative to my heading.
+    double other_along_self =
+      std::cos(self_yaw) * dx +
+      std::sin(self_yaw) * dy;
+
+    // My location relative to the other cart's heading.
+    double self_along_other =
+      std::cos(other_yaw) * (-dx) +
+      std::sin(other_yaw) * (-dy);
+
+    // Both carts must be behind one another in their
+    // respective current forward directions.
+    // This is appropriate for the head-on pass case.
+    bool passed_each_other =
+      other_along_self < -1.20 &&
+      self_along_other < -1.20;
+
+    // Require additional physical separation.
+    bool enough_clearance =
+      distance > 1.80;
+
+    bool safely_cleared =
+      passed_each_other && enough_clearance;
+
+    // Keep yielding only while the priority cart has
+    // NOT clearly completed the pass.
     if (
       neighbor_has_priority &&
-      distance < 5.0
+      distance < 5.0 &&
+      !safely_cleared
     )
     {
       return 2;  // STOP
@@ -415,6 +460,8 @@ int ConflictResolver::resolve(
   // SECOND PASS
   // NORMAL COLLISION PREDICTION AND RIGHT-OF-WAY
   // =====================================================
+
+  bool avoidance_required = false;
 
   for (const auto &cart : neighbors)
   {
@@ -626,22 +673,20 @@ int ConflictResolver::resolve(
 
     if (other_has_priority)
     {
-      return 2;  // STOP
+      // Any higher-ranked conflicting cart requires
+      // us to yield, even if we won against another cart.
+      return 2;
     }
 
-
-    if (self_has_priority)
+    if (self_has_priority && opposite_direction)
     {
-      if (opposite_direction)
-      {
-        return 3;  // AVOID
-      }
-
-      return 0;  // PROCEED
+      // Record the need to avoid, but continue checking
+      // ALL remaining neighboring carts.
+      avoidance_required = true;
     }
   }
 
 
   // No conflict with any cart
-  return 0;  // PROCEED
+  return avoidance_required ? 3 : 0;
 }
