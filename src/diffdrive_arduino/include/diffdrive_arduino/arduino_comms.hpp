@@ -143,7 +143,11 @@ public:
     // Constructing the command string
     std::stringstream ss;
     ss << rpm_left << " " << dir_left << " " << rpm_right << " " << dir_right << "\r";
-    send_msg(ss.str());
+    // send_msg(ss.str());
+
+    // Send command without waiting for an encoder response.
+    // Encoder messages are read separately by read_encoder_values().
+    serial_conn_.Write(ss.str());
   }
 
 //   void set_pid_values(int k_p, int k_d, int k_i, int k_o)

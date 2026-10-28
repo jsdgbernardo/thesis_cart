@@ -56,7 +56,7 @@ def generate_launch_description():
         name='twist_mux',
         output='both',
         parameters=[twist_mux_file],
-        remappings=[('/cmd_vel_out', '/diff_drive/cmd_vel_unstamped')]
+        remappings=[('/cmd_vel_out', '/cmd_vel_requested')]
     )
 
     # Lidar
@@ -77,6 +77,32 @@ def generate_launch_description():
     #         'collision_params.yaml'
     #     )]
     # )
+
+
+    # Collision avoidance / command safety filter
+    collision_avoidance = Node(
+        package='collision_avoidance',
+        executable='collision_avoidance_node',
+        name='collision_avoidance_node',
+        output='both',
+        parameters=[
+            os.path.join(
+                get_package_share_directory(
+                    'collision_avoidance'
+                ),
+                'config',
+                'collision_params.yaml'
+            )
+        ],
+        remappings=[
+            ('/cmd_vel_manual', '/cmd_vel_requested'),
+            (
+                '/cmd_vel_collision',
+                '/diff_drive/cmd_vel_unstamped'
+            )
+        ]
+    )
+
 
     # Controller params file
     controller_params_file = PathJoinSubstitution(
@@ -112,13 +138,14 @@ def generate_launch_description():
         arguments=["joint_broad"],
     )
 
+    
     return LaunchDescription([
         robot_state_publisher,
         twist_mux,
         lidar,
+        collision_avoidance,
         controller_manager,
         joint_broad_spawner,
-        # collision_avoidance,
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=joint_broad_spawner,
