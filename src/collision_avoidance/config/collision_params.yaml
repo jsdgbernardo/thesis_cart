@@ -1,7 +1,21 @@
 
+# collision_avoidance_node:
+#   ros__parameters:
+#     safe_distance: 0.55
+#     slow_distance: 1.00
+#     base_speed: 0.4
+#     turn_speed: 0.8
+
 collision_avoidance_node:
   ros__parameters:
     safe_distance: 0.55
-    slow_distance: 1.00
+    slow_distance: 1.0
     base_speed: 0.4
     turn_speed: 0.8
+    clear_speed_limit: 0.07
+    slow_speed_limit: 0.05
+    side_clearance_threshold: 0.70
+    enable_initial_turn: false
+    initial_turn_angle_deg: 15.0
+    initial_turn_rate: 0.15
+    turn_timeout_sec: 4.0

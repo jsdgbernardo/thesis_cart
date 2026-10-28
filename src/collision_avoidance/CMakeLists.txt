@@ -31,7 +31,7 @@ add_executable(collision_avoidance_node
 )
 
 ament_target_dependencies(collision_avoidance_node
-  rclcpp sensor_msgs geometry_msgs
+  rclcpp sensor_msgs geometry_msgs nav_msgs
 )
 
 target_include_directories(collision_avoidance_node PUBLIC
