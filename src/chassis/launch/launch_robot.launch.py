@@ -59,12 +59,28 @@ def generate_launch_description():
         remappings=[('/cmd_vel_out', '/cmd_vel_requested')]
     )
 
-    # Lidar
-    lidar = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([os.path.join(
-            pkg_path, 'launch', 'rplidar.launch.py'
-        )])
+
+    start_lidar_arg = DeclareLaunchArgument(
+        'start_lidar',
+        default_value='true',
+        description='Start the RPLIDAR driver'
     )
+
+    
+    # LiDAR (optional)
+    lidar = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(
+                pkg_path,
+                'launch',
+                'rplidar.launch.py'
+            )
+        ),
+        condition=IfCondition(
+            LaunchConfiguration('start_lidar')
+        )
+    )
+
 
     # collision_avoidance = Node(
     #     package='collision_avoidance',
@@ -140,6 +156,7 @@ def generate_launch_description():
 
     
     return LaunchDescription([
+        start_lidar_arg,
         robot_state_publisher,
         twist_mux,
         lidar,

@@ -162,6 +162,68 @@ void CollisionAvoidanceNode::control_callback()
         }
     }
 
+
+
+
+    // // TEMPORARY: Straight-line floor testing only.
+    // // Do not execute autonomous avoidance turns yet.
+
+    // if (state_msg.data == "CLEAR") {
+
+    //     // Allow forward motion, but no turning.
+    //     safe_cmd.angular.z = 0.0;
+
+    // } else {
+
+    //     // Stop for any obstacle, invalid sensor data,
+    //     // expired command, or other non-clear state.
+    //     safe_cmd = geometry_msgs::msg::Twist();
+    // }
+
+
+
+    // TEMPORARY: Forward-only obstacle approach testing.
+    // Allow normal movement, slow movement, and stopping.
+    // Autonomous avoidance turning remains disabled.
+
+    if (state_msg.data == "CLEAR") {
+
+        // Normal forward speed, capped at 0.07 m/s
+        safe_cmd.linear.x = std::min(
+            std::max(last_cmd_.linear.x, 0.0),
+            0.07
+        );
+
+        safe_cmd.angular.z = 0.0;
+
+    } else if (state_msg.data == "SLOWING") {
+
+        // Reduce forward speed to at most 0.05 m/s.
+        // Preserve any lower limit imposed by the planner.
+        safe_cmd.linear.x = std::max(
+            0.0,
+            std::min(
+                0.05,
+                std::min(
+                    last_cmd_.linear.x,
+                    safe_cmd.linear.x
+                )
+            )
+        );
+
+        // Do not perform automatic turning yet.
+        safe_cmd.angular.z = 0.0;
+
+    } else {
+
+        // STOP for AVOIDING, BLOCKED, IDLE,
+        // SENSOR_UNAVAILABLE, or unexpected states.
+        safe_cmd = geometry_msgs::msg::Twist();
+    }
+
+
+
+
     cmd_pub_->publish(safe_cmd);
     state_pub_->publish(state_msg);
 

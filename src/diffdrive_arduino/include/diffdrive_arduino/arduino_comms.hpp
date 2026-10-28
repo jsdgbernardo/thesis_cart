@@ -7,6 +7,8 @@
 #include <libserial/SerialPort.h>
 #include <iostream>
 #include <cmath>
+#include <chrono>
+#include <thread>
 
 
 LibSerial::BaudRate convert_baud_rate(int baud_rate)
@@ -37,12 +39,29 @@ public:
 
   ArduinoComms() = default;
 
-  void connect(const std::string &serial_device, int32_t baud_rate, int32_t timeout_ms)
-  {  
-    timeout_ms_ = timeout_ms;
-    serial_conn_.Open(serial_device);
-    serial_conn_.SetBaudRate(convert_baud_rate(baud_rate));
+  
+  void connect(
+      const std::string &serial_device,
+      int32_t baud_rate,
+      int32_t timeout_ms)
+  {
+      timeout_ms_ = timeout_ms;
+
+      serial_conn_.Open(serial_device);
+      serial_conn_.SetBaudRate(
+          convert_baud_rate(baud_rate)
+      );
+
+      // Arduino Uno may reset when USB serial opens.
+      // Give the firmware time to initialize.
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(2500)
+      );
+
+      // Discard messages accumulated during startup.
+      serial_conn_.FlushIOBuffers();
   }
+
 
   void disconnect()
   {

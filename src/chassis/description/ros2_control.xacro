@@ -16,7 +16,7 @@
                 <param name="ppr_left">3001.4</param>
                 <!-- <param name="ppr_right">2982.6</param> -->
                 <param name="ppr_right">2995.4</param>
-                <param name="timeout_ms">2000</param>
+                <param name="timeout_ms">300</param>
             </hardware>
             <joint name="left_wheel_joint">
                 <state_interface name="position"/>
