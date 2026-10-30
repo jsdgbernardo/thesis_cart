@@ -15,6 +15,7 @@
 #include "diffdrive_arduino/diffbot_system.hpp"
 
 #include <chrono>
+#include <thread>
 #include <cmath>
 #include <limits>
 #include <memory>
@@ -161,6 +162,20 @@ hardware_interface::CallbackReturn DiffDriveArduinoHardware::on_configure(
 
   
   comms_.connect(cfg_.device, cfg_.baud_rate, cfg_.timeout_ms);
+
+
+  // Arduino Uno resets when its USB serial port opens.
+  // Allow the firmware to restart before reading encoders.
+  RCLCPP_INFO(
+      rclcpp::get_logger("DiffDriveArduinoHardware"),
+      "Waiting 3 seconds for Arduino startup..."
+  );
+
+  std::this_thread::sleep_for(
+      std::chrono::milliseconds(3000)
+  );
+
+
   RCLCPP_INFO(rclcpp::get_logger("DiffDriveArduinoHardware"), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
