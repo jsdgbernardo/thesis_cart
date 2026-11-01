@@ -1,0 +1,4 @@
+test=T6
+trial=2
+width=2.8
+priority_classes=0,1,0

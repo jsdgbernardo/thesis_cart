@@ -1,0 +1,233 @@
+[INFO] [1793541309.668748213] [intercart_comm_node]: Inter-cart communication node started. Cart ID: 2, Gazebo model: cart_2
+[INFO] [1793541309.756855500] [intercart_comm_node]: Received state from Cart 1: x=-3.00 y=-0.00
+[INFO] [1793541309.756958406] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541310.854688840] [intercart_comm_node]: Received state from Cart 1: x=-2.58 y=0.00
+[INFO] [1793541310.854795940] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541311.855676367] [intercart_comm_node]: Received state from Cart 1: x=-2.19 y=0.00
+[INFO] [1793541311.855813356] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541312.454621102] [intercart_comm_node]: Cart 2 entered negotiation at 1793541312.455
+[INFO] [1793541312.454755678] [intercart_comm_node]: Cart 2 side clearance: LEFT=999.00 m RIGHT=999.00 m
+[WARN] [1793541312.454781271] [intercart_comm_node]: Cart 2 sides equal -- defaulting to LEFT
+[WARN] [1793541312.454797200] [intercart_comm_node]: Cart 2 starting avoidance of Cart 1
+[WARN] [1793541312.454813517] [intercart_comm_node]: Cart 2 starting avoidance maneuver
+[WARN] [1793541312.454831731] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541312.468970564] [intercart_comm_node]: Avoid state=1 | y=-0.00 | original_y=-0.00 | offset=-0.00 | yaw=3.14 | original_yaw=3.14
+[INFO] [1793541312.956261618] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541313.069342661] [intercart_comm_node]: Avoid state=1 | y=0.01 | original_y=-0.00 | offset=-0.01 | yaw=-2.80 | original_yaw=3.14
+[WARN] [1793541313.555482375] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541313.668766352] [intercart_comm_node]: Avoid state=1 | y=-0.02 | original_y=-0.00 | offset=0.02 | yaw=-2.62 | original_yaw=3.14
+[INFO] [1793541314.054416480] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541314.268734938] [intercart_comm_node]: Avoid state=1 | y=-0.06 | original_y=-0.00 | offset=0.06 | yaw=-2.60 | original_yaw=3.14
+[WARN] [1793541314.655366754] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541314.768740879] [intercart_comm_node]: Avoid state=1 | y=-0.10 | original_y=-0.00 | offset=0.10 | yaw=-2.59 | original_yaw=3.14
+[INFO] [1793541315.063952129] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541315.268745274] [intercart_comm_node]: Avoid state=1 | y=-0.14 | original_y=-0.00 | offset=0.14 | yaw=-2.59 | original_yaw=3.14
+[WARN] [1793541315.754403653] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541315.868730281] [intercart_comm_node]: Avoid state=1 | y=-0.18 | original_y=-0.00 | offset=0.18 | yaw=-2.59 | original_yaw=3.14
+[INFO] [1793541316.156858027] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541316.468702281] [intercart_comm_node]: Avoid state=1 | y=-0.23 | original_y=-0.00 | offset=0.23 | yaw=-2.59 | original_yaw=3.14
+[WARN] [1793541316.754964659] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541316.968708964] [intercart_comm_node]: Avoid state=1 | y=-0.27 | original_y=-0.00 | offset=0.27 | yaw=-2.59 | original_yaw=3.14
+[INFO] [1793541317.254514331] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541317.469506989] [intercart_comm_node]: Avoid state=1 | y=-0.30 | original_y=-0.00 | offset=0.30 | yaw=-2.59 | original_yaw=3.14
+[WARN] [1793541317.854672171] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541318.068753496] [intercart_comm_node]: Avoid state=1 | y=-0.35 | original_y=-0.00 | offset=0.35 | yaw=-2.59 | original_yaw=3.14
+[INFO] [1793541318.354495429] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541318.668696573] [intercart_comm_node]: Avoid state=1 | y=-0.40 | original_y=-0.00 | offset=0.40 | yaw=-2.59 | original_yaw=3.14
+[WARN] [1793541318.856340761] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541319.169021516] [intercart_comm_node]: Avoid state=1 | y=-0.43 | original_y=-0.00 | offset=0.43 | yaw=-2.63 | original_yaw=3.14
+[INFO] [1793541319.357633195] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541319.768714564] [intercart_comm_node]: Avoid state=1 | y=-0.47 | original_y=-0.00 | offset=0.47 | yaw=-2.68 | original_yaw=3.14
+[WARN] [1793541319.957817224] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541320.368636710] [intercart_comm_node]: Avoid state=1 | y=-0.50 | original_y=-0.00 | offset=0.50 | yaw=-2.73 | original_yaw=3.14
+[INFO] [1793541320.454373238] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541320.868760276] [intercart_comm_node]: Avoid state=1 | y=-0.52 | original_y=-0.00 | offset=0.52 | yaw=-2.77 | original_yaw=3.14
+[WARN] [1793541321.054798811] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541321.468685019] [intercart_comm_node]: Avoid state=1 | y=-0.54 | original_y=-0.00 | offset=0.54 | yaw=-2.80 | original_yaw=3.14
+[INFO] [1793541321.554251286] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541322.055679981] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541322.068608344] [intercart_comm_node]: Avoid state=1 | y=-0.56 | original_y=-0.00 | offset=0.56 | yaw=-2.83 | original_yaw=3.14
+[INFO] [1793541322.568749516] [intercart_comm_node]: Avoid state=1 | y=-0.57 | original_y=-0.00 | offset=0.57 | yaw=-2.85 | original_yaw=3.14
+[INFO] [1793541322.654533693] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541323.154326256] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541323.168650759] [intercart_comm_node]: Avoid state=1 | y=-0.59 | original_y=-0.00 | offset=0.59 | yaw=-2.87 | original_yaw=3.14
+[INFO] [1793541323.669619760] [intercart_comm_node]: Avoid state=1 | y=-0.60 | original_y=-0.00 | offset=0.60 | yaw=-2.89 | original_yaw=3.14
+[INFO] [1793541323.754241840] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541324.254257010] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541324.268597173] [intercart_comm_node]: Avoid state=1 | y=-0.61 | original_y=-0.00 | offset=0.61 | yaw=-2.90 | original_yaw=3.14
+[INFO] [1793541324.768600114] [intercart_comm_node]: Avoid state=1 | y=-0.61 | original_y=-0.00 | offset=0.61 | yaw=-2.92 | original_yaw=3.14
+[INFO] [1793541324.854125321] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541325.254348046] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541325.268704241] [intercart_comm_node]: Avoid state=1 | y=-0.62 | original_y=-0.00 | offset=0.62 | yaw=-2.93 | original_yaw=3.14
+[INFO] [1793541325.855362409] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541325.868568604] [intercart_comm_node]: Avoid state=1 | y=-0.63 | original_y=-0.00 | offset=0.63 | yaw=-2.94 | original_yaw=3.14
+[WARN] [1793541326.255189289] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541326.468619246] [intercart_comm_node]: Avoid state=1 | y=-0.63 | original_y=-0.00 | offset=0.63 | yaw=-2.95 | original_yaw=3.14
+[INFO] [1793541326.954304178] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541326.970979411] [intercart_comm_node]: Avoid state=1 | y=-0.64 | original_y=-0.00 | offset=0.64 | yaw=-2.96 | original_yaw=3.14
+[WARN] [1793541327.354298202] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541327.570115260] [intercart_comm_node]: Avoid state=1 | y=-0.64 | original_y=-0.00 | offset=0.64 | yaw=-2.97 | original_yaw=3.14
+[INFO] [1793541328.054181940] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541328.168590161] [intercart_comm_node]: Avoid state=1 | y=-0.65 | original_y=-0.00 | offset=0.65 | yaw=-2.97 | original_yaw=3.14
+[WARN] [1793541328.354736518] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541328.768611013] [intercart_comm_node]: Avoid state=1 | y=-0.65 | original_y=-0.00 | offset=0.65 | yaw=-2.98 | original_yaw=3.14
+[INFO] [1793541329.054521513] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[INFO] [1793541329.368556873] [intercart_comm_node]: Avoid state=1 | y=-0.66 | original_y=-0.00 | offset=0.66 | yaw=-2.99 | original_yaw=3.14
+[WARN] [1793541329.454769652] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541329.968599143] [intercart_comm_node]: Avoid state=1 | y=-0.66 | original_y=-0.00 | offset=0.66 | yaw=-2.99 | original_yaw=3.14
+[INFO] [1793541330.156617198] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541330.455015442] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541330.568436860] [intercart_comm_node]: Avoid state=1 | y=-0.66 | original_y=-0.00 | offset=0.66 | yaw=-3.00 | original_yaw=3.14
+[INFO] [1793541331.068462634] [intercart_comm_node]: Avoid state=1 | y=-0.66 | original_y=-0.00 | offset=0.66 | yaw=-3.00 | original_yaw=3.14
+[INFO] [1793541331.254068883] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541331.554283382] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541331.568487843] [intercart_comm_node]: Avoid state=1 | y=-0.67 | original_y=-0.00 | offset=0.67 | yaw=-3.01 | original_yaw=3.14
+[INFO] [1793541332.168436485] [intercart_comm_node]: Avoid state=1 | y=-0.67 | original_y=-0.00 | offset=0.67 | yaw=-3.01 | original_yaw=3.14
+[INFO] [1793541332.354178929] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541332.554308584] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541332.670592003] [intercart_comm_node]: Avoid state=1 | y=-0.67 | original_y=-0.00 | offset=0.67 | yaw=-3.01 | original_yaw=3.14
+[INFO] [1793541333.268506992] [intercart_comm_node]: Avoid state=1 | y=-0.67 | original_y=-0.00 | offset=0.67 | yaw=-3.02 | original_yaw=3.14
+[INFO] [1793541333.453992629] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541333.554312607] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541333.868428953] [intercart_comm_node]: Avoid state=1 | y=-0.68 | original_y=-0.00 | offset=0.68 | yaw=-3.02 | original_yaw=3.14
+[INFO] [1793541334.370667967] [intercart_comm_node]: Avoid state=1 | y=-0.68 | original_y=-0.00 | offset=0.68 | yaw=-3.02 | original_yaw=3.14
+[INFO] [1793541334.454755438] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541334.654025518] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541334.968379447] [intercart_comm_node]: Avoid state=1 | y=-0.68 | original_y=-0.00 | offset=0.68 | yaw=-3.03 | original_yaw=3.14
+[INFO] [1793541335.468400966] [intercart_comm_node]: Avoid state=1 | y=-0.68 | original_y=-0.00 | offset=0.68 | yaw=-3.03 | original_yaw=3.14
+[INFO] [1793541335.554105510] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541335.654043503] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541336.068364549] [intercart_comm_node]: Avoid state=1 | y=-0.68 | original_y=-0.00 | offset=0.68 | yaw=-3.03 | original_yaw=3.14
+[INFO] [1793541336.568367411] [intercart_comm_node]: Avoid state=1 | y=-0.68 | original_y=-0.00 | offset=0.68 | yaw=-3.04 | original_yaw=3.14
+[INFO] [1793541336.653991299] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541336.654080775] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541337.068382973] [intercart_comm_node]: Avoid state=1 | y=-0.69 | original_y=-0.00 | offset=0.69 | yaw=-3.04 | original_yaw=3.14
+[INFO] [1793541337.668379442] [intercart_comm_node]: Avoid state=1 | y=-0.69 | original_y=-0.00 | offset=0.69 | yaw=-3.04 | original_yaw=3.14
+[INFO] [1793541337.756650593] [intercart_comm_node]: Received state from Cart 1: x=-1.90 y=-0.00
+[WARN] [1793541337.756888997] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541337.768324062] [intercart_comm_node]: Cart 2: target already passed. Starting return, offset=0.69
+[INFO] [1793541338.268296500] [intercart_comm_node]: Avoid state=4 | y=-0.71 | original_y=-0.00 | offset=0.71 | yaw=2.97 | original_yaw=3.14
+[INFO] [1793541338.768315009] [intercart_comm_node]: Avoid state=4 | y=-0.67 | original_y=-0.00 | offset=0.67 | yaw=2.59 | original_yaw=3.14
+[INFO] [1793541338.858372772] [intercart_comm_node]: Received state from Cart 1: x=-1.52 y=0.00
+[WARN] [1793541338.858638779] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541339.268417935] [intercart_comm_node]: Avoid state=4 | y=-0.59 | original_y=-0.00 | offset=0.59 | yaw=2.46 | original_yaw=3.14
+[INFO] [1793541339.868284046] [intercart_comm_node]: Avoid state=4 | y=-0.47 | original_y=-0.00 | offset=0.47 | yaw=2.51 | original_yaw=3.14
+[INFO] [1793541339.954136378] [intercart_comm_node]: Received state from Cart 1: x=-1.08 y=0.00
+[WARN] [1793541339.954268856] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541340.371954821] [intercart_comm_node]: Avoid state=4 | y=-0.39 | original_y=-0.00 | offset=0.39 | yaw=2.61 | original_yaw=3.14
+[INFO] [1793541340.968362410] [intercart_comm_node]: Avoid state=4 | y=-0.32 | original_y=-0.00 | offset=0.32 | yaw=2.72 | original_yaw=3.14
+[INFO] [1793541341.053958667] [intercart_comm_node]: Received state from Cart 1: x=-0.65 y=0.00
+[WARN] [1793541341.054059130] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541341.568308099] [intercart_comm_node]: Avoid state=4 | y=-0.27 | original_y=-0.00 | offset=0.27 | yaw=2.79 | original_yaw=3.14
+[INFO] [1793541342.054060545] [intercart_comm_node]: Received state from Cart 1: x=-0.25 y=0.00
+[WARN] [1793541342.054289190] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541342.069046738] [intercart_comm_node]: Avoid state=4 | y=-0.24 | original_y=-0.00 | offset=0.24 | yaw=2.83 | original_yaw=3.14
+[INFO] [1793541342.668364003] [intercart_comm_node]: Avoid state=4 | y=-0.21 | original_y=-0.00 | offset=0.21 | yaw=2.87 | original_yaw=3.14
+[INFO] [1793541343.054060247] [intercart_comm_node]: Received state from Cart 1: x=0.15 y=0.00
+[WARN] [1793541343.153979709] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541343.268236659] [intercart_comm_node]: Avoid state=4 | y=-0.18 | original_y=-0.00 | offset=0.18 | yaw=2.90 | original_yaw=3.14
+[INFO] [1793541343.868208052] [intercart_comm_node]: Avoid state=4 | y=-0.17 | original_y=-0.00 | offset=0.17 | yaw=2.92 | original_yaw=3.14
+[INFO] [1793541344.154058912] [intercart_comm_node]: Received state from Cart 1: x=0.59 y=0.00
+[WARN] [1793541344.154223939] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541344.368241114] [intercart_comm_node]: Avoid state=4 | y=-0.15 | original_y=-0.00 | offset=0.15 | yaw=2.94 | original_yaw=3.14
+[INFO] [1793541344.868256195] [intercart_comm_node]: Avoid state=4 | y=-0.14 | original_y=-0.00 | offset=0.14 | yaw=2.95 | original_yaw=3.14
+[INFO] [1793541345.254015094] [intercart_comm_node]: Received state from Cart 1: x=1.02 y=0.00
+[WARN] [1793541345.254168991] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541345.468167510] [intercart_comm_node]: Avoid state=4 | y=-0.13 | original_y=-0.00 | offset=0.13 | yaw=2.97 | original_yaw=3.14
+[INFO] [1793541346.068214341] [intercart_comm_node]: Avoid state=4 | y=-0.12 | original_y=-0.00 | offset=0.12 | yaw=2.98 | original_yaw=3.14
+[INFO] [1793541346.353737906] [intercart_comm_node]: Received state from Cart 1: x=1.46 y=0.00
+[WARN] [1793541346.353847192] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541346.668145967] [intercart_comm_node]: Avoid state=4 | y=-0.12 | original_y=-0.00 | offset=0.12 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541347.169698535] [intercart_comm_node]: Avoid state=4 | y=-0.11 | original_y=-0.00 | offset=0.11 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541347.354033371] [intercart_comm_node]: Received state from Cart 1: x=1.84 y=-0.00
+[WARN] [1793541347.354325967] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541347.768194520] [intercart_comm_node]: Avoid state=4 | y=-0.10 | original_y=-0.00 | offset=0.10 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541348.368116600] [intercart_comm_node]: Avoid state=4 | y=-0.10 | original_y=-0.00 | offset=0.10 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541348.453950941] [intercart_comm_node]: Received state from Cart 1: x=2.27 y=-0.00
+[WARN] [1793541348.454059734] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541348.868181491] [intercart_comm_node]: Avoid state=4 | y=-0.09 | original_y=-0.00 | offset=0.09 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541349.368266696] [intercart_comm_node]: Avoid state=4 | y=-0.08 | original_y=-0.00 | offset=0.08 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541349.554112142] [intercart_comm_node]: Received state from Cart 1: x=2.71 y=-0.00
+[WARN] [1793541349.554372820] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541349.968150287] [intercart_comm_node]: Avoid state=4 | y=-0.08 | original_y=-0.00 | offset=0.08 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541350.469280105] [intercart_comm_node]: Avoid state=4 | y=-0.07 | original_y=-0.00 | offset=0.07 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541350.554147005] [intercart_comm_node]: Received state from Cart 1: x=3.11 y=-0.00
+[WARN] [1793541350.653978801] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541351.068102087] [intercart_comm_node]: Avoid state=4 | y=-0.07 | original_y=-0.00 | offset=0.07 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541351.653791625] [intercart_comm_node]: Received state from Cart 1: x=3.54 y=-0.00
+[INFO] [1793541351.668087583] [intercart_comm_node]: Avoid state=4 | y=-0.06 | original_y=-0.00 | offset=0.06 | yaw=2.99 | original_yaw=3.14
+[WARN] [1793541351.753892930] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541352.168086948] [intercart_comm_node]: Avoid state=4 | y=-0.05 | original_y=-0.00 | offset=0.05 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541352.654005125] [intercart_comm_node]: Received state from Cart 1: x=3.94 y=-0.00
+[INFO] [1793541352.668112545] [intercart_comm_node]: Avoid state=4 | y=-0.05 | original_y=-0.00 | offset=0.05 | yaw=2.99 | original_yaw=3.14
+[WARN] [1793541352.753986947] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541353.168131799] [intercart_comm_node]: Avoid state=4 | y=-0.04 | original_y=-0.00 | offset=0.04 | yaw=2.99 | original_yaw=3.14
+[INFO] [1793541353.753748191] [intercart_comm_node]: Received state from Cart 1: x=4.38 y=-0.00
+[INFO] [1793541353.768061107] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=2.99 | original_yaw=3.14
+[WARN] [1793541353.856683243] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541354.368009933] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.02 | original_yaw=3.14
+[INFO] [1793541354.754802493] [intercart_comm_node]: Received state from Cart 1: x=4.77 y=-0.00
+[INFO] [1793541354.868027914] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.06 | original_yaw=3.14
+[WARN] [1793541354.957712029] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541355.368041748] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.08 | original_yaw=3.14
+[INFO] [1793541355.854495066] [intercart_comm_node]: Received state from Cart 1: x=5.19 y=0.00
+[INFO] [1793541355.968477459] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.09 | original_yaw=3.14
+[WARN] [1793541356.053893949] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541356.468614652] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.10 | original_yaw=3.14
+[INFO] [1793541356.955206283] [intercart_comm_node]: Received state from Cart 1: x=5.63 y=0.00
+[WARN] [1793541357.053921668] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541357.068000974] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.11 | original_yaw=3.14
+[INFO] [1793541357.667968531] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.11 | original_yaw=3.14
+[INFO] [1793541358.053865158] [intercart_comm_node]: Received state from Cart 1: x=6.07 y=0.00
+[WARN] [1793541358.054036280] [intercart_comm_node]: Cart 2 decision: AVOID
+[INFO] [1793541358.167969433] [intercart_comm_node]: Avoid state=4 | y=-0.03 | original_y=-0.00 | offset=0.03 | yaw=3.12 | original_yaw=3.14
+[INFO] [1793541358.368000534] [intercart_comm_node]: Cart 2 avoidance complete -- path error -0.029 m, yaw error 0.020 rad
+[INFO] [1793541358.453648825] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1793541358.453723754] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541359.153811448] [intercart_comm_node]: Received state from Cart 1: x=6.50 y=0.00
+[INFO] [1793541359.555200553] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541360.153833395] [intercart_comm_node]: Received state from Cart 1: x=6.90 y=0.00
+[INFO] [1793541360.653598730] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541361.253498592] [intercart_comm_node]: Received state from Cart 1: x=7.34 y=0.00
+[INFO] [1793541361.655447275] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541362.253706109] [intercart_comm_node]: Received state from Cart 1: x=7.71 y=-0.00
+[INFO] [1793541362.753442303] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541363.255898242] [intercart_comm_node]: Received state from Cart 1: x=8.11 y=-0.00
+[WARN] [1793541363.567842673] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541363.755599849] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541364.356684754] [intercart_comm_node]: Received state from Cart 1: x=8.55 y=-0.00
+[WARN] [1793541364.567847075] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541364.853815895] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541365.453600469] [intercart_comm_node]: Received state from Cart 1: x=8.98 y=-0.00
+[WARN] [1793541365.567852790] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541365.854725851] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541366.553593376] [intercart_comm_node]: Received state from Cart 1: x=9.42 y=-0.00
+[WARN] [1793541366.567853872] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541366.957349680] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541367.557769857] [intercart_comm_node]: Received state from Cart 1: x=9.82 y=-0.00
+[WARN] [1793541367.667815671] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541368.053432252] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541368.653761147] [intercart_comm_node]: Received state from Cart 1: x=10.25 y=-0.00
+[WARN] [1793541368.767798295] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541369.053467256] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541369.753579303] [intercart_comm_node]: Received state from Cart 1: x=10.69 y=-0.00
+[WARN] [1793541369.767834014] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541370.053490832] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1793541370.767932339] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541370.853530937] [intercart_comm_node]: Received state from Cart 1: x=11.13 y=-0.00
+[INFO] [1793541371.053529959] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1793541371.867747643] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541371.953447162] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=-0.00
+[INFO] [1793541372.156289518] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541372.954829415] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=-0.00
+[WARN] [1793541372.967710884] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541373.254606250] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1793541373.967829234] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541374.053388486] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=-0.00
+[INFO] [1793541374.353409600] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541375.053760905] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=-0.00
+[WARN] [1793541375.067679677] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541375.354504780] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1793541376.153365599] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=-0.00
+[WARN] [1793541376.167660695] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1793541376.258991693] [rclcpp]: signal_handler(SIGINT/SIGTERM)

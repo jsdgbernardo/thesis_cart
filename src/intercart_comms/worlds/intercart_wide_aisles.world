@@ -1,6 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <sdf version="1.6">
   <world name="default">
+    <gui fullscreen="false">
+      <camera name="user_camera">
+        <pose>7.770530 -11.140347 18.850718 0 1.011644 2.348196</pose>
+        <view_controller>orbit</view_controller>
+      </camera>
+    </gui>
     <include>
       <uri>model://ground_plane</uri>
     </include>

@@ -405,8 +405,56 @@ void IntercartCommNode::neighbor_callback(
     // pass before returning to our original path.
     // =====================================================
 
-    avoidance_neighbor_id_ = -1;
+    // avoidance_neighbor_id_ = -1;
 
+    // double nearest_forward_distance = 999.0;
+
+    // for (const auto &neighbor : neighbor_vector)
+    // {
+    //   double dx =
+    //     neighbor.pose.position.x -
+    //     self_state_.pose.position.x;
+
+    //   double dy =
+    //     neighbor.pose.position.y -
+    //     self_state_.pose.position.y;
+
+    //   // Position of neighbor along our original travel direction
+    //   double longitudinal =
+    //     std::cos(original_heading_) * dx +
+    //     std::sin(original_heading_) * dy;
+
+    //   // Only consider carts in front of us
+    //   if (
+    //     longitudinal > 0.0 &&
+    //     longitudinal < nearest_forward_distance
+    //   )
+    //   {
+    //     nearest_forward_distance =
+    //       longitudinal;
+
+    //     avoidance_neighbor_id_ =
+    //       neighbor.cart_id;
+    //   }
+    // }
+
+    // RCLCPP_WARN(
+    //   this->get_logger(),
+    //   "Cart %d avoiding Cart %d",
+    //   self_state_.cart_id,
+    //   avoidance_neighbor_id_
+    // );
+
+    
+
+    // avoidance_state_ =
+    //   AvoidanceState::TURN_OUT;
+
+
+    // Find a cart directly ahead, on approximately
+    // the same lane, and facing the opposite direction.
+
+    avoidance_neighbor_id_ = -1;
     double nearest_forward_distance = 999.0;
 
     for (const auto &neighbor : neighbor_vector)
@@ -419,36 +467,71 @@ void IntercartCommNode::neighbor_callback(
         neighbor.pose.position.y -
         self_state_.pose.position.y;
 
-      // Position of neighbor along our original travel direction
+      // Distance ahead along our original heading
       double longitudinal =
         std::cos(original_heading_) * dx +
         std::sin(original_heading_) * dy;
 
-      // Only consider carts in front of us
+      // Sideways distance from our original path
+      double lateral =
+        -std::sin(original_heading_) * dx +
+        std::cos(original_heading_) * dy;
+
+      // Compare orientations, not instantaneous velocities,
+      // because the other cart may already be STOPPED.
+      double other_yaw =
+        get_yaw(neighbor.pose.orientation);
+
+      double heading_dot =
+        std::cos(
+          normalize_angle(other_yaw - original_heading_)
+        );
+
+      bool same_lane =
+        std::abs(lateral) < 0.70;
+
+      bool opposite_heading =
+        heading_dot < -0.50;
+
       if (
         longitudinal > 0.0 &&
+        same_lane &&
+        opposite_heading &&
         longitudinal < nearest_forward_distance
       )
       {
-        nearest_forward_distance =
-          longitudinal;
-
-        avoidance_neighbor_id_ =
-          neighbor.cart_id;
+        nearest_forward_distance = longitudinal;
+        avoidance_neighbor_id_ = neighbor.cart_id;
       }
     }
 
-    RCLCPP_WARN(
-      this->get_logger(),
-      "Cart %d avoiding Cart %d",
-      self_state_.cart_id,
-      avoidance_neighbor_id_
-    );
+    // Do not initiate an avoidance maneuver if
+    // no suitable head-on target was identified.
+    if (avoidance_neighbor_id_ < 0)
+    {
+      RCLCPP_WARN(
+        this->get_logger(),
+        "Cart %d: no head-on target identified; STOP",
+        self_state_.cart_id
+      );
 
-    
+      decision = 2;
+      self_state_.intent = 2;
+      safe_velocity_ = geometry_msgs::msg::Twist();
+    }
+    else
+    {
+      avoidance_state_ = AvoidanceState::TURN_OUT;
+      self_state_.intent = 3;
 
-    avoidance_state_ =
-      AvoidanceState::TURN_OUT;
+      RCLCPP_WARN(
+        this->get_logger(),
+        "Cart %d starting avoidance of Cart %d",
+        self_state_.cart_id,
+        avoidance_neighbor_id_
+      );
+    }
+
 
     RCLCPP_WARN(
       this->get_logger(),
@@ -920,6 +1003,43 @@ void IntercartCommNode::update_avoidance()
   double path_error =
     -lateral_offset;
 
+  // =====================================================
+  // ALL-NEIGHBOR RETURN CLEARANCE CHECK
+  //
+  // Do not rejoin the original path while ANY nearby
+  // cart still occupies the passing / recovery region.
+  // =====================================================
+
+  bool return_corridor_clear = true;
+
+  for (const auto &entry : neighbors_)
+  {
+    const CartState &other = entry.second;
+
+    double dx =
+      other.pose.position.x -
+      self_state_.pose.position.x;
+
+    double dy =
+      other.pose.position.y -
+      self_state_.pose.position.y;
+
+    double longitudinal =
+      std::cos(original_heading_) * dx +
+      std::sin(original_heading_) * dy;
+
+    double distance = std::hypot(dx, dy);
+
+    if (
+      longitudinal > -1.60 &&
+      distance < 1.80
+    )
+    {
+      return_corridor_clear = false;
+      break;
+    }
+  }
+
   RCLCPP_INFO_THROTTLE(
     this->get_logger(),
     *this->get_clock(),
@@ -998,7 +1118,8 @@ void IntercartCommNode::update_avoidance()
 
       if (
         target_longitudinal < -1.60 &&
-        target_distance > 1.80
+        target_distance > 1.80 &&
+        return_corridor_clear
       )
       {
         safe_velocity_ = geometry_msgs::msg::Twist();
@@ -1207,7 +1328,10 @@ void IntercartCommNode::update_avoidance()
       // 2. We have completely passed the target cart.
       // =====================================================
 
-      if (passed_target_cart)
+      if (
+        passed_target_cart &&
+        return_corridor_clear
+      )
       {
         avoidance_state_ =
           AvoidanceState::TURN_BACK;
@@ -1316,7 +1440,8 @@ void IntercartCommNode::update_avoidance()
         // sufficiently behind us AND physically separated.
         bool safe_to_return =
           target_longitudinal < -1.60 &&
-          target_distance > 1.80;
+          target_distance > 1.80 &&
+          return_corridor_clear;
 
         if (!safe_to_return)
         {
