@@ -1,0 +1,13 @@
+trial,closest_pair,min_center_distance_m
+T1_trial1,cart_1-cart_2,1.152
+T1_trial2,cart_1-cart_2,1.17
+T2_trial1,cart_1-cart_2,1.165
+T2_trial2,cart_1-cart_2,1.157
+T3_trial1,cart_1-cart_3,0.653
+T3_trial2,cart_1-cart_3,0.656
+T4_trial1,cart_1-cart_3,0.649
+T4_trial2,cart_1-cart_3,0.654
+T5_trial1,cart_1-cart_2,0.648
+T5_trial2,cart_1-cart_2,0.65
+T6_trial1,cart_1-cart_2,0.648
+T6_trial2,cart_1-cart_2,0.663
