@@ -1,0 +1,6 @@
+Obstacle Type,Detection Rate (%),Mean Abs. Range Error (m),Max. Range Error (m),Undetected Positions,Partial Positions,Detected Scans,Total Scans,Positions Tested
+Cardboard box,100.0,0.0170,0.0200,None,None,20,20,2
+Human legs,100.0,0.0528,0.0700,None,None,20,20,2
+Thin pole,100.0,0.0230,0.0240,None,None,20,20,2
+Dark/black object,100.0,0.0504,0.0800,None,None,20,20,2
+Reflective surface,100.0,0.0913,0.1100,None,None,20,20,2

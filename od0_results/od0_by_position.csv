@@ -1,0 +1,11 @@
+obstacle_type,position,ground_truth_m,target_angle_deg,detected_scans,total_scans,detection_rate_pct,mean_abs_error_m,max_abs_error_m
+Cardboard box,0.5m/+0deg,0.540,0.0,10,10,100.0,0.0140,0.0140
+Cardboard box,1.0m/+0deg,1.000,0.0,10,10,100.0,0.0200,0.0200
+Human legs,0.5m/+0deg,0.480,0.0,10,10,100.0,0.0656,0.0700
+Human legs,1.0m/+0deg,1.070,0.0,10,10,100.0,0.0400,0.0400
+Thin pole,0.5m/+0deg,0.500,0.0,10,10,100.0,0.0240,0.0240
+Thin pole,1.0m/+0deg,1.000,0.0,10,10,100.0,0.0220,0.0220
+Dark/black object,0.5m/+0deg,0.500,0.0,10,10,100.0,0.0314,0.0360
+Dark/black object,1.0m/+0deg,1.000,0.0,10,10,100.0,0.0694,0.0800
+Reflective surface,0.5m/+0deg,0.500,0.0,10,10,100.0,0.0754,0.0760
+Reflective surface,1.0m/+0deg,1.000,0.0,10,10,100.0,0.1072,0.1100
