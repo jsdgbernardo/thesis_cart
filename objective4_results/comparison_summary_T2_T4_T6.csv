@@ -1,0 +1,4 @@
+method,trials_N,footprint_overlap_trials_n_over_N,priority_cart_first_observed_n_over_N,completed_trials_n_over_N,mean_time_to_clear_s_completed_only,mean_commanded_stop_per_cart_s_completed_only,mean_minimum_separation_m
+no_comm,30,24/30,0/30,0/30,N/A,N/A,0.34
+fcfs,30,0/30,0/30,30/30,31.62,11.57,0.8255
+proposed,30,0/30,30/30,30/30,30.03,10.53,0.8241

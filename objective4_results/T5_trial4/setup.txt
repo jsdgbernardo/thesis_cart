@@ -1,0 +1,4 @@
+test=T5
+trial=4
+width=2.8
+priority_classes=0,0,0
