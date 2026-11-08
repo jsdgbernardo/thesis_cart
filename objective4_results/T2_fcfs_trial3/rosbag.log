@@ -1,0 +1,13 @@
+stdin is not a terminal device. Keyboard handling disabled.[INFO] [1794107238.984927210] [rosbag2_recorder]: Press SPACE for pausing/resuming
+[INFO] [1794107238.987083542] [rosbag2_storage]: Opened database '/home/caitlin/thesis_cart/objective4_results/T2_fcfs_trial3/bag/bag_0.db3' for READ_WRITE.
+[INFO] [1794107238.988086666] [rosbag2_recorder]: Listening for topics...
+[INFO] [1794107238.990448194] [rosbag2_recorder]: Event publisher thread: Starting
+[INFO] [1794107238.990832875] [rosbag2_recorder]: Subscribed to topic '/gazebo/model_states'
+[INFO] [1794107238.990954403] [rosbag2_recorder]: Recording...
+[INFO] [1794107241.614122448] [rosbag2_recorder]: Subscribed to topic '/cart_1/cmd_vel'
+[INFO] [1794107241.616366856] [rosbag2_recorder]: Subscribed to topic '/cart_2/cmd_vel'
+[INFO] [1794107241.618901463] [rosbag2_recorder]: Subscribed to topic '/cart_states'
+[INFO] [1794107241.618963572] [rosbag2_recorder]: All requested topics are subscribed. Stopping discovery...
+[INFO] [1794107268.108945136] [rosbag2_cpp]: Writing remaining messages from cache to the bag. It may take a while
+[INFO] [1794107268.111834590] [rosbag2_recorder]: Event publisher thread: Exiting
+[INFO] [1794107268.111936440] [rosbag2_recorder]: Recording stopped

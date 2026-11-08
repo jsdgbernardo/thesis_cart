@@ -1,0 +1,9 @@
+method=no_comm
+test=T6
+trial=8
+number_of_carts=2
+scenario=headon
+aisle_width_m=2.8
+world_half_width_m=12.0
+commanded_speed_mps=0.5
+intercart_messages=disabled

@@ -1,0 +1,87 @@
+[INFO] [1794111436.513376873] [intercart_comm_node]: Inter-cart communication node started. Cart ID: 2, Gazebo model: cart_2
+[INFO] [1794111436.612505650] [intercart_comm_node]: Received state from Cart 1: x=-3.00 y=-0.00
+[INFO] [1794111436.612604965] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111437.612536399] [intercart_comm_node]: Received state from Cart 1: x=-2.61 y=-0.00
+[INFO] [1794111437.612643824] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111438.612558937] [intercart_comm_node]: Received state from Cart 1: x=-2.22 y=-0.00
+[INFO] [1794111438.712488576] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111439.312621665] [intercart_comm_node]: Cart 2 entered negotiation at 1794111439.313
+[INFO] [1794111439.512533079] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111439.712524329] [intercart_comm_node]: Received state from Cart 1: x=-1.86 y=-0.00
+[INFO] [1794111439.712637737] [intercart_comm_node]: Cart 2 entered negotiation at 1794111439.713
+[INFO] [1794111439.712672244] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111439.912480843] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111440.112705735] [intercart_comm_node]: Cart 2 entered negotiation at 1794111440.113
+[INFO] [1794111440.312478748] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111440.512480935] [intercart_comm_node]: Cart 2 entered negotiation at 1794111440.512
+[INFO] [1794111440.712485770] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111440.812574827] [intercart_comm_node]: Received state from Cart 1: x=-1.65 y=-0.00
+[INFO] [1794111440.812672098] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111440.912554871] [intercart_comm_node]: Cart 2 entered negotiation at 1794111440.913
+[INFO] [1794111441.112430908] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111441.312841968] [intercart_comm_node]: Cart 2 entered negotiation at 1794111441.313
+[INFO] [1794111441.512377679] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111441.712617610] [intercart_comm_node]: Cart 2 entered negotiation at 1794111441.713
+[INFO] [1794111441.912723855] [intercart_comm_node]: Received state from Cart 1: x=-1.41 y=-0.00
+[INFO] [1794111441.912836944] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111441.912868564] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111442.112609326] [intercart_comm_node]: Cart 2 entered negotiation at 1794111442.113
+[INFO] [1794111442.312552699] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111442.512753654] [intercart_comm_node]: Cart 2 entered negotiation at 1794111442.513
+[INFO] [1794111442.712478164] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111442.912983095] [intercart_comm_node]: Received state from Cart 1: x=-1.22 y=-0.00
+[INFO] [1794111442.913144576] [intercart_comm_node]: Cart 2 entered negotiation at 1794111442.913
+[INFO] [1794111442.913195929] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111444.012556472] [intercart_comm_node]: Received state from Cart 1: x=-1.17 y=-0.00
+[INFO] [1794111444.012739800] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111444.912872639] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111445.112557608] [intercart_comm_node]: Received state from Cart 1: x=-1.14 y=-0.00
+[INFO] [1794111445.112683959] [intercart_comm_node]: Cart 2 entered negotiation at 1794111445.113
+[INFO] [1794111445.112754433] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111445.512579017] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111445.712465525] [intercart_comm_node]: Cart 2 entered negotiation at 1794111445.712
+[INFO] [1794111445.912455299] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794111446.112622596] [intercart_comm_node]: Received state from Cart 1: x=-0.98 y=-0.00
+[INFO] [1794111446.112822086] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111447.112835326] [intercart_comm_node]: Received state from Cart 1: x=-0.61 y=0.00
+[INFO] [1794111447.112960715] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111448.212581006] [intercart_comm_node]: Received state from Cart 1: x=-0.17 y=0.00
+[INFO] [1794111448.212760353] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111449.312381339] [intercart_comm_node]: Received state from Cart 1: x=0.27 y=0.00
+[INFO] [1794111449.312470245] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111450.312418253] [intercart_comm_node]: Received state from Cart 1: x=0.66 y=0.00
+[INFO] [1794111450.312579081] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111451.312576461] [intercart_comm_node]: Received state from Cart 1: x=1.06 y=0.00
+[INFO] [1794111451.312756185] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111452.412540092] [intercart_comm_node]: Received state from Cart 1: x=1.50 y=0.00
+[INFO] [1794111452.412725195] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111453.512432660] [intercart_comm_node]: Received state from Cart 1: x=1.93 y=0.00
+[INFO] [1794111453.512618967] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111454.512574605] [intercart_comm_node]: Received state from Cart 1: x=2.33 y=0.00
+[INFO] [1794111454.512757654] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111455.612416499] [intercart_comm_node]: Received state from Cart 1: x=2.77 y=0.00
+[INFO] [1794111455.612548097] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111456.612626501] [intercart_comm_node]: Received state from Cart 1: x=3.17 y=0.00
+[INFO] [1794111456.612760245] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794111457.712477320] [intercart_comm_node]: Received state from Cart 1: x=3.60 y=0.00
+[INFO] [1794111457.712629710] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111457.813226360] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111458.812383884] [intercart_comm_node]: Received state from Cart 1: x=4.04 y=0.00
+[INFO] [1794111458.812531706] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111458.913199096] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111459.812586123] [intercart_comm_node]: Received state from Cart 1: x=4.44 y=0.00
+[INFO] [1794111459.812778191] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111460.013169686] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111460.912426953] [intercart_comm_node]: Received state from Cart 1: x=4.87 y=0.00
+[INFO] [1794111460.912544531] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111461.013192156] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111462.012414806] [intercart_comm_node]: Received state from Cart 1: x=5.31 y=0.00
+[INFO] [1794111462.012578313] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111462.113140896] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111463.112215601] [intercart_comm_node]: Received state from Cart 1: x=5.40 y=-0.00
+[INFO] [1794111463.112330716] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111463.213147921] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111464.112461665] [intercart_comm_node]: Received state from Cart 1: x=5.40 y=-0.00
+[INFO] [1794111464.112589524] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794111464.313134643] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794111464.419097208] [rclcpp]: signal_handler(SIGINT/SIGTERM)

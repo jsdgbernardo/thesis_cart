@@ -1,0 +1,140 @@
+[INFO] [1794110402.607331044] [intercart_comm_node]: Inter-cart communication node started. Cart ID: 2, Gazebo model: cart_2
+[INFO] [1794110402.720277801] [intercart_comm_node]: Received state from Cart 1: x=-3.00 y=-0.00
+[INFO] [1794110402.720397367] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110403.819633873] [intercart_comm_node]: Received state from Cart 1: x=-2.59 y=-0.00
+[INFO] [1794110403.819966288] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110404.819932140] [intercart_comm_node]: Received state from Cart 1: x=-2.19 y=-0.00
+[INFO] [1794110404.820016280] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110405.919945123] [intercart_comm_node]: Received state from Cart 1: x=-1.76 y=-0.00
+[INFO] [1794110405.920048295] [intercart_comm_node]: Cart 2 entered negotiation at 1794110405.920
+[WARN] [1794110405.920093610] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110406.019505169] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794110407.020047573] [intercart_comm_node]: Received state from Cart 1: x=-1.51 y=0.01
+[WARN] [1794110407.020251282] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110408.021858264] [intercart_comm_node]: Received state from Cart 1: x=-1.32 y=0.09
+[WARN] [1794110408.021997447] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110408.219575491] [intercart_comm_node]: Cart 2 entered negotiation at 1794110408.220
+[INFO] [1794110409.119555241] [intercart_comm_node]: Received state from Cart 1: x=-1.12 y=0.17
+[WARN] [1794110409.119713614] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110410.219492386] [intercart_comm_node]: Received state from Cart 1: x=-0.91 y=0.25
+[WARN] [1794110410.219612137] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110411.219629636] [intercart_comm_node]: Received state from Cart 1: x=-0.73 y=0.33
+[WARN] [1794110411.219806892] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110412.319754481] [intercart_comm_node]: Received state from Cart 1: x=-0.53 y=0.41
+[WARN] [1794110412.319976119] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110413.419851287] [intercart_comm_node]: Received state from Cart 1: x=-0.31 y=0.48
+[WARN] [1794110413.420052382] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110414.519412478] [intercart_comm_node]: Received state from Cart 1: x=-0.08 y=0.53
+[WARN] [1794110414.519571736] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110415.519770701] [intercart_comm_node]: Received state from Cart 1: x=0.14 y=0.56
+[WARN] [1794110415.519871276] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110416.619547206] [intercart_comm_node]: Received state from Cart 1: x=0.38 y=0.59
+[WARN] [1794110416.619784931] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110417.620237917] [intercart_comm_node]: Received state from Cart 1: x=0.61 y=0.61
+[WARN] [1794110417.620362415] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110418.719372840] [intercart_comm_node]: Received state from Cart 1: x=0.86 y=0.62
+[WARN] [1794110418.719464598] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110419.719455995] [intercart_comm_node]: Received state from Cart 1: x=1.08 y=0.63
+[WARN] [1794110419.719575251] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110420.720555945] [intercart_comm_node]: Received state from Cart 1: x=1.31 y=0.64
+[WARN] [1794110420.720776196] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110421.819656275] [intercart_comm_node]: Received state from Cart 1: x=1.57 y=0.65
+[WARN] [1794110421.819767403] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110422.819680912] [intercart_comm_node]: Received state from Cart 1: x=1.80 y=0.66
+[WARN] [1794110422.819815200] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110423.921082178] [intercart_comm_node]: Received state from Cart 1: x=2.06 y=0.66
+[WARN] [1794110423.921269961] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110425.019369304] [intercart_comm_node]: Received state from Cart 1: x=2.31 y=0.67
+[WARN] [1794110425.019481162] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110426.119646212] [intercart_comm_node]: Received state from Cart 1: x=2.57 y=0.67
+[WARN] [1794110426.119758408] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110427.219769740] [intercart_comm_node]: Received state from Cart 1: x=2.83 y=0.68
+[WARN] [1794110427.220557037] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110428.222858281] [intercart_comm_node]: Received state from Cart 1: x=3.05 y=0.68
+[WARN] [1794110428.223004928] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110429.319353137] [intercart_comm_node]: Received state from Cart 1: x=3.32 y=0.68
+[WARN] [1794110429.319738397] [intercart_comm_node]: Cart 2 decision: STOP
+[INFO] [1794110429.519534124] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110430.319595329] [intercart_comm_node]: Received state from Cart 1: x=3.61 y=0.69
+[INFO] [1794110430.520147718] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110431.321802190] [intercart_comm_node]: Received state from Cart 1: x=3.90 y=0.52
+[INFO] [1794110431.520786929] [intercart_comm_node]: Cart 2 conflict cleared
+[INFO] [1794110431.520863198] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110432.419964769] [intercart_comm_node]: Received state from Cart 1: x=4.23 y=0.35
+[INFO] [1794110432.619360285] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110433.519470391] [intercart_comm_node]: Received state from Cart 1: x=4.60 y=0.25
+[INFO] [1794110433.620365547] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110434.520470961] [intercart_comm_node]: Received state from Cart 1: x=4.96 y=0.20
+[INFO] [1794110434.719885645] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110435.522905254] [intercart_comm_node]: Received state from Cart 1: x=5.32 y=0.17
+[INFO] [1794110435.719958190] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110436.619420789] [intercart_comm_node]: Received state from Cart 1: x=5.72 y=0.14
+[INFO] [1794110436.819429141] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110437.719393367] [intercart_comm_node]: Received state from Cart 1: x=6.13 y=0.12
+[INFO] [1794110437.819533333] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110438.719520423] [intercart_comm_node]: Received state from Cart 1: x=6.48 y=0.11
+[INFO] [1794110438.819625805] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110439.722907429] [intercart_comm_node]: Received state from Cart 1: x=6.85 y=0.10
+[INFO] [1794110439.919488723] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110440.819974092] [intercart_comm_node]: Received state from Cart 1: x=7.26 y=0.09
+[INFO] [1794110440.919558598] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110441.919322473] [intercart_comm_node]: Received state from Cart 1: x=7.67 y=0.07
+[INFO] [1794110442.019781132] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110442.919402397] [intercart_comm_node]: Received state from Cart 1: x=8.04 y=0.06
+[INFO] [1794110443.120458756] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110443.920998561] [intercart_comm_node]: Received state from Cart 1: x=8.41 y=0.05
+[INFO] [1794110444.219483248] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110444.921272800] [intercart_comm_node]: Received state from Cart 1: x=8.79 y=0.04
+[INFO] [1794110445.319606029] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110446.019492138] [intercart_comm_node]: Received state from Cart 1: x=9.12 y=0.03
+[INFO] [1794110446.419397513] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110447.119451171] [intercart_comm_node]: Received state from Cart 1: x=9.12 y=0.03
+[INFO] [1794110447.419461553] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110448.121245222] [intercart_comm_node]: Received state from Cart 1: x=9.12 y=0.03
+[INFO] [1794110448.520105490] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110449.122084229] [intercart_comm_node]: Received state from Cart 1: x=9.12 y=0.03
+[INFO] [1794110449.522526106] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110450.219324851] [intercart_comm_node]: Received state from Cart 1: x=9.14 y=0.03
+[INFO] [1794110450.619413078] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110451.219827623] [intercart_comm_node]: Received state from Cart 1: x=9.54 y=0.03
+[INFO] [1794110451.619483292] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110452.321891964] [intercart_comm_node]: Received state from Cart 1: x=9.97 y=0.03
+[INFO] [1794110452.719505037] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110453.321957080] [intercart_comm_node]: Received state from Cart 1: x=10.37 y=0.03
+[INFO] [1794110453.819825856] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110454.419428998] [intercart_comm_node]: Received state from Cart 1: x=10.81 y=0.03
+[INFO] [1794110454.919258117] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110455.519417344] [intercart_comm_node]: Received state from Cart 1: x=11.24 y=0.03
+[INFO] [1794110455.919449709] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110456.619161046] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110457.019324932] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110457.621329726] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110458.019483617] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110458.719451198] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110459.019671813] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110459.819526094] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110460.019729286] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110460.919423770] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110461.119391546] [intercart_comm_node]: Cart 2 decision: PROCEED
+[INFO] [1794110461.920827495] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110462.121946019] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110462.807219181] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110463.019564464] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110463.219501850] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110463.807243909] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110464.119393076] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110464.319431938] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110464.807376401] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110465.119622812] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110465.319768581] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110465.907345733] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110466.121727082] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110466.420272839] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110466.907842405] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110467.220060970] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110467.519456674] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110468.007379706] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110468.321007174] [intercart_comm_node]: Received state from Cart 1: x=11.41 y=0.03
+[INFO] [1794110468.619253559] [intercart_comm_node]: Cart 2 decision: PROCEED
+[WARN] [1794110469.007839688] [intercart_comm_node]: Cart 2: movement blocked by aisle boundary
+[INFO] [1794110469.202014517] [rclcpp]: signal_handler(SIGINT/SIGTERM)

@@ -1,0 +1,9 @@
+method=fcfs
+test=T2
+trial=1
+number_of_carts=2
+scenario=cross
+aisle_width_m=1.8
+world_half_width_m=6.0
+commanded_speed_mps=0.5
+priority_all_zero=yes
