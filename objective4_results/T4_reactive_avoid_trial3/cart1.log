@@ -1,0 +1,6 @@
+[INFO] [1794217459.325195013] [reactive_avoid_cart_1]: cart_1: local reactive TURN_OUT/PASS/RETURN, no inter-cart messages, aisle=2.8 m
+[INFO] [1794217459.330437841] [reactive_avoid_cart_1]: cart_1: SENSOR_HOLD nearest=infm Missing/stale Gazebo proximity proxy
+[INFO] [1794217459.408854038] [reactive_avoid_cart_1]: cart_1: CLEAR nearest=infm 
+[INFO] [1794217463.809614415] [reactive_avoid_cart_1]: cart_1: TURN_OUT nearest=1.78m Independent bypass side=-1, offset=0.83m
+[WARN] [1794217468.610008304] [reactive_avoid_cart_1]: cart_1: Protective HOLD: cart distance=0.63m
+[WARN] [1794217468.711017328] [reactive_avoid_cart_1]: cart_1: Protective HOLD: cart distance=0.62m

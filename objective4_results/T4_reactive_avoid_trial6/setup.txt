@@ -1,0 +1,15 @@
+method=reactive_avoid
+test=T4
+trial=6
+number_of_carts=3
+scenario=cross
+aisle_width_m=2.8
+world_half_width_m=12.0
+commanded_speed_mps=0.5
+intercart_messages=disabled
+intercart_messages=disabled
+local_avoidance=turn_out_pass_return
+sensor_proxy=Gazebo_model_states
+sensing_range_m=3.3
+safety_radius_m=1.2
+protected_separation_m=0.616

@@ -118,7 +118,8 @@ def analyze(run):
     test = bits[0]
     if test not in CARTS_FOR_TEST:
         return None
-    method = 'no_comm' if '_no_comm_' in run.name else \
+    method = 'reactive_avoid' if '_reactive_avoid_' in run.name else \
+             'no_comm' if '_no_comm_' in run.name else \
              'fcfs' if '_fcfs_' in run.name else 'proposed'
     trial = run.name.rsplit('trial', 1)[-1]
     names = [f'cart_{i}' for i in range(1, CARTS_FOR_TEST[test] + 1)]
@@ -232,7 +233,7 @@ def main():
     # Pool only the matched priority-designation conditions T2/T4/T6.
     # Different N across methods remains visible in the output.
     summary = []
-    for method in ('no_comm', 'fcfs', 'proposed'):
+    for method in ('reactive_avoid', 'fcfs', 'proposed'):
         group = [r for r in results if r['method'] == method and
                  r['test'] in ('T2', 'T4', 'T6')]
         if not group:

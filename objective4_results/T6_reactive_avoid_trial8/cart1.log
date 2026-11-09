@@ -1,0 +1,6 @@
+[INFO] [1794218158.569367680] [reactive_avoid_cart_1]: cart_1: local reactive TURN_OUT/PASS/RETURN, no inter-cart messages, aisle=2.8 m
+[INFO] [1794218158.647107717] [reactive_avoid_cart_1]: cart_1: CLEAR nearest=infm 
+[INFO] [1794218163.345330577] [reactive_avoid_cart_1]: cart_1: TURN_OUT nearest=2.27m Independent bypass side=-1, offset=0.83m
+[INFO] [1794218180.944621029] [reactive_avoid_cart_1]: cart_1: PASS nearest=infm Reached passing lane
+[INFO] [1794218181.043860885] [reactive_avoid_cart_1]: cart_1: RETURN nearest=infm Passed obstacle; rejoining centerline
+[WARN] [1794218210.945485900] [reactive_avoid_cart_1]: cart_1: Boundary hold: projected motion leaves aisle

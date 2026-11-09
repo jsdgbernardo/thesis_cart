@@ -1,0 +1,5 @@
+[INFO] [1794217178.406344394] [reactive_avoid_cart_2]: cart_2: local reactive TURN_OUT/PASS/RETURN, no inter-cart messages, aisle=1.8 m
+[INFO] [1794217178.483976978] [reactive_avoid_cart_2]: cart_2: CLEAR nearest=infm 
+[INFO] [1794217182.482326402] [reactive_avoid_cart_2]: cart_2: TURN_OUT nearest=2.06m Independent bypass side=+1, offset=0.62m
+[WARN] [1794217187.480794143] [reactive_avoid_cart_2]: cart_2: Protective HOLD: cart distance=0.64m
+[WARN] [1794217187.580710104] [reactive_avoid_cart_2]: cart_2: Protective HOLD: cart distance=0.63m

@@ -1,0 +1,10 @@
+requester: making request: gazebo_msgs.srv.DeleteEntity_Request(name='cart_1')
+
+response:
+gazebo_msgs.srv.DeleteEntity_Response(success=True, status_message='Successfully deleted entity [cart_1]')
+
+requester: making request: gazebo_msgs.srv.DeleteEntity_Request(name='cart_2')
+
+response:
+gazebo_msgs.srv.DeleteEntity_Response(success=True, status_message='Successfully deleted entity [cart_2]')
+

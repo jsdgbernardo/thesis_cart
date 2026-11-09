@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage: ./run_baseline_trial.sh no_comm|fcfs T1|T2|T3|T4|T5|T6 trial_number
+# Usage: ./run_baseline_trial.sh no_comm|reactive_avoid|fcfs T1|T2|T3|T4|T5|T6 trial_number
 set -Eeo pipefail
 
 BASE="$HOME/thesis_cart"
@@ -16,8 +16,8 @@ METHOD="${1:-}"
 TEST="${2:-}"
 TRIAL="${3:-1}"
 
-if [[ "$METHOD" != "no_comm" && "$METHOD" != "fcfs" ]]; then
-  echo 'Usage: ./run_baseline_trial.sh no_comm|fcfs T1|T2|T3|T4|T5|T6 trial_number'
+if [[ "$METHOD" != "no_comm" && "$METHOD" != "fcfs" && "$METHOD" != "reactive_avoid" ]]; then
+  echo 'Usage: ./run_baseline_trial.sh no_comm|reactive_avoid|fcfs T1|T2|T3|T4|T5|T6 trial_number'
   exit 1
 fi
 if ! [[ "$TRIAL" =~ ^[1-9][0-9]*$ ]]; then
@@ -66,6 +66,10 @@ if [[ "$METHOD" == fcfs ]]; then
   printf 'priority_all_zero=yes\n' >> "$RUN/setup.txt"
 else
   printf 'intercart_messages=disabled\n' >> "$RUN/setup.txt"
+fi
+
+if [[ "$METHOD" == reactive_avoid ]]; then
+  printf 'intercart_messages=disabled\nlocal_avoidance=turn_out_pass_return\nsensor_proxy=Gazebo_model_states\nsensing_range_m=3.3\nsafety_radius_m=1.2\nprotected_separation_m=0.616\n' >> "$RUN/setup.txt"
 fi
 
 PIDS=()
@@ -134,7 +138,17 @@ ros2 bag record -o "$RUN/bag" "${TOPICS[@]}" > "$RUN/rosbag.log" 2>&1 &
 BAG_PID=$!
 sleep 3
 
-if [[ "$METHOD" == no_comm ]]; then
+if [[ "$METHOD" == reactive_avoid ]]; then
+  for ((i=1; i<=COUNT; i++)); do
+    /usr/bin/python3 "$BASE/reactive_avoid_cart.py" \
+      --cart-id "$i" --carts "$COUNT" --speed 0.5 \
+      --stop-radius 1.2 --protected-separation 0.616 \
+      --prediction-horizon 3.0 --sensor-range 3.3 \
+      --aisle-width "$WIDTH" --world-half-width "$HALF" \
+      > "$RUN/cart${i}.log" 2>&1 &
+    PIDS+=("$!")
+  done
+elif [[ "$METHOD" == no_comm ]]; then
   /usr/bin/python3 "$BASE/no_comm_drive.py" --carts "$COUNT" --speed 0.5 \
     > "$RUN/no_comm_driver.log" 2>&1 &
   PIDS+=("$!")
@@ -158,4 +172,9 @@ fi
 echo
 printf 'RUNNING %s / %s / trial %s\n' "$METHOD" "$TEST" "$TRIAL"
 echo 'Observe Gazebo. When the interaction is complete (or a collision/stall occurs), press ENTER.'
-read -r -p 'Press ENTER to stop this trial: ' _
+if [[ "$METHOD" == reactive_avoid ]]; then
+  echo 'Observe until all carts exit, overlap, or stall; press ENTER to stop.'
+  read -r -t 85 -p 'Press ENTER to finish reactive trial: ' _ || true
+else
+  read -r -p 'Press ENTER to stop this trial: ' _
+fi
